@@ -1,0 +1,226 @@
+[
+    {
+        "label": "openmeteo_requests",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "openmeteo_requests",
+        "description": "openmeteo_requests",
+        "detail": "openmeteo_requests",
+        "documentation": {}
+    },
+    {
+        "label": "pandas",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "pandas",
+        "description": "pandas",
+        "detail": "pandas",
+        "documentation": {}
+    },
+    {
+        "label": "requests_cache",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "requests_cache",
+        "description": "requests_cache",
+        "detail": "requests_cache",
+        "documentation": {}
+    },
+    {
+        "label": "retry",
+        "importPath": "retry_requests",
+        "description": "retry_requests",
+        "isExtraImport": true,
+        "detail": "retry_requests",
+        "documentation": {}
+    },
+    {
+        "label": "cache_session",
+        "kind": 5,
+        "importPath": "API_call",
+        "description": "API_call",
+        "peekOfCode": "cache_session = requests_cache.CachedSession('.cache', expire_after=3600)\nretry_session = retry(cache_session, retries=5, backoff_factor=0.2)\nopenmeteo = openmeteo_requests.Client(session=retry_session)\n# Make sure all required weather variables are listed here\nurl = \"https://historical-forecast-api.open-meteo.com/v1/forecast\"\nparams = {\n    \"latitude\": 33.7215,\n    \"longitude\": 73.0433,\n    \"start_date\": \"2016-01-01\",\n    \"end_date\": \"2025-10-28\",",
+        "detail": "API_call",
+        "documentation": {}
+    },
+    {
+        "label": "retry_session",
+        "kind": 5,
+        "importPath": "API_call",
+        "description": "API_call",
+        "peekOfCode": "retry_session = retry(cache_session, retries=5, backoff_factor=0.2)\nopenmeteo = openmeteo_requests.Client(session=retry_session)\n# Make sure all required weather variables are listed here\nurl = \"https://historical-forecast-api.open-meteo.com/v1/forecast\"\nparams = {\n    \"latitude\": 33.7215,\n    \"longitude\": 73.0433,\n    \"start_date\": \"2016-01-01\",\n    \"end_date\": \"2025-10-28\",\n    \"daily\": [\"sunset\", \"uv_index_max\", \"apparent_temperature_max\", \"snowfall_sum\"],",
+        "detail": "API_call",
+        "documentation": {}
+    },
+    {
+        "label": "openmeteo",
+        "kind": 5,
+        "importPath": "API_call",
+        "description": "API_call",
+        "peekOfCode": "openmeteo = openmeteo_requests.Client(session=retry_session)\n# Make sure all required weather variables are listed here\nurl = \"https://historical-forecast-api.open-meteo.com/v1/forecast\"\nparams = {\n    \"latitude\": 33.7215,\n    \"longitude\": 73.0433,\n    \"start_date\": \"2016-01-01\",\n    \"end_date\": \"2025-10-28\",\n    \"daily\": [\"sunset\", \"uv_index_max\", \"apparent_temperature_max\", \"snowfall_sum\"],\n    \"hourly\": [\"temperature_2m\", \"uv_index_clear_sky\", \"direct_radiation\", \"direct_normal_irradiance\"],",
+        "detail": "API_call",
+        "documentation": {}
+    },
+    {
+        "label": "url",
+        "kind": 5,
+        "importPath": "API_call",
+        "description": "API_call",
+        "peekOfCode": "url = \"https://historical-forecast-api.open-meteo.com/v1/forecast\"\nparams = {\n    \"latitude\": 33.7215,\n    \"longitude\": 73.0433,\n    \"start_date\": \"2016-01-01\",\n    \"end_date\": \"2025-10-28\",\n    \"daily\": [\"sunset\", \"uv_index_max\", \"apparent_temperature_max\", \"snowfall_sum\"],\n    \"hourly\": [\"temperature_2m\", \"uv_index_clear_sky\", \"direct_radiation\", \"direct_normal_irradiance\"],\n    \"timezone\": \"Asia/Bangkok\",\n}",
+        "detail": "API_call",
+        "documentation": {}
+    },
+    {
+        "label": "params",
+        "kind": 5,
+        "importPath": "API_call",
+        "description": "API_call",
+        "peekOfCode": "params = {\n    \"latitude\": 33.7215,\n    \"longitude\": 73.0433,\n    \"start_date\": \"2016-01-01\",\n    \"end_date\": \"2025-10-28\",\n    \"daily\": [\"sunset\", \"uv_index_max\", \"apparent_temperature_max\", \"snowfall_sum\"],\n    \"hourly\": [\"temperature_2m\", \"uv_index_clear_sky\", \"direct_radiation\", \"direct_normal_irradiance\"],\n    \"timezone\": \"Asia/Bangkok\",\n}\n# API request",
+        "detail": "API_call",
+        "documentation": {}
+    },
+    {
+        "label": "responses",
+        "kind": 5,
+        "importPath": "API_call",
+        "description": "API_call",
+        "peekOfCode": "responses = openmeteo.weather_api(url, params=params)\nresponse = responses[0]\nprint(f\"Coordinates: {response.Latitude()}°N {response.Longitude()}°E\")\nprint(f\"Elevation: {response.Elevation()} m asl\")\nprint(f\"Timezone: {response.Timezone()}{response.TimezoneAbbreviation()}\")\nprint(f\"Timezone difference to GMT+0: {response.UtcOffsetSeconds()}s\")\n# Process hourly data\nhourly = response.Hourly()\nhourly_temperature_2m = hourly.Variables(0).ValuesAsNumpy()\nhourly_uv_index_clear_sky = hourly.Variables(1).ValuesAsNumpy()",
+        "detail": "API_call",
+        "documentation": {}
+    },
+    {
+        "label": "response",
+        "kind": 5,
+        "importPath": "API_call",
+        "description": "API_call",
+        "peekOfCode": "response = responses[0]\nprint(f\"Coordinates: {response.Latitude()}°N {response.Longitude()}°E\")\nprint(f\"Elevation: {response.Elevation()} m asl\")\nprint(f\"Timezone: {response.Timezone()}{response.TimezoneAbbreviation()}\")\nprint(f\"Timezone difference to GMT+0: {response.UtcOffsetSeconds()}s\")\n# Process hourly data\nhourly = response.Hourly()\nhourly_temperature_2m = hourly.Variables(0).ValuesAsNumpy()\nhourly_uv_index_clear_sky = hourly.Variables(1).ValuesAsNumpy()\nhourly_direct_radiation = hourly.Variables(2).ValuesAsNumpy()",
+        "detail": "API_call",
+        "documentation": {}
+    },
+    {
+        "label": "hourly",
+        "kind": 5,
+        "importPath": "API_call",
+        "description": "API_call",
+        "peekOfCode": "hourly = response.Hourly()\nhourly_temperature_2m = hourly.Variables(0).ValuesAsNumpy()\nhourly_uv_index_clear_sky = hourly.Variables(1).ValuesAsNumpy()\nhourly_direct_radiation = hourly.Variables(2).ValuesAsNumpy()\nhourly_direct_normal_irradiance = hourly.Variables(3).ValuesAsNumpy()\nhourly_data = {\n    \"date\": pd.date_range(\n        start=pd.to_datetime(hourly.Time(), unit=\"s\", utc=True),\n        end=pd.to_datetime(hourly.TimeEnd(), unit=\"s\", utc=True),\n        freq=pd.Timedelta(seconds=hourly.Interval()),",
+        "detail": "API_call",
+        "documentation": {}
+    },
+    {
+        "label": "hourly_temperature_2m",
+        "kind": 5,
+        "importPath": "API_call",
+        "description": "API_call",
+        "peekOfCode": "hourly_temperature_2m = hourly.Variables(0).ValuesAsNumpy()\nhourly_uv_index_clear_sky = hourly.Variables(1).ValuesAsNumpy()\nhourly_direct_radiation = hourly.Variables(2).ValuesAsNumpy()\nhourly_direct_normal_irradiance = hourly.Variables(3).ValuesAsNumpy()\nhourly_data = {\n    \"date\": pd.date_range(\n        start=pd.to_datetime(hourly.Time(), unit=\"s\", utc=True),\n        end=pd.to_datetime(hourly.TimeEnd(), unit=\"s\", utc=True),\n        freq=pd.Timedelta(seconds=hourly.Interval()),\n        inclusive=\"left\"",
+        "detail": "API_call",
+        "documentation": {}
+    },
+    {
+        "label": "hourly_uv_index_clear_sky",
+        "kind": 5,
+        "importPath": "API_call",
+        "description": "API_call",
+        "peekOfCode": "hourly_uv_index_clear_sky = hourly.Variables(1).ValuesAsNumpy()\nhourly_direct_radiation = hourly.Variables(2).ValuesAsNumpy()\nhourly_direct_normal_irradiance = hourly.Variables(3).ValuesAsNumpy()\nhourly_data = {\n    \"date\": pd.date_range(\n        start=pd.to_datetime(hourly.Time(), unit=\"s\", utc=True),\n        end=pd.to_datetime(hourly.TimeEnd(), unit=\"s\", utc=True),\n        freq=pd.Timedelta(seconds=hourly.Interval()),\n        inclusive=\"left\"\n    ),",
+        "detail": "API_call",
+        "documentation": {}
+    },
+    {
+        "label": "hourly_direct_radiation",
+        "kind": 5,
+        "importPath": "API_call",
+        "description": "API_call",
+        "peekOfCode": "hourly_direct_radiation = hourly.Variables(2).ValuesAsNumpy()\nhourly_direct_normal_irradiance = hourly.Variables(3).ValuesAsNumpy()\nhourly_data = {\n    \"date\": pd.date_range(\n        start=pd.to_datetime(hourly.Time(), unit=\"s\", utc=True),\n        end=pd.to_datetime(hourly.TimeEnd(), unit=\"s\", utc=True),\n        freq=pd.Timedelta(seconds=hourly.Interval()),\n        inclusive=\"left\"\n    ),\n    \"temperature_2m\": hourly_temperature_2m,",
+        "detail": "API_call",
+        "documentation": {}
+    },
+    {
+        "label": "hourly_direct_normal_irradiance",
+        "kind": 5,
+        "importPath": "API_call",
+        "description": "API_call",
+        "peekOfCode": "hourly_direct_normal_irradiance = hourly.Variables(3).ValuesAsNumpy()\nhourly_data = {\n    \"date\": pd.date_range(\n        start=pd.to_datetime(hourly.Time(), unit=\"s\", utc=True),\n        end=pd.to_datetime(hourly.TimeEnd(), unit=\"s\", utc=True),\n        freq=pd.Timedelta(seconds=hourly.Interval()),\n        inclusive=\"left\"\n    ),\n    \"temperature_2m\": hourly_temperature_2m,\n    \"uv_index_clear_sky\": hourly_uv_index_clear_sky,",
+        "detail": "API_call",
+        "documentation": {}
+    },
+    {
+        "label": "hourly_data",
+        "kind": 5,
+        "importPath": "API_call",
+        "description": "API_call",
+        "peekOfCode": "hourly_data = {\n    \"date\": pd.date_range(\n        start=pd.to_datetime(hourly.Time(), unit=\"s\", utc=True),\n        end=pd.to_datetime(hourly.TimeEnd(), unit=\"s\", utc=True),\n        freq=pd.Timedelta(seconds=hourly.Interval()),\n        inclusive=\"left\"\n    ),\n    \"temperature_2m\": hourly_temperature_2m,\n    \"uv_index_clear_sky\": hourly_uv_index_clear_sky,\n    \"direct_radiation\": hourly_direct_radiation,",
+        "detail": "API_call",
+        "documentation": {}
+    },
+    {
+        "label": "hourly_dataframe",
+        "kind": 5,
+        "importPath": "API_call",
+        "description": "API_call",
+        "peekOfCode": "hourly_dataframe = pd.DataFrame(data=hourly_data)\nprint(\"\\nHourly data\\n\", hourly_dataframe.head())\n# Process daily data\ndaily = response.Daily()\ndaily_sunset = daily.Variables(0).ValuesInt64AsNumpy()\ndaily_uv_index_max = daily.Variables(1).ValuesAsNumpy()\ndaily_apparent_temperature_max = daily.Variables(2).ValuesAsNumpy()\ndaily_snowfall_sum = daily.Variables(3).ValuesAsNumpy()\ndaily_data = {\n    \"date\": pd.date_range(",
+        "detail": "API_call",
+        "documentation": {}
+    },
+    {
+        "label": "daily",
+        "kind": 5,
+        "importPath": "API_call",
+        "description": "API_call",
+        "peekOfCode": "daily = response.Daily()\ndaily_sunset = daily.Variables(0).ValuesInt64AsNumpy()\ndaily_uv_index_max = daily.Variables(1).ValuesAsNumpy()\ndaily_apparent_temperature_max = daily.Variables(2).ValuesAsNumpy()\ndaily_snowfall_sum = daily.Variables(3).ValuesAsNumpy()\ndaily_data = {\n    \"date\": pd.date_range(\n        start=pd.to_datetime(daily.Time(), unit=\"s\", utc=True),\n        end=pd.to_datetime(daily.TimeEnd(), unit=\"s\", utc=True),\n        freq=pd.Timedelta(seconds=daily.Interval()),",
+        "detail": "API_call",
+        "documentation": {}
+    },
+    {
+        "label": "daily_sunset",
+        "kind": 5,
+        "importPath": "API_call",
+        "description": "API_call",
+        "peekOfCode": "daily_sunset = daily.Variables(0).ValuesInt64AsNumpy()\ndaily_uv_index_max = daily.Variables(1).ValuesAsNumpy()\ndaily_apparent_temperature_max = daily.Variables(2).ValuesAsNumpy()\ndaily_snowfall_sum = daily.Variables(3).ValuesAsNumpy()\ndaily_data = {\n    \"date\": pd.date_range(\n        start=pd.to_datetime(daily.Time(), unit=\"s\", utc=True),\n        end=pd.to_datetime(daily.TimeEnd(), unit=\"s\", utc=True),\n        freq=pd.Timedelta(seconds=daily.Interval()),\n        inclusive=\"left\"",
+        "detail": "API_call",
+        "documentation": {}
+    },
+    {
+        "label": "daily_uv_index_max",
+        "kind": 5,
+        "importPath": "API_call",
+        "description": "API_call",
+        "peekOfCode": "daily_uv_index_max = daily.Variables(1).ValuesAsNumpy()\ndaily_apparent_temperature_max = daily.Variables(2).ValuesAsNumpy()\ndaily_snowfall_sum = daily.Variables(3).ValuesAsNumpy()\ndaily_data = {\n    \"date\": pd.date_range(\n        start=pd.to_datetime(daily.Time(), unit=\"s\", utc=True),\n        end=pd.to_datetime(daily.TimeEnd(), unit=\"s\", utc=True),\n        freq=pd.Timedelta(seconds=daily.Interval()),\n        inclusive=\"left\"\n    ),",
+        "detail": "API_call",
+        "documentation": {}
+    },
+    {
+        "label": "daily_apparent_temperature_max",
+        "kind": 5,
+        "importPath": "API_call",
+        "description": "API_call",
+        "peekOfCode": "daily_apparent_temperature_max = daily.Variables(2).ValuesAsNumpy()\ndaily_snowfall_sum = daily.Variables(3).ValuesAsNumpy()\ndaily_data = {\n    \"date\": pd.date_range(\n        start=pd.to_datetime(daily.Time(), unit=\"s\", utc=True),\n        end=pd.to_datetime(daily.TimeEnd(), unit=\"s\", utc=True),\n        freq=pd.Timedelta(seconds=daily.Interval()),\n        inclusive=\"left\"\n    ),\n    \"sunset\": daily_sunset,",
+        "detail": "API_call",
+        "documentation": {}
+    },
+    {
+        "label": "daily_snowfall_sum",
+        "kind": 5,
+        "importPath": "API_call",
+        "description": "API_call",
+        "peekOfCode": "daily_snowfall_sum = daily.Variables(3).ValuesAsNumpy()\ndaily_data = {\n    \"date\": pd.date_range(\n        start=pd.to_datetime(daily.Time(), unit=\"s\", utc=True),\n        end=pd.to_datetime(daily.TimeEnd(), unit=\"s\", utc=True),\n        freq=pd.Timedelta(seconds=daily.Interval()),\n        inclusive=\"left\"\n    ),\n    \"sunset\": daily_sunset,\n    \"uv_index_max\": daily_uv_index_max,",
+        "detail": "API_call",
+        "documentation": {}
+    },
+    {
+        "label": "daily_data",
+        "kind": 5,
+        "importPath": "API_call",
+        "description": "API_call",
+        "peekOfCode": "daily_data = {\n    \"date\": pd.date_range(\n        start=pd.to_datetime(daily.Time(), unit=\"s\", utc=True),\n        end=pd.to_datetime(daily.TimeEnd(), unit=\"s\", utc=True),\n        freq=pd.Timedelta(seconds=daily.Interval()),\n        inclusive=\"left\"\n    ),\n    \"sunset\": daily_sunset,\n    \"uv_index_max\": daily_uv_index_max,\n    \"apparent_temperature_max\": daily_apparent_temperature_max,",
+        "detail": "API_call",
+        "documentation": {}
+    },
+    {
+        "label": "daily_dataframe",
+        "kind": 5,
+        "importPath": "API_call",
+        "description": "API_call",
+        "peekOfCode": "daily_dataframe = pd.DataFrame(data=daily_data)\nprint(\"\\nDaily data\\n\", daily_dataframe.head())\n# 💾 Save data to CSV files\nhourly_dataframe.to_csv(\"hourly_weather_data.csv\", index=False)\ndaily_dataframe.to_csv(\"daily_weather_data.csv\", index=False)\nprint(\"\\nData saved successfully:\")\nprint(\" - hourly_weather_data.csv\")\nprint(\" - daily_weather_data.csv\")",
+        "detail": "API_call",
+        "documentation": {}
+    }
+]

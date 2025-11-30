@@ -1,0 +1,352 @@
+[
+    {
+        "label": "openmeteo_requests",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "openmeteo_requests",
+        "description": "openmeteo_requests",
+        "detail": "openmeteo_requests",
+        "documentation": {}
+    },
+    {
+        "label": "pandas",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "pandas",
+        "description": "pandas",
+        "detail": "pandas",
+        "documentation": {}
+    },
+    {
+        "label": "requests_cache",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "requests_cache",
+        "description": "requests_cache",
+        "detail": "requests_cache",
+        "documentation": {}
+    },
+    {
+        "label": "retry",
+        "importPath": "retry_requests",
+        "description": "retry_requests",
+        "isExtraImport": true,
+        "detail": "retry_requests",
+        "documentation": {}
+    },
+    {
+        "label": "streamlit",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "streamlit",
+        "description": "streamlit",
+        "detail": "streamlit",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "datetime",
+        "description": "datetime",
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "numpy",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "numpy",
+        "description": "numpy",
+        "detail": "numpy",
+        "documentation": {}
+    },
+    {
+        "label": "matplotlib.pyplot",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "matplotlib.pyplot",
+        "description": "matplotlib.pyplot",
+        "detail": "matplotlib.pyplot",
+        "documentation": {}
+    },
+    {
+        "label": "cache_session",
+        "kind": 5,
+        "importPath": "NASA meteriological and solar radiaton data.API_call",
+        "description": "NASA meteriological and solar radiaton data.API_call",
+        "peekOfCode": "cache_session = requests_cache.CachedSession('.cache', expire_after=3600)\nretry_session = retry(cache_session, retries=5, backoff_factor=0.2)\nopenmeteo = openmeteo_requests.Client(session=retry_session)\n# Make sure all required weather variables are listed here\nurl = \"https://historical-forecast-api.open-meteo.com/v1/forecast\"\nparams = {\n    \"latitude\": 33.7215,\n    \"longitude\": 73.0433,\n    \"start_date\": \"2016-01-01\",\n    \"end_date\": \"2025-10-28\",",
+        "detail": "NASA meteriological and solar radiaton data.API_call",
+        "documentation": {}
+    },
+    {
+        "label": "retry_session",
+        "kind": 5,
+        "importPath": "NASA meteriological and solar radiaton data.API_call",
+        "description": "NASA meteriological and solar radiaton data.API_call",
+        "peekOfCode": "retry_session = retry(cache_session, retries=5, backoff_factor=0.2)\nopenmeteo = openmeteo_requests.Client(session=retry_session)\n# Make sure all required weather variables are listed here\nurl = \"https://historical-forecast-api.open-meteo.com/v1/forecast\"\nparams = {\n    \"latitude\": 33.7215,\n    \"longitude\": 73.0433,\n    \"start_date\": \"2016-01-01\",\n    \"end_date\": \"2025-10-28\",\n    \"daily\": [\"sunset\", \"uv_index_max\", \"apparent_temperature_max\", \"snowfall_sum\"],",
+        "detail": "NASA meteriological and solar radiaton data.API_call",
+        "documentation": {}
+    },
+    {
+        "label": "openmeteo",
+        "kind": 5,
+        "importPath": "NASA meteriological and solar radiaton data.API_call",
+        "description": "NASA meteriological and solar radiaton data.API_call",
+        "peekOfCode": "openmeteo = openmeteo_requests.Client(session=retry_session)\n# Make sure all required weather variables are listed here\nurl = \"https://historical-forecast-api.open-meteo.com/v1/forecast\"\nparams = {\n    \"latitude\": 33.7215,\n    \"longitude\": 73.0433,\n    \"start_date\": \"2016-01-01\",\n    \"end_date\": \"2025-10-28\",\n    \"daily\": [\"sunset\", \"uv_index_max\", \"apparent_temperature_max\", \"snowfall_sum\"],\n    \"hourly\": [\"temperature_2m\", \"uv_index_clear_sky\", \"direct_radiation\", \"direct_normal_irradiance\"],",
+        "detail": "NASA meteriological and solar radiaton data.API_call",
+        "documentation": {}
+    },
+    {
+        "label": "url",
+        "kind": 5,
+        "importPath": "NASA meteriological and solar radiaton data.API_call",
+        "description": "NASA meteriological and solar radiaton data.API_call",
+        "peekOfCode": "url = \"https://historical-forecast-api.open-meteo.com/v1/forecast\"\nparams = {\n    \"latitude\": 33.7215,\n    \"longitude\": 73.0433,\n    \"start_date\": \"2016-01-01\",\n    \"end_date\": \"2025-10-28\",\n    \"daily\": [\"sunset\", \"uv_index_max\", \"apparent_temperature_max\", \"snowfall_sum\"],\n    \"hourly\": [\"temperature_2m\", \"uv_index_clear_sky\", \"direct_radiation\", \"direct_normal_irradiance\"],\n    \"timezone\": \"Asia/Bangkok\",\n}",
+        "detail": "NASA meteriological and solar radiaton data.API_call",
+        "documentation": {}
+    },
+    {
+        "label": "params",
+        "kind": 5,
+        "importPath": "NASA meteriological and solar radiaton data.API_call",
+        "description": "NASA meteriological and solar radiaton data.API_call",
+        "peekOfCode": "params = {\n    \"latitude\": 33.7215,\n    \"longitude\": 73.0433,\n    \"start_date\": \"2016-01-01\",\n    \"end_date\": \"2025-10-28\",\n    \"daily\": [\"sunset\", \"uv_index_max\", \"apparent_temperature_max\", \"snowfall_sum\"],\n    \"hourly\": [\"temperature_2m\", \"uv_index_clear_sky\", \"direct_radiation\", \"direct_normal_irradiance\"],\n    \"timezone\": \"Asia/Bangkok\",\n}\n# API request",
+        "detail": "NASA meteriological and solar radiaton data.API_call",
+        "documentation": {}
+    },
+    {
+        "label": "responses",
+        "kind": 5,
+        "importPath": "NASA meteriological and solar radiaton data.API_call",
+        "description": "NASA meteriological and solar radiaton data.API_call",
+        "peekOfCode": "responses = openmeteo.weather_api(url, params=params)\nresponse = responses[0]\nprint(f\"Coordinates: {response.Latitude()}°N {response.Longitude()}°E\")\nprint(f\"Elevation: {response.Elevation()} m asl\")\nprint(f\"Timezone: {response.Timezone()}{response.TimezoneAbbreviation()}\")\nprint(f\"Timezone difference to GMT+0: {response.UtcOffsetSeconds()}s\")\n# Process hourly data\nhourly = response.Hourly()\nhourly_temperature_2m = hourly.Variables(0).ValuesAsNumpy()\nhourly_uv_index_clear_sky = hourly.Variables(1).ValuesAsNumpy()",
+        "detail": "NASA meteriological and solar radiaton data.API_call",
+        "documentation": {}
+    },
+    {
+        "label": "response",
+        "kind": 5,
+        "importPath": "NASA meteriological and solar radiaton data.API_call",
+        "description": "NASA meteriological and solar radiaton data.API_call",
+        "peekOfCode": "response = responses[0]\nprint(f\"Coordinates: {response.Latitude()}°N {response.Longitude()}°E\")\nprint(f\"Elevation: {response.Elevation()} m asl\")\nprint(f\"Timezone: {response.Timezone()}{response.TimezoneAbbreviation()}\")\nprint(f\"Timezone difference to GMT+0: {response.UtcOffsetSeconds()}s\")\n# Process hourly data\nhourly = response.Hourly()\nhourly_temperature_2m = hourly.Variables(0).ValuesAsNumpy()\nhourly_uv_index_clear_sky = hourly.Variables(1).ValuesAsNumpy()\nhourly_direct_radiation = hourly.Variables(2).ValuesAsNumpy()",
+        "detail": "NASA meteriological and solar radiaton data.API_call",
+        "documentation": {}
+    },
+    {
+        "label": "hourly",
+        "kind": 5,
+        "importPath": "NASA meteriological and solar radiaton data.API_call",
+        "description": "NASA meteriological and solar radiaton data.API_call",
+        "peekOfCode": "hourly = response.Hourly()\nhourly_temperature_2m = hourly.Variables(0).ValuesAsNumpy()\nhourly_uv_index_clear_sky = hourly.Variables(1).ValuesAsNumpy()\nhourly_direct_radiation = hourly.Variables(2).ValuesAsNumpy()\nhourly_direct_normal_irradiance = hourly.Variables(3).ValuesAsNumpy()\nhourly_data = {\n    \"date\": pd.date_range(\n        start=pd.to_datetime(hourly.Time(), unit=\"s\", utc=True),\n        end=pd.to_datetime(hourly.TimeEnd(), unit=\"s\", utc=True),\n        freq=pd.Timedelta(seconds=hourly.Interval()),",
+        "detail": "NASA meteriological and solar radiaton data.API_call",
+        "documentation": {}
+    },
+    {
+        "label": "hourly_temperature_2m",
+        "kind": 5,
+        "importPath": "NASA meteriological and solar radiaton data.API_call",
+        "description": "NASA meteriological and solar radiaton data.API_call",
+        "peekOfCode": "hourly_temperature_2m = hourly.Variables(0).ValuesAsNumpy()\nhourly_uv_index_clear_sky = hourly.Variables(1).ValuesAsNumpy()\nhourly_direct_radiation = hourly.Variables(2).ValuesAsNumpy()\nhourly_direct_normal_irradiance = hourly.Variables(3).ValuesAsNumpy()\nhourly_data = {\n    \"date\": pd.date_range(\n        start=pd.to_datetime(hourly.Time(), unit=\"s\", utc=True),\n        end=pd.to_datetime(hourly.TimeEnd(), unit=\"s\", utc=True),\n        freq=pd.Timedelta(seconds=hourly.Interval()),\n        inclusive=\"left\"",
+        "detail": "NASA meteriological and solar radiaton data.API_call",
+        "documentation": {}
+    },
+    {
+        "label": "hourly_uv_index_clear_sky",
+        "kind": 5,
+        "importPath": "NASA meteriological and solar radiaton data.API_call",
+        "description": "NASA meteriological and solar radiaton data.API_call",
+        "peekOfCode": "hourly_uv_index_clear_sky = hourly.Variables(1).ValuesAsNumpy()\nhourly_direct_radiation = hourly.Variables(2).ValuesAsNumpy()\nhourly_direct_normal_irradiance = hourly.Variables(3).ValuesAsNumpy()\nhourly_data = {\n    \"date\": pd.date_range(\n        start=pd.to_datetime(hourly.Time(), unit=\"s\", utc=True),\n        end=pd.to_datetime(hourly.TimeEnd(), unit=\"s\", utc=True),\n        freq=pd.Timedelta(seconds=hourly.Interval()),\n        inclusive=\"left\"\n    ),",
+        "detail": "NASA meteriological and solar radiaton data.API_call",
+        "documentation": {}
+    },
+    {
+        "label": "hourly_direct_radiation",
+        "kind": 5,
+        "importPath": "NASA meteriological and solar radiaton data.API_call",
+        "description": "NASA meteriological and solar radiaton data.API_call",
+        "peekOfCode": "hourly_direct_radiation = hourly.Variables(2).ValuesAsNumpy()\nhourly_direct_normal_irradiance = hourly.Variables(3).ValuesAsNumpy()\nhourly_data = {\n    \"date\": pd.date_range(\n        start=pd.to_datetime(hourly.Time(), unit=\"s\", utc=True),\n        end=pd.to_datetime(hourly.TimeEnd(), unit=\"s\", utc=True),\n        freq=pd.Timedelta(seconds=hourly.Interval()),\n        inclusive=\"left\"\n    ),\n    \"temperature_2m\": hourly_temperature_2m,",
+        "detail": "NASA meteriological and solar radiaton data.API_call",
+        "documentation": {}
+    },
+    {
+        "label": "hourly_direct_normal_irradiance",
+        "kind": 5,
+        "importPath": "NASA meteriological and solar radiaton data.API_call",
+        "description": "NASA meteriological and solar radiaton data.API_call",
+        "peekOfCode": "hourly_direct_normal_irradiance = hourly.Variables(3).ValuesAsNumpy()\nhourly_data = {\n    \"date\": pd.date_range(\n        start=pd.to_datetime(hourly.Time(), unit=\"s\", utc=True),\n        end=pd.to_datetime(hourly.TimeEnd(), unit=\"s\", utc=True),\n        freq=pd.Timedelta(seconds=hourly.Interval()),\n        inclusive=\"left\"\n    ),\n    \"temperature_2m\": hourly_temperature_2m,\n    \"uv_index_clear_sky\": hourly_uv_index_clear_sky,",
+        "detail": "NASA meteriological and solar radiaton data.API_call",
+        "documentation": {}
+    },
+    {
+        "label": "hourly_data",
+        "kind": 5,
+        "importPath": "NASA meteriological and solar radiaton data.API_call",
+        "description": "NASA meteriological and solar radiaton data.API_call",
+        "peekOfCode": "hourly_data = {\n    \"date\": pd.date_range(\n        start=pd.to_datetime(hourly.Time(), unit=\"s\", utc=True),\n        end=pd.to_datetime(hourly.TimeEnd(), unit=\"s\", utc=True),\n        freq=pd.Timedelta(seconds=hourly.Interval()),\n        inclusive=\"left\"\n    ),\n    \"temperature_2m\": hourly_temperature_2m,\n    \"uv_index_clear_sky\": hourly_uv_index_clear_sky,\n    \"direct_radiation\": hourly_direct_radiation,",
+        "detail": "NASA meteriological and solar radiaton data.API_call",
+        "documentation": {}
+    },
+    {
+        "label": "hourly_dataframe",
+        "kind": 5,
+        "importPath": "NASA meteriological and solar radiaton data.API_call",
+        "description": "NASA meteriological and solar radiaton data.API_call",
+        "peekOfCode": "hourly_dataframe = pd.DataFrame(data=hourly_data)\nprint(\"\\nHourly data\\n\", hourly_dataframe.head())\n# Process daily data\ndaily = response.Daily()\ndaily_sunset = daily.Variables(0).ValuesInt64AsNumpy()\ndaily_uv_index_max = daily.Variables(1).ValuesAsNumpy()\ndaily_apparent_temperature_max = daily.Variables(2).ValuesAsNumpy()\ndaily_snowfall_sum = daily.Variables(3).ValuesAsNumpy()\ndaily_data = {\n    \"date\": pd.date_range(",
+        "detail": "NASA meteriological and solar radiaton data.API_call",
+        "documentation": {}
+    },
+    {
+        "label": "daily",
+        "kind": 5,
+        "importPath": "NASA meteriological and solar radiaton data.API_call",
+        "description": "NASA meteriological and solar radiaton data.API_call",
+        "peekOfCode": "daily = response.Daily()\ndaily_sunset = daily.Variables(0).ValuesInt64AsNumpy()\ndaily_uv_index_max = daily.Variables(1).ValuesAsNumpy()\ndaily_apparent_temperature_max = daily.Variables(2).ValuesAsNumpy()\ndaily_snowfall_sum = daily.Variables(3).ValuesAsNumpy()\ndaily_data = {\n    \"date\": pd.date_range(\n        start=pd.to_datetime(daily.Time(), unit=\"s\", utc=True),\n        end=pd.to_datetime(daily.TimeEnd(), unit=\"s\", utc=True),\n        freq=pd.Timedelta(seconds=daily.Interval()),",
+        "detail": "NASA meteriological and solar radiaton data.API_call",
+        "documentation": {}
+    },
+    {
+        "label": "daily_sunset",
+        "kind": 5,
+        "importPath": "NASA meteriological and solar radiaton data.API_call",
+        "description": "NASA meteriological and solar radiaton data.API_call",
+        "peekOfCode": "daily_sunset = daily.Variables(0).ValuesInt64AsNumpy()\ndaily_uv_index_max = daily.Variables(1).ValuesAsNumpy()\ndaily_apparent_temperature_max = daily.Variables(2).ValuesAsNumpy()\ndaily_snowfall_sum = daily.Variables(3).ValuesAsNumpy()\ndaily_data = {\n    \"date\": pd.date_range(\n        start=pd.to_datetime(daily.Time(), unit=\"s\", utc=True),\n        end=pd.to_datetime(daily.TimeEnd(), unit=\"s\", utc=True),\n        freq=pd.Timedelta(seconds=daily.Interval()),\n        inclusive=\"left\"",
+        "detail": "NASA meteriological and solar radiaton data.API_call",
+        "documentation": {}
+    },
+    {
+        "label": "daily_uv_index_max",
+        "kind": 5,
+        "importPath": "NASA meteriological and solar radiaton data.API_call",
+        "description": "NASA meteriological and solar radiaton data.API_call",
+        "peekOfCode": "daily_uv_index_max = daily.Variables(1).ValuesAsNumpy()\ndaily_apparent_temperature_max = daily.Variables(2).ValuesAsNumpy()\ndaily_snowfall_sum = daily.Variables(3).ValuesAsNumpy()\ndaily_data = {\n    \"date\": pd.date_range(\n        start=pd.to_datetime(daily.Time(), unit=\"s\", utc=True),\n        end=pd.to_datetime(daily.TimeEnd(), unit=\"s\", utc=True),\n        freq=pd.Timedelta(seconds=daily.Interval()),\n        inclusive=\"left\"\n    ),",
+        "detail": "NASA meteriological and solar radiaton data.API_call",
+        "documentation": {}
+    },
+    {
+        "label": "daily_apparent_temperature_max",
+        "kind": 5,
+        "importPath": "NASA meteriological and solar radiaton data.API_call",
+        "description": "NASA meteriological and solar radiaton data.API_call",
+        "peekOfCode": "daily_apparent_temperature_max = daily.Variables(2).ValuesAsNumpy()\ndaily_snowfall_sum = daily.Variables(3).ValuesAsNumpy()\ndaily_data = {\n    \"date\": pd.date_range(\n        start=pd.to_datetime(daily.Time(), unit=\"s\", utc=True),\n        end=pd.to_datetime(daily.TimeEnd(), unit=\"s\", utc=True),\n        freq=pd.Timedelta(seconds=daily.Interval()),\n        inclusive=\"left\"\n    ),\n    \"sunset\": daily_sunset,",
+        "detail": "NASA meteriological and solar radiaton data.API_call",
+        "documentation": {}
+    },
+    {
+        "label": "daily_snowfall_sum",
+        "kind": 5,
+        "importPath": "NASA meteriological and solar radiaton data.API_call",
+        "description": "NASA meteriological and solar radiaton data.API_call",
+        "peekOfCode": "daily_snowfall_sum = daily.Variables(3).ValuesAsNumpy()\ndaily_data = {\n    \"date\": pd.date_range(\n        start=pd.to_datetime(daily.Time(), unit=\"s\", utc=True),\n        end=pd.to_datetime(daily.TimeEnd(), unit=\"s\", utc=True),\n        freq=pd.Timedelta(seconds=daily.Interval()),\n        inclusive=\"left\"\n    ),\n    \"sunset\": daily_sunset,\n    \"uv_index_max\": daily_uv_index_max,",
+        "detail": "NASA meteriological and solar radiaton data.API_call",
+        "documentation": {}
+    },
+    {
+        "label": "daily_data",
+        "kind": 5,
+        "importPath": "NASA meteriological and solar radiaton data.API_call",
+        "description": "NASA meteriological and solar radiaton data.API_call",
+        "peekOfCode": "daily_data = {\n    \"date\": pd.date_range(\n        start=pd.to_datetime(daily.Time(), unit=\"s\", utc=True),\n        end=pd.to_datetime(daily.TimeEnd(), unit=\"s\", utc=True),\n        freq=pd.Timedelta(seconds=daily.Interval()),\n        inclusive=\"left\"\n    ),\n    \"sunset\": daily_sunset,\n    \"uv_index_max\": daily_uv_index_max,\n    \"apparent_temperature_max\": daily_apparent_temperature_max,",
+        "detail": "NASA meteriological and solar radiaton data.API_call",
+        "documentation": {}
+    },
+    {
+        "label": "daily_dataframe",
+        "kind": 5,
+        "importPath": "NASA meteriological and solar radiaton data.API_call",
+        "description": "NASA meteriological and solar radiaton data.API_call",
+        "peekOfCode": "daily_dataframe = pd.DataFrame(data=daily_data)\nprint(\"\\nDaily data\\n\", daily_dataframe.head())\n# 💾 Save data to CSV files\nhourly_dataframe.to_csv(\"hourly_weather_data.csv\", index=False)\ndaily_dataframe.to_csv(\"daily_weather_data.csv\", index=False)\nprint(\"\\nData saved successfully:\")\nprint(\" - hourly_weather_data.csv\")\nprint(\" - daily_weather_data.csv\")",
+        "detail": "NASA meteriological and solar radiaton data.API_call",
+        "documentation": {}
+    },
+    {
+        "label": "date",
+        "kind": 5,
+        "importPath": "frontend",
+        "description": "frontend",
+        "peekOfCode": "date = st.sidebar.date_input(\"Select Date\", datetime.date.today())\ntime = st.sidebar.time_input(\"Select Time\", datetime.datetime.now().time())\n# API dropdown (example options, update as needed)\napi_options = [\"NASA\", \"Local Weather\", \"Custom API\"]\napi_choice = st.sidebar.selectbox(\"Select API Source\", api_options)\n# Model selection (multiple selection allowed)\nmodel_folder = \"save_model\"\navailable_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),",
+        "detail": "frontend",
+        "documentation": {}
+    },
+    {
+        "label": "time",
+        "kind": 5,
+        "importPath": "frontend",
+        "description": "frontend",
+        "peekOfCode": "time = st.sidebar.time_input(\"Select Time\", datetime.datetime.now().time())\n# API dropdown (example options, update as needed)\napi_options = [\"NASA\", \"Local Weather\", \"Custom API\"]\napi_choice = st.sidebar.selectbox(\"Select API Source\", api_options)\n# Model selection (multiple selection allowed)\nmodel_folder = \"save_model\"\navailable_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),\n    (\"Random Forest\", \"random_forrest_model.pkl\"),",
+        "detail": "frontend",
+        "documentation": {}
+    },
+    {
+        "label": "api_options",
+        "kind": 5,
+        "importPath": "frontend",
+        "description": "frontend",
+        "peekOfCode": "api_options = [\"NASA\", \"Local Weather\", \"Custom API\"]\napi_choice = st.sidebar.selectbox(\"Select API Source\", api_options)\n# Model selection (multiple selection allowed)\nmodel_folder = \"save_model\"\navailable_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),\n    (\"Random Forest\", \"random_forrest_model.pkl\"),\n    (\"XGBoost\", \"xgboost_model.pkl\"),\n]",
+        "detail": "frontend",
+        "documentation": {}
+    },
+    {
+        "label": "api_choice",
+        "kind": 5,
+        "importPath": "frontend",
+        "description": "frontend",
+        "peekOfCode": "api_choice = st.sidebar.selectbox(\"Select API Source\", api_options)\n# Model selection (multiple selection allowed)\nmodel_folder = \"save_model\"\navailable_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),\n    (\"Random Forest\", \"random_forrest_model.pkl\"),\n    (\"XGBoost\", \"xgboost_model.pkl\"),\n]\nmodel_files = [",
+        "detail": "frontend",
+        "documentation": {}
+    },
+    {
+        "label": "model_folder",
+        "kind": 5,
+        "importPath": "frontend",
+        "description": "frontend",
+        "peekOfCode": "model_folder = \"save_model\"\navailable_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),\n    (\"Random Forest\", \"random_forrest_model.pkl\"),\n    (\"XGBoost\", \"xgboost_model.pkl\"),\n]\nmodel_files = [\n    m for m in available_models if os.path.exists(os.path.join(model_folder, m[1]))\n]",
+        "detail": "frontend",
+        "documentation": {}
+    },
+    {
+        "label": "available_models",
+        "kind": 5,
+        "importPath": "frontend",
+        "description": "frontend",
+        "peekOfCode": "available_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),\n    (\"Random Forest\", \"random_forrest_model.pkl\"),\n    (\"XGBoost\", \"xgboost_model.pkl\"),\n]\nmodel_files = [\n    m for m in available_models if os.path.exists(os.path.join(model_folder, m[1]))\n]\nif not model_files:",
+        "detail": "frontend",
+        "documentation": {}
+    },
+    {
+        "label": "model_files",
+        "kind": 5,
+        "importPath": "frontend",
+        "description": "frontend",
+        "peekOfCode": "model_files = [\n    m for m in available_models if os.path.exists(os.path.join(model_folder, m[1]))\n]\nif not model_files:\n    model_files = available_models  # Show all if none found, for UI demo\nmodel_names = [m[0] for m in model_files]\nselected_models = st.sidebar.multiselect(\n    \"Select Models\", model_names, default=model_names\n)\n# Placeholder for model performance and prediction",
+        "detail": "frontend",
+        "documentation": {}
+    },
+    {
+        "label": "model_names",
+        "kind": 5,
+        "importPath": "frontend",
+        "description": "frontend",
+        "peekOfCode": "model_names = [m[0] for m in model_files]\nselected_models = st.sidebar.multiselect(\n    \"Select Models\", model_names, default=model_names\n)\n# Placeholder for model performance and prediction\nst.header(\"Prediction and Model Performance\")\nif st.button(\"Predict for Next Day\"):\n    # Placeholder: Simulate predictions for each selected model\n    hours = np.arange(24)\n    predictions = {}",
+        "detail": "frontend",
+        "documentation": {}
+    },
+    {
+        "label": "selected_models",
+        "kind": 5,
+        "importPath": "frontend",
+        "description": "frontend",
+        "peekOfCode": "selected_models = st.sidebar.multiselect(\n    \"Select Models\", model_names, default=model_names\n)\n# Placeholder for model performance and prediction\nst.header(\"Prediction and Model Performance\")\nif st.button(\"Predict for Next Day\"):\n    # Placeholder: Simulate predictions for each selected model\n    hours = np.arange(24)\n    predictions = {}\n    for model in selected_models:",
+        "detail": "frontend",
+        "documentation": {}
+    }
+]
