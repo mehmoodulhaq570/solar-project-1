@@ -273,7 +273,7 @@
         "kind": 5,
         "importPath": "frontend",
         "description": "frontend",
-        "peekOfCode": "date = st.sidebar.date_input(\"Select Date\", datetime.date.today())\ntime = st.sidebar.time_input(\"Select Time\", datetime.datetime.now().time())\n# API dropdown (example options, update as needed)\napi_options = [\"NASA\", \"Local Weather\", \"Custom API\"]\napi_choice = st.sidebar.selectbox(\"Select API Source\", api_options)\n# Model selection (multiple selection allowed)\nmodel_folder = \"save_model\"\navailable_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),",
+        "peekOfCode": "date = st.sidebar.date_input(\"Select Date\", datetime.date.today())\ntime = st.sidebar.time_input(\"Select Time\", datetime.datetime.now().time())\napi_options = [\"NASA\", \"Local Weather\", \"Custom API\"]\napi_choice = st.sidebar.selectbox(\"Select API Source\", api_options)\nmodel_folder = \"save_model\"\navailable_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),\n    (\"Random Forest\", \"random_forest_model.pkl\"),\n    (\"XGBoost\", \"xgboost_model.pkl\"),",
         "detail": "frontend",
         "documentation": {}
     },
@@ -282,7 +282,7 @@
         "kind": 5,
         "importPath": "frontend",
         "description": "frontend",
-        "peekOfCode": "time = st.sidebar.time_input(\"Select Time\", datetime.datetime.now().time())\n# API dropdown (example options, update as needed)\napi_options = [\"NASA\", \"Local Weather\", \"Custom API\"]\napi_choice = st.sidebar.selectbox(\"Select API Source\", api_options)\n# Model selection (multiple selection allowed)\nmodel_folder = \"save_model\"\navailable_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),\n    (\"Random Forest\", \"random_forrest_model.pkl\"),",
+        "peekOfCode": "time = st.sidebar.time_input(\"Select Time\", datetime.datetime.now().time())\napi_options = [\"NASA\", \"Local Weather\", \"Custom API\"]\napi_choice = st.sidebar.selectbox(\"Select API Source\", api_options)\nmodel_folder = \"save_model\"\navailable_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),\n    (\"Random Forest\", \"random_forest_model.pkl\"),\n    (\"XGBoost\", \"xgboost_model.pkl\"),\n]",
         "detail": "frontend",
         "documentation": {}
     },
@@ -291,7 +291,7 @@
         "kind": 5,
         "importPath": "frontend",
         "description": "frontend",
-        "peekOfCode": "api_options = [\"NASA\", \"Local Weather\", \"Custom API\"]\napi_choice = st.sidebar.selectbox(\"Select API Source\", api_options)\n# Model selection (multiple selection allowed)\nmodel_folder = \"save_model\"\navailable_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),\n    (\"Random Forest\", \"random_forrest_model.pkl\"),\n    (\"XGBoost\", \"xgboost_model.pkl\"),\n]",
+        "peekOfCode": "api_options = [\"NASA\", \"Local Weather\", \"Custom API\"]\napi_choice = st.sidebar.selectbox(\"Select API Source\", api_options)\nmodel_folder = \"save_model\"\navailable_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),\n    (\"Random Forest\", \"random_forest_model.pkl\"),\n    (\"XGBoost\", \"xgboost_model.pkl\"),\n]\nmodel_files = [",
         "detail": "frontend",
         "documentation": {}
     },
@@ -300,7 +300,7 @@
         "kind": 5,
         "importPath": "frontend",
         "description": "frontend",
-        "peekOfCode": "api_choice = st.sidebar.selectbox(\"Select API Source\", api_options)\n# Model selection (multiple selection allowed)\nmodel_folder = \"save_model\"\navailable_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),\n    (\"Random Forest\", \"random_forrest_model.pkl\"),\n    (\"XGBoost\", \"xgboost_model.pkl\"),\n]\nmodel_files = [",
+        "peekOfCode": "api_choice = st.sidebar.selectbox(\"Select API Source\", api_options)\nmodel_folder = \"save_model\"\navailable_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),\n    (\"Random Forest\", \"random_forest_model.pkl\"),\n    (\"XGBoost\", \"xgboost_model.pkl\"),\n]\nmodel_files = [\n    m for m in available_models if os.path.exists(os.path.join(model_folder, m[1]))",
         "detail": "frontend",
         "documentation": {}
     },
@@ -309,7 +309,7 @@
         "kind": 5,
         "importPath": "frontend",
         "description": "frontend",
-        "peekOfCode": "model_folder = \"save_model\"\navailable_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),\n    (\"Random Forest\", \"random_forrest_model.pkl\"),\n    (\"XGBoost\", \"xgboost_model.pkl\"),\n]\nmodel_files = [\n    m for m in available_models if os.path.exists(os.path.join(model_folder, m[1]))\n]",
+        "peekOfCode": "model_folder = \"save_model\"\navailable_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),\n    (\"Random Forest\", \"random_forest_model.pkl\"),\n    (\"XGBoost\", \"xgboost_model.pkl\"),\n]\nmodel_files = [\n    m for m in available_models if os.path.exists(os.path.join(model_folder, m[1]))\n]",
         "detail": "frontend",
         "documentation": {}
     },
@@ -318,7 +318,7 @@
         "kind": 5,
         "importPath": "frontend",
         "description": "frontend",
-        "peekOfCode": "available_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),\n    (\"Random Forest\", \"random_forrest_model.pkl\"),\n    (\"XGBoost\", \"xgboost_model.pkl\"),\n]\nmodel_files = [\n    m for m in available_models if os.path.exists(os.path.join(model_folder, m[1]))\n]\nif not model_files:",
+        "peekOfCode": "available_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),\n    (\"Random Forest\", \"random_forest_model.pkl\"),\n    (\"XGBoost\", \"xgboost_model.pkl\"),\n]\nmodel_files = [\n    m for m in available_models if os.path.exists(os.path.join(model_folder, m[1]))\n]\nif not model_files:",
         "detail": "frontend",
         "documentation": {}
     },
@@ -327,7 +327,7 @@
         "kind": 5,
         "importPath": "frontend",
         "description": "frontend",
-        "peekOfCode": "model_files = [\n    m for m in available_models if os.path.exists(os.path.join(model_folder, m[1]))\n]\nif not model_files:\n    model_files = available_models  # Show all if none found, for UI demo\nmodel_names = [m[0] for m in model_files]\nselected_models = st.sidebar.multiselect(\n    \"Select Models\", model_names, default=model_names\n)\n# Placeholder for model performance and prediction",
+        "peekOfCode": "model_files = [\n    m for m in available_models if os.path.exists(os.path.join(model_folder, m[1]))\n]\nif not model_files:\n    model_files = available_models\nmodel_names = [m[0] for m in model_files]\nselected_models = st.sidebar.multiselect(\n    \"Select Models\", model_names, default=model_names\n)\nst.sidebar.markdown(\"---\")",
         "detail": "frontend",
         "documentation": {}
     },
@@ -336,7 +336,7 @@
         "kind": 5,
         "importPath": "frontend",
         "description": "frontend",
-        "peekOfCode": "model_names = [m[0] for m in model_files]\nselected_models = st.sidebar.multiselect(\n    \"Select Models\", model_names, default=model_names\n)\n# Placeholder for model performance and prediction\nst.header(\"Prediction and Model Performance\")\nif st.button(\"Predict for Next Day\"):\n    # Placeholder: Simulate predictions for each selected model\n    hours = np.arange(24)\n    predictions = {}",
+        "peekOfCode": "model_names = [m[0] for m in model_files]\nselected_models = st.sidebar.multiselect(\n    \"Select Models\", model_names, default=model_names\n)\nst.sidebar.markdown(\"---\")\nst.sidebar.write(f\"**Date:** {date}\")\nst.sidebar.write(f\"**Time:** {time}\")\nst.sidebar.write(f\"**API:** {api_choice}\")\nst.sidebar.write(\n    f\"**Models:** {', '.join(selected_models) if selected_models else 'None'}\"",
         "detail": "frontend",
         "documentation": {}
     },
@@ -345,7 +345,7 @@
         "kind": 5,
         "importPath": "frontend",
         "description": "frontend",
-        "peekOfCode": "selected_models = st.sidebar.multiselect(\n    \"Select Models\", model_names, default=model_names\n)\n# Placeholder for model performance and prediction\nst.header(\"Prediction and Model Performance\")\nif st.button(\"Predict for Next Day\"):\n    # Placeholder: Simulate predictions for each selected model\n    hours = np.arange(24)\n    predictions = {}\n    for model in selected_models:",
+        "peekOfCode": "selected_models = st.sidebar.multiselect(\n    \"Select Models\", model_names, default=model_names\n)\nst.sidebar.markdown(\"---\")\nst.sidebar.write(f\"**Date:** {date}\")\nst.sidebar.write(f\"**Time:** {time}\")\nst.sidebar.write(f\"**API:** {api_choice}\")\nst.sidebar.write(\n    f\"**Models:** {', '.join(selected_models) if selected_models else 'None'}\"\n)",
         "detail": "frontend",
         "documentation": {}
     }
