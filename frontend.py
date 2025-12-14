@@ -7,9 +7,22 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import joblib
-import tensorflow as tf
-from tensorflow.keras.models import load_model
-import xgboost as xgb
+
+try:
+    import tensorflow as tf
+    from tensorflow.keras.models import load_model
+
+    TENSORFLOW_AVAILABLE = True
+except Exception as e:
+    TENSORFLOW_AVAILABLE = False
+    tf_error = str(e)
+try:
+    import xgboost as xgb
+
+    XGBOOST_AVAILABLE = True
+except Exception as e:
+    XGBOOST_AVAILABLE = False
+    xgb_error = str(e)
 
 
 # --- Sidebar ---
@@ -97,7 +110,10 @@ with tab1:
     if st.button("Predict for Next Day"):
         # --- Load last 24 hours from lahore_hourly_filled.csv ---
         try:
-            df = pd.read_csv("lahore_hourly_filled.csv", parse_dates=["datetime"])
+            df = pd.read_csv(
+                "NASA meteriological and solar radiaton data/lahore_hourly_filled.csv",
+                parse_dates=["datetime"],
+            )
             df = df.sort_values("datetime")
             df = df.apply(pd.to_numeric, errors="coerce")
             df["datetime"] = pd.to_datetime(df["datetime"], errors="coerce")
@@ -117,11 +133,12 @@ with tab1:
         df_day["hour"] = df_day.index.hour
         df_day["month"] = df_day.index.month
 
-        # Get last 24 daylight records
-        last_24 = df_day.iloc[-24:].copy()
+        # Always use the last 24 available daylight records for prediction
+        last_24 = df_day.tail(24).copy()
         if len(last_24) < 24:
-            st.error("Not enough daylight records for prediction (need 24).")
-            st.stop()
+            st.warning(
+                "Less than 24 daylight records found. Predictions will use all available records, but may be less accurate."
+            )
 
         # Prepare input for tree models
         def make_lag_features(series_df, max_lag=24):
@@ -154,9 +171,13 @@ with tab1:
             "SolarRadiation",
         ]
         seq_input = last_24[features].dropna().copy()
-        if len(seq_input) < 24:
-            st.error("Not enough valid records for deep model input.")
+        if len(seq_input) < 2:
+            st.error("Not enough valid records for deep model input (need at least 2).")
             st.stop()
+        elif len(seq_input) < 24:
+            st.warning(
+                f"Only {len(seq_input)} valid records for deep model input. Predictions may be less accurate."
+            )
 
         # Load scalers
         try:
@@ -167,10 +188,18 @@ with tab1:
             st.stop()
 
         # Prepare input for tree models (XGBoost, Random Forest)
-        lag_input = make_lag_features(last_24, 24)
+        # Use as many lags as possible (minimum 1 row)
+        lag_input = make_lag_features(last_24, min(24, len(last_24) - 1))
         if lag_input.empty:
-            st.error("Not enough lag data for tree-based models.")
-            st.stop()
+            st.warning(
+                "Not enough lag data for tree-based models. At least 2 daylight records are required for 1 prediction."
+            )
+        elif lag_input.shape[0] < 1 or lag_input.shape[1] < 10:
+            st.warning("Very few lag records available. Prediction may be unreliable.")
+        elif lag_input.shape[0] < 24:
+            st.warning(
+                f"Only {lag_input.shape[0]} lag records available for tree-based models. Predictions may be less accurate."
+            )
         X_pred_tree = lag_input.drop(columns=["SolarRadiation"])
 
         # Prepare input for deep models (LSTM, CNN-LSTM)
@@ -179,30 +208,45 @@ with tab1:
 
         # --- Predict next 24 hours ---
         predictions = {}
-        hours = np.arange(24)
+        start_time = last_24.index[-1] + pd.Timedelta(hours=1)
+        future_times = pd.date_range(start=start_time, periods=24, freq="H")
         # XGBoost
         if "XGBoost" in selected_models:
-            try:
-                xgb_model = joblib.load(os.path.join("save_model", "xgboost_model.pkl"))
-                preds = []
-                # For each next hour, roll the input and append prediction
-                lag_data = last_24.copy()
-                for i in range(24):
-                    lag_feats = make_lag_features(lag_data, 24)
-                    if lag_feats.empty:
-                        preds.append(np.nan)
-                        continue
-                    X_pred = lag_feats.drop(columns=["SolarRadiation"]).iloc[[-1]]
-                    pred = xgb_model.predict(X_pred)[0]
-                    preds.append(pred)
-                    # Append prediction for next lag
-                    new_row = lag_data.iloc[-1].copy()
-                    new_row["SolarRadiation"] = pred
-                    new_row.name = lag_data.index[-1] + pd.Timedelta(hours=1)
-                    lag_data = pd.concat([lag_data, pd.DataFrame([new_row])])
-                predictions["XGBoost"] = preds
-            except Exception as e:
-                st.warning(f"XGBoost prediction error: {e}")
+            if not XGBOOST_AVAILABLE:
+                st.warning("XGBoost is not available. Skipping XGBoost prediction.")
+            else:
+                try:
+                    xgb_model = joblib.load(
+                        os.path.join("save_model", "xgboost_model.pkl")
+                    )
+                    preds = []
+                    lag_data = last_24.copy()
+                    for i in range(24):
+                        lag_feats = make_lag_features(lag_data, 24)
+                        if lag_feats.empty:
+                            preds.append(0)
+                            continue
+                        X_pred = lag_feats.drop(columns=["SolarRadiation"]).iloc[[-1]]
+                        pred = xgb_model.predict(X_pred)[0]
+                        pred = max(pred, 0)  # Clip negatives
+
+                        # Daylight-aware prediction
+                        next_time = future_times[i]
+                        if next_time.hour < 6 or next_time.hour > 18:
+                            pred = 0
+
+                        preds.append(pred)
+
+                        # Append prediction for next lag
+                        new_row = lag_data.iloc[-1].copy()
+                        new_row["SolarRadiation"] = pred
+                        new_row["hour"] = next_time.hour
+                        new_row["month"] = next_time.month
+                        new_row.name = next_time
+                        lag_data = pd.concat([lag_data, pd.DataFrame([new_row])])
+                    predictions["XGBoost"] = preds
+                except Exception as e:
+                    st.warning(f"XGBoost prediction error: {e}")
 
         # Random Forest
         if "Random Forest" in selected_models:
@@ -215,14 +259,24 @@ with tab1:
                 for i in range(24):
                     lag_feats = make_lag_features(lag_data, 24)
                     if lag_feats.empty:
-                        preds.append(np.nan)
+                        preds.append(0)
                         continue
                     X_pred = lag_feats.drop(columns=["SolarRadiation"]).iloc[[-1]]
                     pred = rf_model.predict(X_pred)[0]
+                    pred = max(pred, 0)  # Clip negatives
+
+                    # Daylight-aware prediction
+                    next_time = future_times[i]
+                    if next_time.hour < 6 or next_time.hour > 18:
+                        pred = 0
+
                     preds.append(pred)
+
                     new_row = lag_data.iloc[-1].copy()
                     new_row["SolarRadiation"] = pred
-                    new_row.name = lag_data.index[-1] + pd.Timedelta(hours=1)
+                    new_row["hour"] = next_time.hour
+                    new_row["month"] = next_time.month
+                    new_row.name = next_time
                     lag_data = pd.concat([lag_data, pd.DataFrame([new_row])])
                 predictions["Random Forest"] = preds
             except Exception as e:
@@ -230,59 +284,101 @@ with tab1:
 
         # LSTM
         if "LSTM" in selected_models:
-            try:
-                lstm_model = load_model(os.path.join("save_model", "lstm_model.h5"))
-                preds = []
-                seq = X_pred_seq.copy()
-                for i in range(24):
-                    pred_scaled = lstm_model.predict(seq, verbose=0)[0][0]
-                    pred = scaler_y.inverse_transform([[pred_scaled]])[0][0]
-                    preds.append(pred)
-                    # Roll sequence for next hour
-                    next_features = (
-                        seq_input.drop(columns=["SolarRadiation"]).iloc[-23:].values
-                    )
-                    next_row = np.append(next_features[-1], pred)
-                    seq_input_next = np.vstack([next_features, next_row])
-                    seq = scaler_X.transform(seq_input_next)
-                    seq = seq.reshape(1, 24, -1)
-                predictions["LSTM"] = preds
-            except Exception as e:
-                st.warning(f"LSTM prediction error: {e}")
+            if not TENSORFLOW_AVAILABLE:
+                st.warning("TensorFlow is not available. Skipping LSTM prediction.")
+            else:
+                try:
+                    lstm_model = load_model(os.path.join("save_model", "lstm_model.h5"))
+                    preds = []
+                    rolling_df = last_24.copy()
+
+                    for i in range(24):
+                        # Prepare sequence
+                        seq_input_current = rolling_df[features].tail(24)
+                        X_current = scaler_X.transform(
+                            seq_input_current.drop(columns=["SolarRadiation"])
+                        )
+                        seq = X_current.reshape(1, 24, -1)
+
+                        # Predict
+                        pred_scaled = lstm_model.predict(seq, verbose=0)[0][0]
+                        pred = scaler_y.inverse_transform([[pred_scaled]])[0][0]
+                        pred = max(pred, 0)  # Clip negatives
+
+                        # Daylight-aware prediction
+                        next_time = future_times[i]
+                        if next_time.hour < 6 or next_time.hour > 18:
+                            pred = 0
+
+                        preds.append(pred)
+
+                        # Build next row
+                        new_row = rolling_df.iloc[-1].copy()
+                        new_row.name = next_time
+                        new_row["SolarRadiation"] = pred
+                        new_row["hour"] = next_time.hour
+                        new_row["month"] = next_time.month
+                        rolling_df = pd.concat([rolling_df, pd.DataFrame([new_row])])
+
+                    predictions["LSTM"] = preds
+                except Exception as e:
+                    st.warning(f"LSTM prediction error: {e}")
 
         # CNN-LSTM
         if "CNN-LSTM" in selected_models:
-            try:
-                cnn_lstm_model = load_model(
-                    os.path.join("save_model", "cnn_lstm_model.h5")
-                )
-                preds = []
-                seq = X_pred_seq.copy()
-                for i in range(24):
-                    pred_scaled = cnn_lstm_model.predict(seq, verbose=0)[0][0]
-                    pred = scaler_y.inverse_transform([[pred_scaled]])[0][0]
-                    preds.append(pred)
-                    next_features = (
-                        seq_input.drop(columns=["SolarRadiation"]).iloc[-23:].values
+            if not TENSORFLOW_AVAILABLE:
+                st.warning("TensorFlow is not available. Skipping CNN-LSTM prediction.")
+            else:
+                try:
+                    cnn_lstm_model = load_model(
+                        os.path.join("save_model", "cnn_lstm_model.h5")
                     )
-                    next_row = np.append(next_features[-1], pred)
-                    seq_input_next = np.vstack([next_features, next_row])
-                    seq = scaler_X.transform(seq_input_next)
-                    seq = seq.reshape(1, 24, -1)
-                predictions["CNN-LSTM"] = preds
-            except Exception as e:
-                st.warning(f"CNN-LSTM prediction error: {e}")
+                    preds = []
+                    rolling_df = last_24.copy()
+
+                    for i in range(24):
+                        # Prepare sequence
+                        seq_input_current = rolling_df[features].tail(24)
+                        X_current = scaler_X.transform(
+                            seq_input_current.drop(columns=["SolarRadiation"])
+                        )
+                        seq = X_current.reshape(1, 24, -1)
+
+                        # Predict
+                        pred_scaled = cnn_lstm_model.predict(seq, verbose=0)[0][0]
+                        pred = scaler_y.inverse_transform([[pred_scaled]])[0][0]
+                        pred = max(pred, 0)  # Clip negatives
+
+                        # Daylight-aware prediction
+                        next_time = future_times[i]
+                        if next_time.hour < 6 or next_time.hour > 18:
+                            pred = 0
+
+                        preds.append(pred)
+
+                        # Build next row
+                        new_row = rolling_df.iloc[-1].copy()
+                        new_row.name = next_time
+                        new_row["SolarRadiation"] = pred
+                        new_row["hour"] = next_time.hour
+                        new_row["month"] = next_time.month
+                        rolling_df = pd.concat([rolling_df, pd.DataFrame([new_row])])
+
+                    predictions["CNN-LSTM"] = preds
+                except Exception as e:
+                    st.warning(f"CNN-LSTM prediction error: {e}")
 
         # Plot predictions
-        fig, ax = plt.subplots(figsize=(10, 5))
+        fig, ax = plt.subplots(figsize=(11, 5))
         for model, preds in predictions.items():
-            ax.plot(hours, preds, label=model, marker="o")
-        ax.set_xticks(hours)
-        ax.set_xlabel("Hour of Day", fontsize=12)
-        ax.set_ylabel("Predicted Solar Output", fontsize=12)
-        ax.set_title("Next Day Solar Output Prediction", fontsize=14, color="#2c3e50")
+            ax.plot(future_times, preds, label=model, marker="o")
+        ax.set_xlabel("Datetime", fontsize=12)
+        ax.set_ylabel("Predicted Solar Radiation", fontsize=12)
+        ax.set_title("Next 24 Hours Solar Power Forecast", fontsize=14, color="#2c3e50")
         ax.legend(loc="upper left", bbox_to_anchor=(1.02, 1), borderaxespad=0)
         ax.grid(True, linestyle="--", alpha=0.5)
+        plt.xticks(rotation=45)
+        plt.tight_layout()
         st.pyplot(fig, use_container_width=True)
     else:
         st.info("Select input and click 'Predict for Next Day' to see results.")

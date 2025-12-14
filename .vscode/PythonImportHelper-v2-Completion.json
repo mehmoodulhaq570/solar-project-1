@@ -89,32 +89,6 @@
         "documentation": {}
     },
     {
-        "label": "tensorflow",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "tensorflow",
-        "description": "tensorflow",
-        "detail": "tensorflow",
-        "documentation": {}
-    },
-    {
-        "label": "load_model",
-        "importPath": "tensorflow.keras.models",
-        "description": "tensorflow.keras.models",
-        "isExtraImport": true,
-        "detail": "tensorflow.keras.models",
-        "documentation": {}
-    },
-    {
-        "label": "xgboost",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "xgboost",
-        "description": "xgboost",
-        "detail": "xgboost",
-        "documentation": {}
-    },
-    {
         "label": "cache_session",
         "kind": 5,
         "importPath": "NASA meteriological and solar radiaton data.API_call",
