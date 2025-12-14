@@ -1,10 +1,10 @@
 # ==========================================
-# 🌤 Forecast Next-Year Solar Radiation Trend
+# 🌤 Daily Hourly Solar Radiation Forecast
 # Using trained models from 2018–2025
-# Iterative forecasting for 2026
+# Input: year, month, day → Output: 24-hour forecast
 # ==========================================
 
-import os, warnings, gc
+import os, warnings
 warnings.filterwarnings("ignore")
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
@@ -12,10 +12,9 @@ import numpy as np
 import pandas as pd
 import joblib
 from tensorflow.keras.models import load_model
-from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 
-# ---------- 1. Load historical data (2018–2025) ----------
+# ---------- 1. Load historical data ----------
 df = pd.read_csv(
     "NASA meteriological and solar radiaton data/lahore_hourly_filled.csv",
     parse_dates=["datetime"],
@@ -44,63 +43,79 @@ scaler_y = joblib.load("save_model/scaler_y.pkl")
 
 # ---------- 3. Forecast settings ----------
 MAX_LAG = 24
-SEQ_LEN  = 24
-hours_to_forecast = 500  # Number of hours to forecast (adjust as needed)
+SEQ_LEN = 24
 
-last_hist = df_day.copy()
-last_hist_values = last_hist[target_col].values
+# ---------- 4. User input: day to forecast ----------
+year = 2025
+month = 6   # June
+day = 15    # 15th
 
-# ---------- 4. Forecast for tree-based models ----------
+# Generate hourly datetime index for the day
+date_index = pd.date_range(
+    start=f"{year}-{month:02d}-{day:02d} 00:00",
+    end=f"{year}-{month:02d}-{day:02d} 23:00",
+    freq='H'
+)
+hours = date_index.hour
+
+# ---------- 5. Prepare tree-based model inputs ----------
+last_hist_values = df_day[target_col].values
+tree_series = last_hist_values[-MAX_LAG:].tolist()  # last 24 hours
+
+# Use last known weather values
+Temperature = df_day["Temperature"].iloc[-1]
+HumiditySpecific = df_day["HumiditySpecific"].iloc[-1]
+HumidityRelative = df_day["HumidityRelative"].iloc[-1]
+Pressure = df_day["Pressure"].iloc[-1]
+WindSpeed = df_day["WindSpeed"].iloc[-1]
+WindDirection = df_day["WindDirection"].iloc[-1]
+
 tree_predictions = []
-tree_series = last_hist_values[-MAX_LAG:].tolist()
 
-for i in range(hours_to_forecast):
-    hour = (last_hist.index[-1].hour + i + 1) % 24
-    month = ((last_hist.index[-1].month - 1 + ((last_hist.index[-1].hour + i + 1)//24)) % 12) + 1
+for h in range(24):
+    hour = hours[h]
     lag_feats = tree_series[-MAX_LAG:]
-    
-    Temperature = last_hist["Temperature"].iloc[-1]
-    HumiditySpecific = last_hist["HumiditySpecific"].iloc[-1]
-    HumidityRelative = last_hist["HumidityRelative"].iloc[-1]
-    Pressure = last_hist["Pressure"].iloc[-1]
-    WindSpeed = last_hist["WindSpeed"].iloc[-1]
-    WindDirection = last_hist["WindDirection"].iloc[-1]
-
-    X_row = [hour, month, Temperature, HumiditySpecific, HumidityRelative, Pressure, WindSpeed, WindDirection] + lag_feats
+    X_row = [hour, month, Temperature, HumiditySpecific, HumidityRelative,
+             Pressure, WindSpeed, WindDirection] + lag_feats
     X_row = np.array(X_row).reshape(1, -1)
     
     xgb_pred = xgb_model.predict(X_row)[0]
     rf_pred  = rf_model.predict(X_row)[0]
     
     tree_predictions.append((xgb_pred, rf_pred))
-    tree_series.append(xgb_pred)
+    tree_series.append(xgb_pred)  # iterative update
 
-# ---------- 5. Forecast for sequence-based models ----------
-seq_features = ['hour','month','Temperature','HumiditySpecific','HumidityRelative','Pressure','WindSpeed','WindDirection', target_col]
-seq_data = last_hist[seq_features].copy()
+# ---------- 6. Prepare sequence-based model inputs ----------
+seq_features = ['hour','month','Temperature','HumiditySpecific','HumidityRelative',
+                'Pressure','WindSpeed','WindDirection', target_col]
+seq_data = df_day[seq_features].copy()
 
+# Scale features
+X_seq_scaled = scaler_X.transform(seq_data.drop(columns=[target_col])).astype(np.float32)
+
+# Start with last SEQ_LEN rows
+seq_array = X_seq_scaled[-SEQ_LEN:].copy()
 seq_predictions = []
-seq_array = scaler_X.transform(seq_data.tail(SEQ_LEN).drop(columns=[target_col]))
 
-for i in range(hours_to_forecast):
-    X_seq_input = np.array(seq_array[-SEQ_LEN:]).reshape(1, SEQ_LEN, seq_array.shape[1])
+for h in range(24):
+    X_seq_input = seq_array[-SEQ_LEN:].reshape(1, SEQ_LEN, seq_array.shape[1])
     
-    lstm_pred = scaler_y.inverse_transform(lstm_model.predict(X_seq_input)).flatten()[0]
-    cnn_pred  = scaler_y.inverse_transform(cnn_lstm_model.predict(X_seq_input)).flatten()[0]
-    
+    lstm_pred_scaled = lstm_model.predict(X_seq_input, verbose=0)
+    cnn_pred_scaled  = cnn_lstm_model.predict(X_seq_input, verbose=0)
+
+    lstm_pred = scaler_y.inverse_transform(lstm_pred_scaled.reshape(-1,1))[0,0]
+    cnn_pred  = scaler_y.inverse_transform(cnn_pred_scaled.reshape(-1,1))[0,0]
+
     seq_predictions.append((lstm_pred, cnn_pred))
-    
-    new_row = seq_array[-1].copy()
-    new_row[-1] = scaler_y.transform(np.array([[lstm_pred]]))[0,0]
-    seq_array = np.vstack([seq_array, new_row])
 
-# ---------- 6. Prepare datetime index ----------
-last_time = last_hist.index[-1]
-forecast_index = pd.date_range(start=last_time + pd.Timedelta(hours=1), periods=hours_to_forecast, freq='H')
+    # Prepare next input row (scaled)
+    next_row = seq_array[-1].copy()
+    next_row[-1] = lstm_pred_scaled  # keep scaled
+    seq_array = np.vstack([seq_array, next_row])
 
 # ---------- 7. Combine results ----------
-results_df = pd.DataFrame({
-    'datetime': forecast_index,
+results_day = pd.DataFrame({
+    'datetime': date_index,
     'XGBoost': [x for x,_ in tree_predictions],
     'RandomForest': [x for _,x in tree_predictions],
     'LSTM': [x for x,_ in seq_predictions],
@@ -108,18 +123,26 @@ results_df = pd.DataFrame({
 })
 
 # ---------- 8. Save to CSV ----------
-results_df.to_csv("predicted_trend_2026.csv", index=False)
-print("✅ Next-year trend predictions saved to predicted_trend_2026.csv")
+results_day.to_csv(f"solar_forecast_{year}_{month:02d}_{day:02d}.csv", index=False)
+print(f"✅ Forecast saved to solar_forecast_{year}_{month:02d}_{day:02d}.csv")
 
-# ---------- 9. Plot the predictions ----------
-plt.figure(figsize=(16,6))
-plt.plot(results_df['datetime'], results_df['XGBoost'], label='XGBoost', alpha=0.8)
-plt.plot(results_df['datetime'], results_df['RandomForest'], label='Random Forest', alpha=0.8)
-plt.plot(results_df['datetime'], results_df['LSTM'], label='LSTM', alpha=0.8)
-plt.plot(results_df['datetime'], results_df['CNN_LSTM'], label='CNN-LSTM', alpha=0.8)
-plt.xlabel("Datetime")
-plt.ylabel("Predicted Solar Radiation")
-plt.title("Next-Year Solar Radiation Trend (2026)")
+# ---------- 9. Print hourly predictions ----------
+print(f"\nHourly Solar Radiation Forecast for {year}-{month:02d}-{day:02d}:")
+print(f"{'Hour':>4} | {'XGBoost':>10} | {'RandomForest':>13} | {'LSTM':>8} | {'CNN-LSTM':>10}")
+print("-"*55)
+for i, row in results_day.iterrows():
+    hour = row['datetime'].hour
+    print(f"{hour:02d}:00 | {row['XGBoost']:10.2f} | {row['RandomForest']:13.2f} | {row['LSTM']:8.2f} | {row['CNN_LSTM']:10.2f}")
+
+# ---------- 10. Plot results ----------
+plt.figure(figsize=(12,5))
+plt.plot(results_day['datetime'], results_day['XGBoost'], label='XGBoost')
+plt.plot(results_day['datetime'], results_day['RandomForest'], label='RandomForest')
+plt.plot(results_day['datetime'], results_day['LSTM'], label='LSTM')
+plt.plot(results_day['datetime'], results_day['CNN_LSTM'], label='CNN-LSTM')
+plt.xlabel("Hour")
+plt.ylabel("Solar Radiation")
+plt.title(f"Hourly Solar Radiation Forecast: {year}-{month:02d}-{day:02d}")
 plt.legend()
 plt.tight_layout()
 plt.show()

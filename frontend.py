@@ -1,21 +1,19 @@
 # ===============================================
 # Streamlit frontend for solar prediction (Updated)
-# Supports future date selection and rolling forecast
+# Using working model loading approach from trend.py
 # ===============================================
 
 import streamlit as st
-import os, datetime
+import os, datetime, warnings
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import joblib
-import warnings
 
-# Suppress sklearn version warnings
-warnings.filterwarnings("ignore", category=UserWarning, module="sklearn")
+warnings.filterwarnings("ignore")
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 try:
-    import tensorflow as tf
     from tensorflow.keras.models import load_model
 
     TENSORFLOW_AVAILABLE = True
@@ -95,279 +93,242 @@ with tab1:
 
     if st.button("Predict"):
 
-        # --- Load historical data ---
+        if not selected_models:
+            st.error("Please select at least one model.")
+            st.stop()
+
+        # ---------- 1. Load historical data ----------
         try:
             df = pd.read_csv(
                 "NASA meteriological and solar radiaton data/lahore_hourly_filled.csv",
                 parse_dates=["datetime"],
+                dayfirst=True,
+                index_col="datetime",
             )
-            df = df.sort_values("datetime")
-            df["datetime"] = pd.to_datetime(df["datetime"], errors="coerce")
-            df = df.dropna(subset=["datetime"])
-            df.set_index("datetime", inplace=True)
+            df = df.sort_index().apply(pd.to_numeric, errors="coerce")
+            df.index = pd.to_datetime(df.index, dayfirst=True)
 
-            # Convert numeric columns
-            for col in df.columns:
-                df[col] = pd.to_numeric(df[col], errors="coerce")
+            # Filter daylight-only
+            df_day = df[df["SolarZenith"] < 90].copy()
+            df_day.dropna(subset=["SolarRadiation"], inplace=True)
+            df_day["hour"] = df_day.index.hour
+            df_day["month"] = df_day.index.month
 
-            st.info(
-                f"Loaded {len(df)} records. Columns: {', '.join(df.columns.tolist())}"
-            )
+            target_col = "SolarRadiation"
+
+            st.success(f"✅ Loaded {len(df)} records, {len(df_day)} daylight records")
 
         except Exception as e:
             st.error(f"Error loading data: {e}")
             st.stop()
 
-        if "SolarZenith" not in df.columns:
-            st.warning("'SolarZenith' column missing. Using all records.")
-            df_day = df.copy()
-        else:
-            df_day = df[df["SolarZenith"] < 90].copy()
-
-        # Check if SolarRadiation column exists
-        if "SolarRadiation" not in df_day.columns:
-            st.error(
-                f"'SolarRadiation' column not found. Available columns: {', '.join(df_day.columns.tolist())}"
-            )
-            st.stop()
-
-        df_day.dropna(subset=["SolarRadiation"], inplace=True)
-        st.info(f"After SolarRadiation filter: {len(df_day)} records")
-
-        # If no daylight records, use all available data
-        if df_day.empty:
-            st.warning("No daylight records found. Using all available data instead.")
-            df_day = df.copy()
-            df_day.dropna(subset=["SolarRadiation"], inplace=True)
-            st.info(f"After using all data: {len(df_day)} records")
-
-        df_day["hour"] = df_day.index.hour
-        df_day["month"] = df_day.index.month
-
-        # Validate data availability
-        if df_day.empty:
-            st.error(
-                "No valid records found. Check if 'SolarRadiation' column has data."
-            )
-            st.stop()
-
-        # Get the last available time from the historical data
-        last_time = df_day.index[-1]
-
-        target_datetime = pd.Timestamp(
-            datetime.datetime.combine(selected_date, selected_time)
-        )
-        hours_ahead = int((target_datetime - last_time).total_seconds() / 3600)
-
-        if hours_ahead < 0:
-            st.error("Selected date must be after last available historical data.")
-            st.stop()
-        elif hours_ahead > 30 * 24:
-            st.warning("Forecast is far beyond training data. Accuracy may be low.")
-
-        # --- Manual scaling (compute from data) ---
-        # Calculate statistics for standardization from historical data
-        feature_cols_for_scaling = [
-            "hour",
-            "month",
-            "Temperature",
-            "HumiditySpecific",
-            "HumidityRelative",
-            "Pressure",
-            "WindSpeed",
-            "WindDirection",
-        ]
-
-        X_mean = df_day[feature_cols_for_scaling].mean()
-        X_std = df_day[feature_cols_for_scaling].std()
-        y_mean = df_day["SolarRadiation"].mean()
-        y_std = df_day["SolarRadiation"].std()
-
-        # Manual standardization functions
-        def scale_X(data):
-            return (data - X_mean) / X_std
-
-        def scale_y(data):
-            return (data - y_mean) / y_std
-
-        def inverse_scale_y(data):
-            return data * y_std + y_mean
-
-        # --- Features ---
-        features = [
-            "hour",
-            "month",
-            "Temperature",
-            "HumiditySpecific",
-            "HumidityRelative",
-            "Pressure",
-            "WindSpeed",
-            "WindDirection",
-            "SolarRadiation",
-        ]
-
-        def make_lag_features(series_df, max_lag=24):
-            """Create lag features for tree-based models"""
-            if len(series_df) < max_lag + 1:
-                return pd.DataFrame()  # Not enough data
-
-            df_feat = series_df[features[:-1]].copy()
-            df_feat["SolarRadiation"] = series_df["SolarRadiation"]
-            for lag in range(1, max_lag + 1):
-                df_feat[f"lag_{lag}"] = df_feat["SolarRadiation"].shift(lag)
-            return df_feat.dropna()
-
-        # --- Recursive forecasting ---
-        forecast_hours = 24
-        total_steps = hours_ahead + forecast_hours
-        future_times = pd.date_range(
-            start=last_time + pd.Timedelta(hours=1), periods=total_steps, freq="h"
-        )
-
-        # Validate minimum data - need 24 lags + at least 1 row = 25 minimum
-        if len(df_day) < 25:
-            st.error(f"Need at least 25 records for lag features. Found {len(df_day)}.")
-            st.stop()
-
-        predictions = {model: [] for model in selected_models}
-
-        # Start with enough data for 24 lags (need 24 past values + current)
-        rolling_df = df_day.tail(50).copy() if len(df_day) >= 50 else df_day.copy()
-
-        # --- Load models once (with individual error handling) ---
+        # ---------- 2. Load trained models ----------
+        model_folder = "save_model"
         loaded_models = {}
 
-        if "XGBoost" in selected_models and XGBOOST_AVAILABLE:
-            try:
+        try:
+            if "XGBoost" in selected_models and XGBOOST_AVAILABLE:
                 loaded_models["XGBoost"] = joblib.load(
-                    os.path.join(model_folder, "xgboost_model.pkl")
+                    f"{model_folder}/xgboost_model.pkl"
                 )
-            except Exception as e:
-                st.warning(f"Could not load XGBoost: {e}")
+                st.success("✅ XGBoost loaded")
+        except Exception as e:
+            st.warning(f"⚠️ XGBoost: {e}")
 
-        if "Random Forest" in selected_models:
-            try:
-                import pickle
-
-                model_path = os.path.join(model_folder, "random_forest_model.pkl")
-                with open(model_path, "rb") as f:
-                    loaded_models["Random Forest"] = pickle.load(f)
-            except Exception as e:
-                st.warning(f"Could not load Random Forest: {e}")
-                st.info(
-                    "Random Forest model may need to be retrained with current scikit-learn version."
+        try:
+            if "Random Forest" in selected_models:
+                loaded_models["Random Forest"] = joblib.load(
+                    f"{model_folder}/random_forest_model.pkl"
                 )
+                st.success("✅ Random Forest loaded")
+        except Exception as e:
+            st.warning(f"⚠️ Random Forest: {e}")
 
-        if "LSTM" in selected_models and TENSORFLOW_AVAILABLE:
-            try:
-                loaded_models["LSTM"] = load_model(
-                    os.path.join(model_folder, "lstm_model.h5"), compile=False
-                )
-            except Exception as e:
-                st.warning(f"Could not load LSTM: {e}")
-                st.info(
-                    "LSTM model may need to be retrained with current TensorFlow version."
-                )
+        try:
+            if "LSTM" in selected_models and TENSORFLOW_AVAILABLE:
+                loaded_models["LSTM"] = load_model(f"{model_folder}/lstm_model.h5")
+                st.success("✅ LSTM loaded")
+        except Exception as e:
+            st.warning(f"⚠️ LSTM: {e}")
 
-        if "CNN-LSTM" in selected_models and TENSORFLOW_AVAILABLE:
-            try:
+        try:
+            if "CNN-LSTM" in selected_models and TENSORFLOW_AVAILABLE:
                 loaded_models["CNN-LSTM"] = load_model(
-                    os.path.join(model_folder, "cnn_lstm_model.h5"), compile=False
+                    f"{model_folder}/cnn_lstm_model.h5"
                 )
-            except Exception as e:
-                st.warning(f"Could not load CNN-LSTM: {e}")
-                st.info(
-                    "CNN-LSTM model may need to be retrained with current TensorFlow version."
-                )
+                st.success("✅ CNN-LSTM loaded")
+        except Exception as e:
+            st.warning(f"⚠️ CNN-LSTM: {e}")
 
         if not loaded_models:
-            st.error("No models could be loaded. Please check model files.")
+            st.error(
+                "❌ No models could be loaded. Check model files and package versions."
+            )
             st.stop()
 
-        for i, ts in enumerate(future_times):
-            # Create lag features for tree models
-            lag_input = make_lag_features(rolling_df, 24)
-            if lag_input.empty:
-                lag_input_row = None
-            else:
-                # Drop SolarRadiation column to get only features and lags
-                lag_input_row = lag_input.drop(columns=["SolarRadiation"]).iloc[[-1]]
+        # Load scalers for deep learning models
+        scaler_X = None
+        scaler_y = None
+        if "LSTM" in loaded_models or "CNN-LSTM" in loaded_models:
+            try:
+                scaler_X = joblib.load(f"{model_folder}/scaler_X.pkl")
+                scaler_y = joblib.load(f"{model_folder}/scaler_y.pkl")
+                st.success("✅ Scalers loaded")
+            except Exception as e:
+                st.warning(f"⚠️ Scalers: {e}. Deep learning predictions may fail.")
 
-            # --- Predict for each model ---
-            step_predictions = []
-            for model in selected_models:
-                pred = 0
-                try:
-                    if (
-                        model == "XGBoost"
-                        and model in loaded_models
-                        and lag_input_row is not None
-                    ):
-                        pred = loaded_models[model].predict(lag_input_row)[0]
-                    elif (
-                        model == "Random Forest"
-                        and model in loaded_models
-                        and lag_input_row is not None
-                    ):
-                        pred = loaded_models[model].predict(lag_input_row)[0]
-                    elif model == "LSTM" and model in loaded_models:
-                        seq_input = rolling_df[features].tail(24)
-                        X_seq_data = seq_input.drop(columns=["SolarRadiation"])
-                        X_seq = scale_X(X_seq_data).values.reshape(1, 24, -1)
-                        pred_scaled = loaded_models[model].predict(X_seq, verbose=0)[0][
-                            0
-                        ]
-                        pred = inverse_scale_y(pred_scaled)
-                    elif model == "CNN-LSTM" and model in loaded_models:
-                        seq_input = rolling_df[features].tail(24)
-                        X_seq_data = seq_input.drop(columns=["SolarRadiation"])
-                        X_seq = scale_X(X_seq_data).values.reshape(1, 24, -1)
-                        pred_scaled = loaded_models[model].predict(X_seq, verbose=0)[0][
-                            0
-                        ]
-                        pred = inverse_scale_y(pred_scaled)
-                except Exception as e:
-                    st.warning(f"{model} prediction error at step {i}: {e}")
-                    pred = 0
+        # ---------- 3. Forecast settings ----------
+        MAX_LAG = 24
+        SEQ_LEN = 24
 
-                pred = max(pred, 0)
-                # Only daylight
-                if ts.hour < 6 or ts.hour > 18:
-                    pred = 0
+        # Extract date components
+        year = selected_date.year
+        month = selected_date.month
+        day = selected_date.day
 
-                predictions[model].append(pred)
-                step_predictions.append(pred)
+        # Generate hourly datetime index for the day
+        date_index = pd.date_range(
+            start=f"{year}-{month:02d}-{day:02d} 00:00",
+            end=f"{year}-{month:02d}-{day:02d} 23:00",
+            freq="h",
+        )
+        hours = date_index.hour
 
-            # Append for next lag (use first model's prediction or average if multiple)
-            new_row = rolling_df.iloc[-1].copy()
-            new_row.name = ts
-            new_row["hour"] = ts.hour
-            new_row["month"] = ts.month
-            # Use average of all valid predictions for next lag
-            valid_preds = [
-                p for p in step_predictions if p > 0 or ts.hour < 6 or ts.hour > 18
+        # ---------- 4. Tree-based model predictions ----------
+        tree_predictions = {"XGBoost": [], "Random Forest": []}
+
+        if "XGBoost" in loaded_models or "Random Forest" in loaded_models:
+            last_hist_values = df_day[target_col].values
+            tree_series = last_hist_values[-MAX_LAG:].tolist()
+
+            # Use last known weather values
+            Temperature = df_day["Temperature"].iloc[-1]
+            HumiditySpecific = df_day["HumiditySpecific"].iloc[-1]
+            HumidityRelative = df_day["HumidityRelative"].iloc[-1]
+            Pressure = df_day["Pressure"].iloc[-1]
+            WindSpeed = df_day["WindSpeed"].iloc[-1]
+            WindDirection = df_day["WindDirection"].iloc[-1]
+
+            for h in range(24):
+                hour = hours[h]
+                lag_feats = tree_series[-MAX_LAG:]
+                X_row = [
+                    hour,
+                    month,
+                    Temperature,
+                    HumiditySpecific,
+                    HumidityRelative,
+                    Pressure,
+                    WindSpeed,
+                    WindDirection,
+                ] + lag_feats
+                X_row = np.array(X_row).reshape(1, -1)
+
+                if "XGBoost" in loaded_models:
+                    xgb_pred = loaded_models["XGBoost"].predict(X_row)[0]
+                    tree_predictions["XGBoost"].append(max(0, xgb_pred))
+                    tree_series.append(xgb_pred)
+
+                if "Random Forest" in loaded_models:
+                    rf_pred = loaded_models["Random Forest"].predict(X_row)[0]
+                    tree_predictions["Random Forest"].append(max(0, rf_pred))
+                    if "XGBoost" not in loaded_models:
+                        tree_series.append(rf_pred)
+
+        # ---------- 5. Sequence-based model predictions ----------
+        seq_predictions = {"LSTM": [], "CNN-LSTM": []}
+
+        if (
+            ("LSTM" in loaded_models or "CNN-LSTM" in loaded_models)
+            and scaler_X
+            and scaler_y
+        ):
+            seq_features = [
+                "hour",
+                "month",
+                "Temperature",
+                "HumiditySpecific",
+                "HumidityRelative",
+                "Pressure",
+                "WindSpeed",
+                "WindDirection",
+                target_col,
             ]
-            new_row["SolarRadiation"] = np.mean(valid_preds) if valid_preds else 0
-            rolling_df = pd.concat([rolling_df, pd.DataFrame([new_row])])
+            seq_data = df_day[seq_features].copy()
 
-        # --- Plot only selected date ---
-        forecast_df = pd.DataFrame(predictions, index=future_times)
-        selected_day_df = forecast_df[forecast_df.index.date == selected_date]
+            # Scale features
+            X_seq_scaled = scaler_X.transform(
+                seq_data.drop(columns=[target_col])
+            ).astype(np.float32)
 
-        if selected_day_df.empty:
-            st.warning("Selected date not within forecast range.")
-        else:
-            fig, ax = plt.subplots(figsize=(11, 5))
-            for model in selected_models:
-                ax.plot(
-                    selected_day_df.index.hour,
-                    selected_day_df[model],
-                    label=model,
-                    marker="o",
+            # Start with last SEQ_LEN rows
+            seq_array = X_seq_scaled[-SEQ_LEN:].copy()
+
+            for h in range(24):
+                X_seq_input = seq_array[-SEQ_LEN:].reshape(
+                    1, SEQ_LEN, seq_array.shape[1]
                 )
+
+                if "LSTM" in loaded_models:
+                    lstm_pred_scaled = loaded_models["LSTM"].predict(
+                        X_seq_input, verbose=0
+                    )
+                    lstm_pred = scaler_y.inverse_transform(
+                        lstm_pred_scaled.reshape(-1, 1)
+                    )[0, 0]
+                    seq_predictions["LSTM"].append(max(0, lstm_pred))
+
+                if "CNN-LSTM" in loaded_models:
+                    cnn_pred_scaled = loaded_models["CNN-LSTM"].predict(
+                        X_seq_input, verbose=0
+                    )
+                    cnn_pred = scaler_y.inverse_transform(
+                        cnn_pred_scaled.reshape(-1, 1)
+                    )[0, 0]
+                    seq_predictions["CNN-LSTM"].append(max(0, cnn_pred))
+
+                # Prepare next input row
+                next_row = seq_array[-1].copy()
+                if "LSTM" in loaded_models:
+                    next_row[-1] = lstm_pred_scaled
+                elif "CNN-LSTM" in loaded_models:
+                    next_row[-1] = cnn_pred_scaled
+                seq_array = np.vstack([seq_array, next_row])
+
+        # ---------- 6. Combine results ----------
+        results = {"datetime": date_index}
+        for model_name in selected_models:
+            if model_name in tree_predictions and tree_predictions[model_name]:
+                results[model_name] = tree_predictions[model_name]
+            elif model_name in seq_predictions and seq_predictions[model_name]:
+                results[model_name] = seq_predictions[model_name]
+
+        results_df = pd.DataFrame(results)
+
+        # ---------- 7. Plot ----------
+        if len(results_df) > 0:
+            fig, ax = plt.subplots(figsize=(12, 5))
+            for model_name in selected_models:
+                if model_name in results_df.columns:
+                    ax.plot(
+                        results_df["datetime"].dt.hour,
+                        results_df[model_name],
+                        label=model_name,
+                        marker="o",
+                    )
+
             ax.set_xlabel("Hour of Day")
-            ax.set_ylabel("Predicted Solar Radiation")
-            ax.set_title(f"Solar Forecast for {selected_date}")
+            ax.set_ylabel("Predicted Solar Radiation (W/m²)")
+            ax.set_title(f"Hourly Solar Forecast: {year}-{month:02d}-{day:02d}")
             ax.legend()
             ax.grid(True, linestyle="--", alpha=0.5)
-            st.pyplot(fig, use_container_width=True)
+            st.pyplot(fig)
+
+            # Display summary table
+            st.subheader("Hourly Predictions")
+            display_df = results_df.copy()
+            display_df["Hour"] = display_df["datetime"].dt.strftime("%H:%00")
+            display_df = display_df.drop(columns=["datetime"]).set_index("Hour")
+            st.dataframe(display_df.style.format("{:.2f}"))
+        else:
+            st.error("No predictions generated.")
