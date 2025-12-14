@@ -80,6 +80,15 @@
         "documentation": {}
     },
     {
+        "label": "warnings",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "warnings",
+        "description": "warnings",
+        "detail": "warnings",
+        "documentation": {}
+    },
+    {
         "label": "cache_session",
         "kind": 5,
         "importPath": "NASA meteriological and solar radiaton data.API_call",
@@ -273,7 +282,7 @@
         "kind": 5,
         "importPath": "frontend",
         "description": "frontend",
-        "peekOfCode": "selected_date = st.sidebar.date_input(\"Forecast Date\", datetime.date.today())\nselected_time = st.sidebar.time_input(\"Forecast Time\", datetime.datetime.now().time())\napi_choice = st.sidebar.selectbox(\"API Source\", [\"NASA\", \"Local Weather\", \"Custom API\"])\n# --- Model selection ---\nmodel_folder = \"save_model\"\navailable_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),\n    (\"Random Forest\", \"random_forest_model.pkl\"),\n    (\"XGBoost\", \"xgboost_model.pkl\")",
+        "peekOfCode": "selected_date = st.sidebar.date_input(\"Forecast Date\", datetime.date.today())\nselected_time = st.sidebar.time_input(\"Forecast Time\", datetime.datetime.now().time())\napi_choice = st.sidebar.selectbox(\"API Source\", [\"NASA\", \"Local Weather\", \"Custom API\"])\n# --- Model selection ---\nmodel_folder = \"save_model\"\navailable_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),\n    (\"Random Forest\", \"random_forest_model.pkl\"),\n    (\"XGBoost\", \"xgboost_model.pkl\"),",
         "detail": "frontend",
         "documentation": {}
     },
@@ -282,7 +291,7 @@
         "kind": 5,
         "importPath": "frontend",
         "description": "frontend",
-        "peekOfCode": "selected_time = st.sidebar.time_input(\"Forecast Time\", datetime.datetime.now().time())\napi_choice = st.sidebar.selectbox(\"API Source\", [\"NASA\", \"Local Weather\", \"Custom API\"])\n# --- Model selection ---\nmodel_folder = \"save_model\"\navailable_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),\n    (\"Random Forest\", \"random_forest_model.pkl\"),\n    (\"XGBoost\", \"xgboost_model.pkl\")\n]",
+        "peekOfCode": "selected_time = st.sidebar.time_input(\"Forecast Time\", datetime.datetime.now().time())\napi_choice = st.sidebar.selectbox(\"API Source\", [\"NASA\", \"Local Weather\", \"Custom API\"])\n# --- Model selection ---\nmodel_folder = \"save_model\"\navailable_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),\n    (\"Random Forest\", \"random_forest_model.pkl\"),\n    (\"XGBoost\", \"xgboost_model.pkl\"),\n]",
         "detail": "frontend",
         "documentation": {}
     },
@@ -291,7 +300,7 @@
         "kind": 5,
         "importPath": "frontend",
         "description": "frontend",
-        "peekOfCode": "api_choice = st.sidebar.selectbox(\"API Source\", [\"NASA\", \"Local Weather\", \"Custom API\"])\n# --- Model selection ---\nmodel_folder = \"save_model\"\navailable_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),\n    (\"Random Forest\", \"random_forest_model.pkl\"),\n    (\"XGBoost\", \"xgboost_model.pkl\")\n]\n# Check if files exist",
+        "peekOfCode": "api_choice = st.sidebar.selectbox(\"API Source\", [\"NASA\", \"Local Weather\", \"Custom API\"])\n# --- Model selection ---\nmodel_folder = \"save_model\"\navailable_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),\n    (\"Random Forest\", \"random_forest_model.pkl\"),\n    (\"XGBoost\", \"xgboost_model.pkl\"),\n]\n# Check if files exist",
         "detail": "frontend",
         "documentation": {}
     },
@@ -300,7 +309,7 @@
         "kind": 5,
         "importPath": "frontend",
         "description": "frontend",
-        "peekOfCode": "model_folder = \"save_model\"\navailable_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),\n    (\"Random Forest\", \"random_forest_model.pkl\"),\n    (\"XGBoost\", \"xgboost_model.pkl\")\n]\n# Check if files exist\nmodel_files = [m for m in available_models if os.path.exists(os.path.join(model_folder, m[1]))]\nif not model_files: model_files = available_models",
+        "peekOfCode": "model_folder = \"save_model\"\navailable_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),\n    (\"Random Forest\", \"random_forest_model.pkl\"),\n    (\"XGBoost\", \"xgboost_model.pkl\"),\n]\n# Check if files exist\nmodel_files = [\n    m for m in available_models if os.path.exists(os.path.join(model_folder, m[1]))",
         "detail": "frontend",
         "documentation": {}
     },
@@ -309,7 +318,7 @@
         "kind": 5,
         "importPath": "frontend",
         "description": "frontend",
-        "peekOfCode": "available_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),\n    (\"Random Forest\", \"random_forest_model.pkl\"),\n    (\"XGBoost\", \"xgboost_model.pkl\")\n]\n# Check if files exist\nmodel_files = [m for m in available_models if os.path.exists(os.path.join(model_folder, m[1]))]\nif not model_files: model_files = available_models\nmodel_names = [m[0] for m in model_files]",
+        "peekOfCode": "available_models = [\n    (\"LSTM\", \"lstm_model.h5\"),\n    (\"CNN-LSTM\", \"cnn_lstm_model.h5\"),\n    (\"Random Forest\", \"random_forest_model.pkl\"),\n    (\"XGBoost\", \"xgboost_model.pkl\"),\n]\n# Check if files exist\nmodel_files = [\n    m for m in available_models if os.path.exists(os.path.join(model_folder, m[1]))\n]",
         "detail": "frontend",
         "documentation": {}
     },
@@ -318,7 +327,7 @@
         "kind": 5,
         "importPath": "frontend",
         "description": "frontend",
-        "peekOfCode": "model_files = [m for m in available_models if os.path.exists(os.path.join(model_folder, m[1]))]\nif not model_files: model_files = available_models\nmodel_names = [m[0] for m in model_files]\nselected_models = st.sidebar.multiselect(\"Select Models\", model_names, default=model_names)\nst.sidebar.markdown(\"---\")\nst.sidebar.write(f\"**Date:** {selected_date}\")\nst.sidebar.write(f\"**Time:** {selected_time}\")\nst.sidebar.write(f\"**Models:** {', '.join(selected_models) if selected_models else 'None'}\")\n# --- Main ---\nst.markdown(\"<h1 style='text-align:center;color:#2c3e50;'>Solar Power Prediction Dashboard</h1>\", unsafe_allow_html=True)",
+        "peekOfCode": "model_files = [\n    m for m in available_models if os.path.exists(os.path.join(model_folder, m[1]))\n]\nif not model_files:\n    model_files = available_models\nmodel_names = [m[0] for m in model_files]\nselected_models = st.sidebar.multiselect(\n    \"Select Models\", model_names, default=model_names\n)\nst.sidebar.markdown(\"---\")",
         "detail": "frontend",
         "documentation": {}
     },
@@ -327,7 +336,7 @@
         "kind": 5,
         "importPath": "frontend",
         "description": "frontend",
-        "peekOfCode": "model_names = [m[0] for m in model_files]\nselected_models = st.sidebar.multiselect(\"Select Models\", model_names, default=model_names)\nst.sidebar.markdown(\"---\")\nst.sidebar.write(f\"**Date:** {selected_date}\")\nst.sidebar.write(f\"**Time:** {selected_time}\")\nst.sidebar.write(f\"**Models:** {', '.join(selected_models) if selected_models else 'None'}\")\n# --- Main ---\nst.markdown(\"<h1 style='text-align:center;color:#2c3e50;'>Solar Power Prediction Dashboard</h1>\", unsafe_allow_html=True)\ntab1, tab2 = st.tabs([\"Prediction Graph\", \"Instructions\"])\nwith tab2:",
+        "peekOfCode": "model_names = [m[0] for m in model_files]\nselected_models = st.sidebar.multiselect(\n    \"Select Models\", model_names, default=model_names\n)\nst.sidebar.markdown(\"---\")\nst.sidebar.write(f\"**Date:** {selected_date}\")\nst.sidebar.write(f\"**Time:** {selected_time}\")\nst.sidebar.write(\n    f\"**Models:** {', '.join(selected_models) if selected_models else 'None'}\"\n)",
         "detail": "frontend",
         "documentation": {}
     },
@@ -336,7 +345,7 @@
         "kind": 5,
         "importPath": "frontend",
         "description": "frontend",
-        "peekOfCode": "selected_models = st.sidebar.multiselect(\"Select Models\", model_names, default=model_names)\nst.sidebar.markdown(\"---\")\nst.sidebar.write(f\"**Date:** {selected_date}\")\nst.sidebar.write(f\"**Time:** {selected_time}\")\nst.sidebar.write(f\"**Models:** {', '.join(selected_models) if selected_models else 'None'}\")\n# --- Main ---\nst.markdown(\"<h1 style='text-align:center;color:#2c3e50;'>Solar Power Prediction Dashboard</h1>\", unsafe_allow_html=True)\ntab1, tab2 = st.tabs([\"Prediction Graph\", \"Instructions\"])\nwith tab2:\n    st.markdown(\"\"\"",
+        "peekOfCode": "selected_models = st.sidebar.multiselect(\n    \"Select Models\", model_names, default=model_names\n)\nst.sidebar.markdown(\"---\")\nst.sidebar.write(f\"**Date:** {selected_date}\")\nst.sidebar.write(f\"**Time:** {selected_time}\")\nst.sidebar.write(\n    f\"**Models:** {', '.join(selected_models) if selected_models else 'None'}\"\n)\n# --- Main ---",
         "detail": "frontend",
         "documentation": {}
     }
