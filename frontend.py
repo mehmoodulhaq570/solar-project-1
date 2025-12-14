@@ -165,23 +165,33 @@ with tab1:
         elif hours_ahead > 30 * 24:
             st.warning("Forecast is far beyond training data. Accuracy may be low.")
 
-        # --- Prepare scalers ---
-        scaler_X = None
-        scaler_y = None
-        try:
-            scaler_X = joblib.load(os.path.join(model_folder, "scaler_X.pkl"))
-            scaler_y = joblib.load(os.path.join(model_folder, "scaler_y.pkl"))
-        except Exception as e:
-            st.warning(
-                f"Could not load scalers: {e}. Deep learning models (LSTM, CNN-LSTM) will be skipped."
-            )
-            # Remove LSTM and CNN-LSTM from selected models if scalers fail
-            selected_models = [
-                m for m in selected_models if m not in ["LSTM", "CNN-LSTM"]
-            ]
-            if not selected_models:
-                st.error("No models available. Please select Random Forest or XGBoost.")
-                st.stop()
+        # --- Manual scaling (compute from data) ---
+        # Calculate statistics for standardization from historical data
+        feature_cols_for_scaling = [
+            "hour",
+            "month",
+            "Temperature",
+            "HumiditySpecific",
+            "HumidityRelative",
+            "Pressure",
+            "WindSpeed",
+            "WindDirection",
+        ]
+
+        X_mean = df_day[feature_cols_for_scaling].mean()
+        X_std = df_day[feature_cols_for_scaling].std()
+        y_mean = df_day["SolarRadiation"].mean()
+        y_std = df_day["SolarRadiation"].std()
+
+        # Manual standardization functions
+        def scale_X(data):
+            return (data - X_mean) / X_std
+
+        def scale_y(data):
+            return (data - y_mean) / y_std
+
+        def inverse_scale_y(data):
+            return data * y_std + y_mean
 
         # --- Features ---
         features = [
@@ -211,7 +221,7 @@ with tab1:
         forecast_hours = 24
         total_steps = hours_ahead + forecast_hours
         future_times = pd.date_range(
-            start=last_time + pd.Timedelta(hours=1), periods=total_steps, freq="H"
+            start=last_time + pd.Timedelta(hours=1), periods=total_steps, freq="h"
         )
 
         # Validate minimum data - need 24 lags + at least 1 row = 25 minimum
@@ -224,27 +234,54 @@ with tab1:
         # Start with enough data for 24 lags (need 24 past values + current)
         rolling_df = df_day.tail(50).copy() if len(df_day) >= 50 else df_day.copy()
 
-        # --- Load models once ---
+        # --- Load models once (with individual error handling) ---
         loaded_models = {}
-        try:
-            if "XGBoost" in selected_models and XGBOOST_AVAILABLE:
+
+        if "XGBoost" in selected_models and XGBOOST_AVAILABLE:
+            try:
                 loaded_models["XGBoost"] = joblib.load(
                     os.path.join(model_folder, "xgboost_model.pkl")
                 )
-            if "Random Forest" in selected_models:
-                loaded_models["Random Forest"] = joblib.load(
-                    os.path.join(model_folder, "random_forest_model.pkl")
+            except Exception as e:
+                st.warning(f"Could not load XGBoost: {e}")
+
+        if "Random Forest" in selected_models:
+            try:
+                import pickle
+
+                model_path = os.path.join(model_folder, "random_forest_model.pkl")
+                with open(model_path, "rb") as f:
+                    loaded_models["Random Forest"] = pickle.load(f)
+            except Exception as e:
+                st.warning(f"Could not load Random Forest: {e}")
+                st.info(
+                    "Random Forest model may need to be retrained with current scikit-learn version."
                 )
-            if "LSTM" in selected_models and TENSORFLOW_AVAILABLE:
+
+        if "LSTM" in selected_models and TENSORFLOW_AVAILABLE:
+            try:
                 loaded_models["LSTM"] = load_model(
-                    os.path.join(model_folder, "lstm_model.h5")
+                    os.path.join(model_folder, "lstm_model.h5"), compile=False
                 )
-            if "CNN-LSTM" in selected_models and TENSORFLOW_AVAILABLE:
+            except Exception as e:
+                st.warning(f"Could not load LSTM: {e}")
+                st.info(
+                    "LSTM model may need to be retrained with current TensorFlow version."
+                )
+
+        if "CNN-LSTM" in selected_models and TENSORFLOW_AVAILABLE:
+            try:
                 loaded_models["CNN-LSTM"] = load_model(
-                    os.path.join(model_folder, "cnn_lstm_model.h5")
+                    os.path.join(model_folder, "cnn_lstm_model.h5"), compile=False
                 )
-        except Exception as e:
-            st.error(f"Error loading models: {e}")
+            except Exception as e:
+                st.warning(f"Could not load CNN-LSTM: {e}")
+                st.info(
+                    "CNN-LSTM model may need to be retrained with current TensorFlow version."
+                )
+
+        if not loaded_models:
+            st.error("No models could be loaded. Please check model files.")
             st.stop()
 
         for i, ts in enumerate(future_times):
@@ -273,34 +310,22 @@ with tab1:
                         and lag_input_row is not None
                     ):
                         pred = loaded_models[model].predict(lag_input_row)[0]
-                    elif (
-                        model == "LSTM"
-                        and model in loaded_models
-                        and scaler_X is not None
-                        and scaler_y is not None
-                    ):
+                    elif model == "LSTM" and model in loaded_models:
                         seq_input = rolling_df[features].tail(24)
-                        X_seq = scaler_X.transform(
-                            seq_input.drop(columns=["SolarRadiation"])
-                        ).reshape(1, 24, -1)
+                        X_seq_data = seq_input.drop(columns=["SolarRadiation"])
+                        X_seq = scale_X(X_seq_data).values.reshape(1, 24, -1)
                         pred_scaled = loaded_models[model].predict(X_seq, verbose=0)[0][
                             0
                         ]
-                        pred = scaler_y.inverse_transform([[pred_scaled]])[0][0]
-                    elif (
-                        model == "CNN-LSTM"
-                        and model in loaded_models
-                        and scaler_X is not None
-                        and scaler_y is not None
-                    ):
+                        pred = inverse_scale_y(pred_scaled)
+                    elif model == "CNN-LSTM" and model in loaded_models:
                         seq_input = rolling_df[features].tail(24)
-                        X_seq = scaler_X.transform(
-                            seq_input.drop(columns=["SolarRadiation"])
-                        ).reshape(1, 24, -1)
+                        X_seq_data = seq_input.drop(columns=["SolarRadiation"])
+                        X_seq = scale_X(X_seq_data).values.reshape(1, 24, -1)
                         pred_scaled = loaded_models[model].predict(X_seq, verbose=0)[0][
                             0
                         ]
-                        pred = scaler_y.inverse_transform([[pred_scaled]])[0][0]
+                        pred = inverse_scale_y(pred_scaled)
                 except Exception as e:
                     st.warning(f"{model} prediction error at step {i}: {e}")
                     pred = 0

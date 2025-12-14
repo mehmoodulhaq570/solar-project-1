@@ -89,6 +89,96 @@
         "documentation": {}
     },
     {
+        "label": "mean_absolute_error",
+        "importPath": "sklearn.metrics",
+        "description": "sklearn.metrics",
+        "isExtraImport": true,
+        "detail": "sklearn.metrics",
+        "documentation": {}
+    },
+    {
+        "label": "mean_squared_error",
+        "importPath": "sklearn.metrics",
+        "description": "sklearn.metrics",
+        "isExtraImport": true,
+        "detail": "sklearn.metrics",
+        "documentation": {}
+    },
+    {
+        "label": "r2_score",
+        "importPath": "sklearn.metrics",
+        "description": "sklearn.metrics",
+        "isExtraImport": true,
+        "detail": "sklearn.metrics",
+        "documentation": {}
+    },
+    {
+        "label": "RandomForestRegressor",
+        "importPath": "sklearn.ensemble",
+        "description": "sklearn.ensemble",
+        "isExtraImport": true,
+        "detail": "sklearn.ensemble",
+        "documentation": {}
+    },
+    {
+        "label": "StandardScaler",
+        "importPath": "sklearn.preprocessing",
+        "description": "sklearn.preprocessing",
+        "isExtraImport": true,
+        "detail": "sklearn.preprocessing",
+        "documentation": {}
+    },
+    {
+        "label": "xgboost",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "xgboost",
+        "description": "xgboost",
+        "detail": "xgboost",
+        "documentation": {}
+    },
+    {
+        "label": "tensorflow",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "tensorflow",
+        "description": "tensorflow",
+        "detail": "tensorflow",
+        "documentation": {}
+    },
+    {
+        "label": "layers",
+        "importPath": "tensorflow.keras",
+        "description": "tensorflow.keras",
+        "isExtraImport": true,
+        "detail": "tensorflow.keras",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "tensorflow.keras",
+        "description": "tensorflow.keras",
+        "isExtraImport": true,
+        "detail": "tensorflow.keras",
+        "documentation": {}
+    },
+    {
+        "label": "callbacks",
+        "importPath": "tensorflow.keras",
+        "description": "tensorflow.keras",
+        "isExtraImport": true,
+        "detail": "tensorflow.keras",
+        "documentation": {}
+    },
+    {
+        "label": "backend",
+        "importPath": "tensorflow.keras",
+        "description": "tensorflow.keras",
+        "isExtraImport": true,
+        "detail": "tensorflow.keras",
+        "documentation": {}
+    },
+    {
         "label": "cache_session",
         "kind": 5,
         "importPath": "NASA meteriological and solar radiaton data.API_call",
@@ -347,6 +437,510 @@
         "description": "frontend",
         "peekOfCode": "selected_models = st.sidebar.multiselect(\n    \"Select Models\", model_names, default=model_names\n)\nst.sidebar.markdown(\"---\")\nst.sidebar.write(f\"**Date:** {selected_date}\")\nst.sidebar.write(f\"**Time:** {selected_time}\")\nst.sidebar.write(\n    f\"**Models:** {', '.join(selected_models) if selected_models else 'None'}\"\n)\n# --- Main ---",
         "detail": "frontend",
+        "documentation": {}
+    },
+    {
+        "label": "rmse",
+        "kind": 2,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "def rmse(a, b):\n    return np.sqrt(mean_squared_error(a, b))\n# ---------- 1. Load data ----------\ndf = pd.read_csv('NASA meteriological and solar radiaton data/lahore_hourly_filled.csv')\ndf.columns = df.columns.str.strip()\nif 'datetime' not in df.columns:\n    raise ValueError(f\"'datetime' column not found\")\ndf['datetime'] = pd.to_datetime(df['datetime'], errors='coerce')\ndf = df.dropna(subset=['datetime'])\ndf.set_index('datetime', inplace=True)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "make_lag_features",
+        "kind": 2,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "def make_lag_features(series_df, max_lag=24):\n    cols_base = [target_col,'hour','month','Temperature','HumiditySpecific',\n                 'HumidityRelative','Pressure','WindSpeed','WindDirection']\n    df_feat = series_df[cols_base].copy()\n    for lag in range(1, max_lag+1):\n        df_feat[f\"lag_{lag}\"] = df_feat[target_col].shift(lag)\n    return df_feat.dropna()\ndf_lag = make_lag_features(df_day, MAX_LAG)\ntrain_lag = df_lag.loc[df_lag.index.intersection(train.index)]\ntest_lag  = df_lag.loc[df_lag.index.intersection(test.index)]",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "create_sequences",
+        "kind": 2,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "def create_sequences(df_in, seq_len=24):\n    Xs, ys, idxs = [], [], []\n    X_arr = scaler_X.transform(df_in.drop(columns=[target_col]))\n    y_arr = scaler_y.transform(df_in[[target_col]]).flatten()\n    for i in range(seq_len, len(df_in)):\n        Xs.append(X_arr[i-seq_len:i])\n        ys.append(y_arr[i])\n        idxs.append(df_in.index[i])\n    return np.array(Xs), np.array(ys), np.array(idxs)\nX_seq_all, y_seq_all, idxs_all = create_sequences(df_seq)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "os.environ['TF_CPP_MIN_LOG_LEVEL']",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'\nimport numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\nfrom sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score\nfrom sklearn.ensemble import RandomForestRegressor\nfrom sklearn.preprocessing import StandardScaler\nimport xgboost as xgb\nimport joblib\nimport tensorflow as tf",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "RANDOM_STATE",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "RANDOM_STATE = 42\nnp.random.seed(RANDOM_STATE)\ntf.random.set_seed(RANDOM_STATE)\n# create save directory\nos.makedirs(\"saved_models\", exist_ok=True)\n# TF GPU memory growth (Colab safe)\ngpus = tf.config.experimental.list_physical_devices('GPU')\nif gpus:\n    try:\n        for gpu in gpus:",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "gpus",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "gpus = tf.config.experimental.list_physical_devices('GPU')\nif gpus:\n    try:\n        for gpu in gpus:\n            tf.config.experimental.set_memory_growth(gpu, True)\n    except Exception:\n        pass\ndef rmse(a, b):\n    return np.sqrt(mean_squared_error(a, b))\n# ---------- 1. Load data ----------",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "df",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "df = pd.read_csv('NASA meteriological and solar radiaton data/lahore_hourly_filled.csv')\ndf.columns = df.columns.str.strip()\nif 'datetime' not in df.columns:\n    raise ValueError(f\"'datetime' column not found\")\ndf['datetime'] = pd.to_datetime(df['datetime'], errors='coerce')\ndf = df.dropna(subset=['datetime'])\ndf.set_index('datetime', inplace=True)\ndf = df.sort_index()\ndf = df.apply(pd.to_numeric, errors='coerce')\nprint(\"Loaded CSV range:\", df.index.min(), \"→\", df.index.max())",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "df.columns",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "df.columns = df.columns.str.strip()\nif 'datetime' not in df.columns:\n    raise ValueError(f\"'datetime' column not found\")\ndf['datetime'] = pd.to_datetime(df['datetime'], errors='coerce')\ndf = df.dropna(subset=['datetime'])\ndf.set_index('datetime', inplace=True)\ndf = df.sort_index()\ndf = df.apply(pd.to_numeric, errors='coerce')\nprint(\"Loaded CSV range:\", df.index.min(), \"→\", df.index.max())\nrequired = ['ClearSkyRadiation','SolarRadiation','DirectRadiation','DiffuseRadiation',",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "df['datetime']",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "df['datetime'] = pd.to_datetime(df['datetime'], errors='coerce')\ndf = df.dropna(subset=['datetime'])\ndf.set_index('datetime', inplace=True)\ndf = df.sort_index()\ndf = df.apply(pd.to_numeric, errors='coerce')\nprint(\"Loaded CSV range:\", df.index.min(), \"→\", df.index.max())\nrequired = ['ClearSkyRadiation','SolarRadiation','DirectRadiation','DiffuseRadiation',\n            'SolarZenith','Temperature','HumiditySpecific','HumidityRelative',\n            'Pressure','WindSpeed','WindDirection']\nmissing = [c for c in required if c not in df.columns]",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "df",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "df = df.dropna(subset=['datetime'])\ndf.set_index('datetime', inplace=True)\ndf = df.sort_index()\ndf = df.apply(pd.to_numeric, errors='coerce')\nprint(\"Loaded CSV range:\", df.index.min(), \"→\", df.index.max())\nrequired = ['ClearSkyRadiation','SolarRadiation','DirectRadiation','DiffuseRadiation',\n            'SolarZenith','Temperature','HumiditySpecific','HumidityRelative',\n            'Pressure','WindSpeed','WindDirection']\nmissing = [c for c in required if c not in df.columns]\nif missing:",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "df",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "df = df.sort_index()\ndf = df.apply(pd.to_numeric, errors='coerce')\nprint(\"Loaded CSV range:\", df.index.min(), \"→\", df.index.max())\nrequired = ['ClearSkyRadiation','SolarRadiation','DirectRadiation','DiffuseRadiation',\n            'SolarZenith','Temperature','HumiditySpecific','HumidityRelative',\n            'Pressure','WindSpeed','WindDirection']\nmissing = [c for c in required if c not in df.columns]\nif missing:\n    raise ValueError(\"Missing columns: \", missing)\ndf_day = df[df['SolarZenith'] < 90].copy()",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "df",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "df = df.apply(pd.to_numeric, errors='coerce')\nprint(\"Loaded CSV range:\", df.index.min(), \"→\", df.index.max())\nrequired = ['ClearSkyRadiation','SolarRadiation','DirectRadiation','DiffuseRadiation',\n            'SolarZenith','Temperature','HumiditySpecific','HumidityRelative',\n            'Pressure','WindSpeed','WindDirection']\nmissing = [c for c in required if c not in df.columns]\nif missing:\n    raise ValueError(\"Missing columns: \", missing)\ndf_day = df[df['SolarZenith'] < 90].copy()\ndf_day.dropna(subset=['SolarRadiation'], inplace=True)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "required",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "required = ['ClearSkyRadiation','SolarRadiation','DirectRadiation','DiffuseRadiation',\n            'SolarZenith','Temperature','HumiditySpecific','HumidityRelative',\n            'Pressure','WindSpeed','WindDirection']\nmissing = [c for c in required if c not in df.columns]\nif missing:\n    raise ValueError(\"Missing columns: \", missing)\ndf_day = df[df['SolarZenith'] < 90].copy()\ndf_day.dropna(subset=['SolarRadiation'], inplace=True)\ndf_day['hour'] = df_day.index.hour\ndf_day['month'] = df_day.index.month",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "missing",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "missing = [c for c in required if c not in df.columns]\nif missing:\n    raise ValueError(\"Missing columns: \", missing)\ndf_day = df[df['SolarZenith'] < 90].copy()\ndf_day.dropna(subset=['SolarRadiation'], inplace=True)\ndf_day['hour'] = df_day.index.hour\ndf_day['month'] = df_day.index.month\ntarget_col = 'SolarRadiation'\nprint(\"Daylight records:\", len(df_day))\n# ---------- 2. Train/Test split ----------",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "df_day",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "df_day = df[df['SolarZenith'] < 90].copy()\ndf_day.dropna(subset=['SolarRadiation'], inplace=True)\ndf_day['hour'] = df_day.index.hour\ndf_day['month'] = df_day.index.month\ntarget_col = 'SolarRadiation'\nprint(\"Daylight records:\", len(df_day))\n# ---------- 2. Train/Test split ----------\nsplit_idx = int(len(df_day) * 0.8)\ntrain = df_day.iloc[:split_idx].copy()\ntest  = df_day.iloc[split_idx:].copy()",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "df_day['hour']",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "df_day['hour'] = df_day.index.hour\ndf_day['month'] = df_day.index.month\ntarget_col = 'SolarRadiation'\nprint(\"Daylight records:\", len(df_day))\n# ---------- 2. Train/Test split ----------\nsplit_idx = int(len(df_day) * 0.8)\ntrain = df_day.iloc[:split_idx].copy()\ntest  = df_day.iloc[split_idx:].copy()\n# ---------- 3. Lag features ----------\nMAX_LAG = 24",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "df_day['month']",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "df_day['month'] = df_day.index.month\ntarget_col = 'SolarRadiation'\nprint(\"Daylight records:\", len(df_day))\n# ---------- 2. Train/Test split ----------\nsplit_idx = int(len(df_day) * 0.8)\ntrain = df_day.iloc[:split_idx].copy()\ntest  = df_day.iloc[split_idx:].copy()\n# ---------- 3. Lag features ----------\nMAX_LAG = 24\ndef make_lag_features(series_df, max_lag=24):",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "target_col",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "target_col = 'SolarRadiation'\nprint(\"Daylight records:\", len(df_day))\n# ---------- 2. Train/Test split ----------\nsplit_idx = int(len(df_day) * 0.8)\ntrain = df_day.iloc[:split_idx].copy()\ntest  = df_day.iloc[split_idx:].copy()\n# ---------- 3. Lag features ----------\nMAX_LAG = 24\ndef make_lag_features(series_df, max_lag=24):\n    cols_base = [target_col,'hour','month','Temperature','HumiditySpecific',",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "split_idx",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "split_idx = int(len(df_day) * 0.8)\ntrain = df_day.iloc[:split_idx].copy()\ntest  = df_day.iloc[split_idx:].copy()\n# ---------- 3. Lag features ----------\nMAX_LAG = 24\ndef make_lag_features(series_df, max_lag=24):\n    cols_base = [target_col,'hour','month','Temperature','HumiditySpecific',\n                 'HumidityRelative','Pressure','WindSpeed','WindDirection']\n    df_feat = series_df[cols_base].copy()\n    for lag in range(1, max_lag+1):",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "train",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "train = df_day.iloc[:split_idx].copy()\ntest  = df_day.iloc[split_idx:].copy()\n# ---------- 3. Lag features ----------\nMAX_LAG = 24\ndef make_lag_features(series_df, max_lag=24):\n    cols_base = [target_col,'hour','month','Temperature','HumiditySpecific',\n                 'HumidityRelative','Pressure','WindSpeed','WindDirection']\n    df_feat = series_df[cols_base].copy()\n    for lag in range(1, max_lag+1):\n        df_feat[f\"lag_{lag}\"] = df_feat[target_col].shift(lag)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "MAX_LAG",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "MAX_LAG = 24\ndef make_lag_features(series_df, max_lag=24):\n    cols_base = [target_col,'hour','month','Temperature','HumiditySpecific',\n                 'HumidityRelative','Pressure','WindSpeed','WindDirection']\n    df_feat = series_df[cols_base].copy()\n    for lag in range(1, max_lag+1):\n        df_feat[f\"lag_{lag}\"] = df_feat[target_col].shift(lag)\n    return df_feat.dropna()\ndf_lag = make_lag_features(df_day, MAX_LAG)\ntrain_lag = df_lag.loc[df_lag.index.intersection(train.index)]",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "df_lag",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "df_lag = make_lag_features(df_day, MAX_LAG)\ntrain_lag = df_lag.loc[df_lag.index.intersection(train.index)]\ntest_lag  = df_lag.loc[df_lag.index.intersection(test.index)]\n# fallback if no test rows\nif len(test_lag) == 0:\n    train_lag = df_lag.iloc[:-MAX_LAG].copy()\n    test_lag  = df_lag.iloc[-MAX_LAG:].copy()\nX_train_tree = train_lag.drop(columns=[target_col])\ny_train_tree = train_lag[target_col]\nX_test_tree  = test_lag.drop(columns=[target_col])",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "train_lag",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "train_lag = df_lag.loc[df_lag.index.intersection(train.index)]\ntest_lag  = df_lag.loc[df_lag.index.intersection(test.index)]\n# fallback if no test rows\nif len(test_lag) == 0:\n    train_lag = df_lag.iloc[:-MAX_LAG].copy()\n    test_lag  = df_lag.iloc[-MAX_LAG:].copy()\nX_train_tree = train_lag.drop(columns=[target_col])\ny_train_tree = train_lag[target_col]\nX_test_tree  = test_lag.drop(columns=[target_col])\ny_test       = test_lag[target_col]",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "X_train_tree",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "X_train_tree = train_lag.drop(columns=[target_col])\ny_train_tree = train_lag[target_col]\nX_test_tree  = test_lag.drop(columns=[target_col])\ny_test       = test_lag[target_col]\n# ---------- 4. Scaling for deep learning ----------\nSEQ_LEN = 24\nfeatures = ['hour','month','Temperature','HumiditySpecific','HumidityRelative',\n            'Pressure','WindSpeed','WindDirection', target_col]\ndf_seq = df_day[features].dropna()\ntrain_seq_df = df_seq.loc[:train.index.max()]",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "y_train_tree",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "y_train_tree = train_lag[target_col]\nX_test_tree  = test_lag.drop(columns=[target_col])\ny_test       = test_lag[target_col]\n# ---------- 4. Scaling for deep learning ----------\nSEQ_LEN = 24\nfeatures = ['hour','month','Temperature','HumiditySpecific','HumidityRelative',\n            'Pressure','WindSpeed','WindDirection', target_col]\ndf_seq = df_day[features].dropna()\ntrain_seq_df = df_seq.loc[:train.index.max()]\nscaler_X = StandardScaler()",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "SEQ_LEN",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "SEQ_LEN = 24\nfeatures = ['hour','month','Temperature','HumiditySpecific','HumidityRelative',\n            'Pressure','WindSpeed','WindDirection', target_col]\ndf_seq = df_day[features].dropna()\ntrain_seq_df = df_seq.loc[:train.index.max()]\nscaler_X = StandardScaler()\nscaler_y = StandardScaler()\nscaler_X.fit(train_seq_df.drop(columns=[target_col]))\nscaler_y.fit(train_seq_df[[target_col]])\n# Save scalers",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "features",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "features = ['hour','month','Temperature','HumiditySpecific','HumidityRelative',\n            'Pressure','WindSpeed','WindDirection', target_col]\ndf_seq = df_day[features].dropna()\ntrain_seq_df = df_seq.loc[:train.index.max()]\nscaler_X = StandardScaler()\nscaler_y = StandardScaler()\nscaler_X.fit(train_seq_df.drop(columns=[target_col]))\nscaler_y.fit(train_seq_df[[target_col]])\n# Save scalers\njoblib.dump(scaler_X, \"saved_models/scaler_X.pkl\")",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "df_seq",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "df_seq = df_day[features].dropna()\ntrain_seq_df = df_seq.loc[:train.index.max()]\nscaler_X = StandardScaler()\nscaler_y = StandardScaler()\nscaler_X.fit(train_seq_df.drop(columns=[target_col]))\nscaler_y.fit(train_seq_df[[target_col]])\n# Save scalers\njoblib.dump(scaler_X, \"saved_models/scaler_X.pkl\")\njoblib.dump(scaler_y, \"saved_models/scaler_y.pkl\")\ndef create_sequences(df_in, seq_len=24):",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "train_seq_df",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "train_seq_df = df_seq.loc[:train.index.max()]\nscaler_X = StandardScaler()\nscaler_y = StandardScaler()\nscaler_X.fit(train_seq_df.drop(columns=[target_col]))\nscaler_y.fit(train_seq_df[[target_col]])\n# Save scalers\njoblib.dump(scaler_X, \"saved_models/scaler_X.pkl\")\njoblib.dump(scaler_y, \"saved_models/scaler_y.pkl\")\ndef create_sequences(df_in, seq_len=24):\n    Xs, ys, idxs = [], [], []",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "scaler_X",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "scaler_X = StandardScaler()\nscaler_y = StandardScaler()\nscaler_X.fit(train_seq_df.drop(columns=[target_col]))\nscaler_y.fit(train_seq_df[[target_col]])\n# Save scalers\njoblib.dump(scaler_X, \"saved_models/scaler_X.pkl\")\njoblib.dump(scaler_y, \"saved_models/scaler_y.pkl\")\ndef create_sequences(df_in, seq_len=24):\n    Xs, ys, idxs = [], [], []\n    X_arr = scaler_X.transform(df_in.drop(columns=[target_col]))",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "scaler_y",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "scaler_y = StandardScaler()\nscaler_X.fit(train_seq_df.drop(columns=[target_col]))\nscaler_y.fit(train_seq_df[[target_col]])\n# Save scalers\njoblib.dump(scaler_X, \"saved_models/scaler_X.pkl\")\njoblib.dump(scaler_y, \"saved_models/scaler_y.pkl\")\ndef create_sequences(df_in, seq_len=24):\n    Xs, ys, idxs = [], [], []\n    X_arr = scaler_X.transform(df_in.drop(columns=[target_col]))\n    y_arr = scaler_y.transform(df_in[[target_col]]).flatten()",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "train_idx_set",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "train_idx_set = set(train.index)\ntest_idx_set  = set(test.index)\ntrain_mask = np.array([idx in train_idx_set for idx in idxs_all])\ntest_mask  = np.array([idx in test_idx_set  for idx in idxs_all])\nX_train_seq = X_seq_all[train_mask]\ny_train_seq = y_seq_all[train_mask]\nX_test_seq  = X_seq_all[test_mask]\ny_test_seq  = y_seq_all[test_mask]\ny_train_unscaled = scaler_y.inverse_transform(y_train_seq.reshape(-1,1)).flatten()\ny_test_unscaled  = scaler_y.inverse_transform(y_test_seq.reshape(-1,1)).flatten()",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "train_mask",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "train_mask = np.array([idx in train_idx_set for idx in idxs_all])\ntest_mask  = np.array([idx in test_idx_set  for idx in idxs_all])\nX_train_seq = X_seq_all[train_mask]\ny_train_seq = y_seq_all[train_mask]\nX_test_seq  = X_seq_all[test_mask]\ny_test_seq  = y_seq_all[test_mask]\ny_train_unscaled = scaler_y.inverse_transform(y_train_seq.reshape(-1,1)).flatten()\ny_test_unscaled  = scaler_y.inverse_transform(y_test_seq.reshape(-1,1)).flatten()\n# ---------- RESULTS ----------\nresults = []",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "X_train_seq",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "X_train_seq = X_seq_all[train_mask]\ny_train_seq = y_seq_all[train_mask]\nX_test_seq  = X_seq_all[test_mask]\ny_test_seq  = y_seq_all[test_mask]\ny_train_unscaled = scaler_y.inverse_transform(y_train_seq.reshape(-1,1)).flatten()\ny_test_unscaled  = scaler_y.inverse_transform(y_test_seq.reshape(-1,1)).flatten()\n# ---------- RESULTS ----------\nresults = []\n# ======================================\n# 6. XGBoost",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "y_train_seq",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "y_train_seq = y_seq_all[train_mask]\nX_test_seq  = X_seq_all[test_mask]\ny_test_seq  = y_seq_all[test_mask]\ny_train_unscaled = scaler_y.inverse_transform(y_train_seq.reshape(-1,1)).flatten()\ny_test_unscaled  = scaler_y.inverse_transform(y_test_seq.reshape(-1,1)).flatten()\n# ---------- RESULTS ----------\nresults = []\n# ======================================\n# 6. XGBoost\n# ======================================",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "y_train_unscaled",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "y_train_unscaled = scaler_y.inverse_transform(y_train_seq.reshape(-1,1)).flatten()\ny_test_unscaled  = scaler_y.inverse_transform(y_test_seq.reshape(-1,1)).flatten()\n# ---------- RESULTS ----------\nresults = []\n# ======================================\n# 6. XGBoost\n# ======================================\nprint(\"\\n=== Training XGBoost ===\")\nxgb_model = xgb.XGBRegressor(\n    n_estimators=800, max_depth=5, learning_rate=0.05,",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "results",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "results = []\n# ======================================\n# 6. XGBoost\n# ======================================\nprint(\"\\n=== Training XGBoost ===\")\nxgb_model = xgb.XGBRegressor(\n    n_estimators=800, max_depth=5, learning_rate=0.05,\n    subsample=0.8, colsample_bytree=0.8,\n    random_state=RANDOM_STATE, n_jobs=-1\n)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "xgb_model",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "xgb_model = xgb.XGBRegressor(\n    n_estimators=800, max_depth=5, learning_rate=0.05,\n    subsample=0.8, colsample_bytree=0.8,\n    random_state=RANDOM_STATE, n_jobs=-1\n)\nxgb_model.fit(X_train_tree, y_train_tree)\n# Save model\njoblib.dump(xgb_model, \"saved_models/xgboost_model.pkl\")\nxgb_train_pred = xgb_model.predict(X_train_tree)\nxgb_test_pred  = xgb_model.predict(X_test_tree)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "xgb_train_pred",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "xgb_train_pred = xgb_model.predict(X_train_tree)\nxgb_test_pred  = xgb_model.predict(X_test_tree)\nresults.append([\n    'XGBoost',\n    r2_score(y_train_tree, xgb_train_pred),\n    r2_score(y_test, xgb_test_pred),\n    mean_absolute_error(y_test, xgb_test_pred),\n    rmse(y_test, xgb_test_pred)\n])\n# ======================================",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "rf",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "rf = RandomForestRegressor(\n    n_estimators=300, max_depth=10,\n    random_state=RANDOM_STATE, n_jobs=-1\n)\nrf.fit(X_train_tree, y_train_tree)\n# Save model\njoblib.dump(rf, \"saved_models/random_forest_model.pkl\")\nrf_train_pred = rf.predict(X_train_tree)\nrf_test_pred  = rf.predict(X_test_tree)\nresults.append([",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "rf_train_pred",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "rf_train_pred = rf.predict(X_train_tree)\nrf_test_pred  = rf.predict(X_test_tree)\nresults.append([\n    'Random Forest',\n    r2_score(y_train_tree, rf_train_pred),\n    r2_score(y_test, rf_test_pred),\n    mean_absolute_error(y_test, rf_test_pred),\n    rmse(y_test, rf_test_pred)\n])\n# ======================================",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "lstm_model",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "lstm_model = models.Sequential([\n    layers.Input(shape=(SEQ_LEN, X_train_seq.shape[2])),\n    layers.LSTM(64),\n    layers.Dropout(0.2),\n    layers.Dense(32, activation='relu'),\n    layers.Dense(1)\n])\nlstm_model.compile(optimizer='adam', loss='mse')\nes = callbacks.EarlyStopping(patience=5, restore_best_weights=True)\nlstm_model.fit(",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "es",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "es = callbacks.EarlyStopping(patience=5, restore_best_weights=True)\nlstm_model.fit(\n    X_train_seq, y_train_seq,\n    validation_split=0.1,\n    epochs=50,\n    batch_size=64,\n    callbacks=[es],\n    verbose=0\n)\n# Save model",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "lstm_train_pred",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "lstm_train_pred = scaler_y.inverse_transform(lstm_model.predict(X_train_seq))\nlstm_test_pred  = scaler_y.inverse_transform(lstm_model.predict(X_test_seq))\nlstm_train_pred = lstm_train_pred.flatten()\nlstm_test_pred  = lstm_test_pred.flatten()\nresults.append([\n    'LSTM',\n    r2_score(y_train_unscaled, lstm_train_pred),\n    r2_score(y_test_unscaled, lstm_test_pred),\n    mean_absolute_error(y_test_unscaled, lstm_test_pred),\n    rmse(y_test_unscaled, lstm_test_pred)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "lstm_train_pred",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "lstm_train_pred = lstm_train_pred.flatten()\nlstm_test_pred  = lstm_test_pred.flatten()\nresults.append([\n    'LSTM',\n    r2_score(y_train_unscaled, lstm_train_pred),\n    r2_score(y_test_unscaled, lstm_test_pred),\n    mean_absolute_error(y_test_unscaled, lstm_test_pred),\n    rmse(y_test_unscaled, lstm_test_pred)\n])\n# ======================================",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "inp",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "inp = layers.Input(shape=(SEQ_LEN, X_train_seq.shape[2]))\nx = layers.Conv1D(32, 3, padding='same', activation='relu')(inp)\nx = layers.MaxPool1D(2)(x)\nx = layers.LSTM(48)(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(24, activation='relu')(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\ncnn_lstm_model.compile(optimizer='adam', loss='mse')\ncnn_lstm_model.fit(",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.Conv1D(32, 3, padding='same', activation='relu')(inp)\nx = layers.MaxPool1D(2)(x)\nx = layers.LSTM(48)(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(24, activation='relu')(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\ncnn_lstm_model.compile(optimizer='adam', loss='mse')\ncnn_lstm_model.fit(\n    X_train_seq, y_train_seq,",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.MaxPool1D(2)(x)\nx = layers.LSTM(48)(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(24, activation='relu')(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\ncnn_lstm_model.compile(optimizer='adam', loss='mse')\ncnn_lstm_model.fit(\n    X_train_seq, y_train_seq,\n    validation_split=0.1,",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.LSTM(48)(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(24, activation='relu')(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\ncnn_lstm_model.compile(optimizer='adam', loss='mse')\ncnn_lstm_model.fit(\n    X_train_seq, y_train_seq,\n    validation_split=0.1,\n    epochs=50,",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.Dropout(0.2)(x)\nx = layers.Dense(24, activation='relu')(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\ncnn_lstm_model.compile(optimizer='adam', loss='mse')\ncnn_lstm_model.fit(\n    X_train_seq, y_train_seq,\n    validation_split=0.1,\n    epochs=50,\n    batch_size=64,",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.Dense(24, activation='relu')(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\ncnn_lstm_model.compile(optimizer='adam', loss='mse')\ncnn_lstm_model.fit(\n    X_train_seq, y_train_seq,\n    validation_split=0.1,\n    epochs=50,\n    batch_size=64,\n    callbacks=[es],",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "out",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "out = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\ncnn_lstm_model.compile(optimizer='adam', loss='mse')\ncnn_lstm_model.fit(\n    X_train_seq, y_train_seq,\n    validation_split=0.1,\n    epochs=50,\n    batch_size=64,\n    callbacks=[es],\n    verbose=0",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "cnn_lstm_model",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "cnn_lstm_model = models.Model(inp, out)\ncnn_lstm_model.compile(optimizer='adam', loss='mse')\ncnn_lstm_model.fit(\n    X_train_seq, y_train_seq,\n    validation_split=0.1,\n    epochs=50,\n    batch_size=64,\n    callbacks=[es],\n    verbose=0\n)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "cnn_train_pred",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "cnn_train_pred = scaler_y.inverse_transform(cnn_lstm_model.predict(X_train_seq))\ncnn_test_pred  = scaler_y.inverse_transform(cnn_lstm_model.predict(X_test_seq))\ncnn_train_pred = cnn_train_pred.flatten()\ncnn_test_pred  = cnn_test_pred.flatten()\nresults.append([\n    'CNN-LSTM',\n    r2_score(y_train_unscaled, cnn_train_pred),\n    r2_score(y_test_unscaled, cnn_test_pred),\n    mean_absolute_error(y_test_unscaled, cnn_test_pred),\n    rmse(y_test_unscaled, cnn_test_pred)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "cnn_train_pred",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "cnn_train_pred = cnn_train_pred.flatten()\ncnn_test_pred  = cnn_test_pred.flatten()\nresults.append([\n    'CNN-LSTM',\n    r2_score(y_train_unscaled, cnn_train_pred),\n    r2_score(y_test_unscaled, cnn_test_pred),\n    mean_absolute_error(y_test_unscaled, cnn_test_pred),\n    rmse(y_test_unscaled, cnn_test_pred)\n])\n# ---------- 10. Final Results ----------",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "results_df",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "results_df = pd.DataFrame(results, columns=['Model','R2_Train','R2_Test','MAE_Test','RMSE_Test'])\nprint(results_df)\nresults_df.to_csv(\"saved_models/model_results.csv\", index=False)\nprint(\"\\n🎉 All models saved successfully in: saved_models/\")",
+        "detail": "training",
         "documentation": {}
     }
 ]
