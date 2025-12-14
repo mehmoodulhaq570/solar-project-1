@@ -129,6 +129,14 @@
         "documentation": {}
     },
     {
+        "label": "StandardScaler",
+        "importPath": "sklearn.preprocessing",
+        "description": "sklearn.preprocessing",
+        "isExtraImport": true,
+        "detail": "sklearn.preprocessing",
+        "documentation": {}
+    },
+    {
         "label": "xgboost",
         "kind": 6,
         "isExtraImport": true,
@@ -176,6 +184,14 @@
         "description": "tensorflow.keras",
         "isExtraImport": true,
         "detail": "tensorflow.keras",
+        "documentation": {}
+    },
+    {
+        "label": "load_model",
+        "importPath": "tensorflow.keras.models",
+        "description": "tensorflow.keras.models",
+        "isExtraImport": true,
+        "detail": "tensorflow.keras.models",
         "documentation": {}
     },
     {
@@ -941,6 +957,240 @@
         "description": "training",
         "peekOfCode": "results_df = pd.DataFrame(results, columns=['Model','R2_Train','R2_Test','MAE_Test','RMSE_Test'])\nprint(results_df)\nresults_df.to_csv(\"saved_models/model_results.csv\", index=False)\nprint(\"\\n🎉 All models saved successfully in: saved_models/\")",
         "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "os.environ[\"TF_CPP_MIN_LOG_LEVEL\"]",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "os.environ[\"TF_CPP_MIN_LOG_LEVEL\"] = \"2\"\nimport numpy as np\nimport pandas as pd\nimport joblib\nfrom tensorflow.keras.models import load_model\nfrom sklearn.preprocessing import StandardScaler\nimport matplotlib.pyplot as plt\n# ---------- 1. Load historical data (2018–2025) ----------\ndf = pd.read_csv(\n    \"NASA meteriological and solar radiaton data/lahore_hourly_filled.csv\",",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "df",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "df = pd.read_csv(\n    \"NASA meteriological and solar radiaton data/lahore_hourly_filled.csv\",\n    parse_dates=[\"datetime\"],\n    dayfirst=True,\n    index_col=\"datetime\"\n)\ndf = df.sort_index().apply(pd.to_numeric, errors=\"coerce\")\ndf.index = pd.to_datetime(df.index, dayfirst=True)\n# Filter daylight-only\ndf_day = df[df[\"SolarZenith\"] < 90].copy()",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "df",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "df = df.sort_index().apply(pd.to_numeric, errors=\"coerce\")\ndf.index = pd.to_datetime(df.index, dayfirst=True)\n# Filter daylight-only\ndf_day = df[df[\"SolarZenith\"] < 90].copy()\ndf_day.dropna(subset=[\"SolarRadiation\"], inplace=True)\ndf_day[\"hour\"] = df_day.index.hour\ndf_day[\"month\"] = df_day.index.month\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"save_model/xgboost_model.pkl\")",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "df.index",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "df.index = pd.to_datetime(df.index, dayfirst=True)\n# Filter daylight-only\ndf_day = df[df[\"SolarZenith\"] < 90].copy()\ndf_day.dropna(subset=[\"SolarRadiation\"], inplace=True)\ndf_day[\"hour\"] = df_day.index.hour\ndf_day[\"month\"] = df_day.index.month\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model  = joblib.load(\"save_model/random_forest_model.pkl\")",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "df_day",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "df_day = df[df[\"SolarZenith\"] < 90].copy()\ndf_day.dropna(subset=[\"SolarRadiation\"], inplace=True)\ndf_day[\"hour\"] = df_day.index.hour\ndf_day[\"month\"] = df_day.index.month\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model  = joblib.load(\"save_model/random_forest_model.pkl\")\nlstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "df_day[\"hour\"]",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "df_day[\"hour\"] = df_day.index.hour\ndf_day[\"month\"] = df_day.index.month\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model  = joblib.load(\"save_model/random_forest_model.pkl\")\nlstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "df_day[\"month\"]",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "df_day[\"month\"] = df_day.index.month\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model  = joblib.load(\"save_model/random_forest_model.pkl\")\nlstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "target_col",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "target_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model  = joblib.load(\"save_model/random_forest_model.pkl\")\nlstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "xgb_model",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "xgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model  = joblib.load(\"save_model/random_forest_model.pkl\")\nlstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN  = 24\nhours_to_forecast = 500  # Number of hours to forecast (adjust as needed)",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "lstm_model",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "lstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN  = 24\nhours_to_forecast = 500  # Number of hours to forecast (adjust as needed)\nlast_hist = df_day.copy()\nlast_hist_values = last_hist[target_col].values",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "cnn_lstm_model",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "cnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN  = 24\nhours_to_forecast = 500  # Number of hours to forecast (adjust as needed)\nlast_hist = df_day.copy()\nlast_hist_values = last_hist[target_col].values\n# ---------- 4. Forecast for tree-based models ----------",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "scaler_X",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "scaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN  = 24\nhours_to_forecast = 500  # Number of hours to forecast (adjust as needed)\nlast_hist = df_day.copy()\nlast_hist_values = last_hist[target_col].values\n# ---------- 4. Forecast for tree-based models ----------\ntree_predictions = []",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "scaler_y",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "scaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN  = 24\nhours_to_forecast = 500  # Number of hours to forecast (adjust as needed)\nlast_hist = df_day.copy()\nlast_hist_values = last_hist[target_col].values\n# ---------- 4. Forecast for tree-based models ----------\ntree_predictions = []\ntree_series = last_hist_values[-MAX_LAG:].tolist()",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "MAX_LAG",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "MAX_LAG = 24\nSEQ_LEN  = 24\nhours_to_forecast = 500  # Number of hours to forecast (adjust as needed)\nlast_hist = df_day.copy()\nlast_hist_values = last_hist[target_col].values\n# ---------- 4. Forecast for tree-based models ----------\ntree_predictions = []\ntree_series = last_hist_values[-MAX_LAG:].tolist()\nfor i in range(hours_to_forecast):\n    hour = (last_hist.index[-1].hour + i + 1) % 24",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "hours_to_forecast",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "hours_to_forecast = 500  # Number of hours to forecast (adjust as needed)\nlast_hist = df_day.copy()\nlast_hist_values = last_hist[target_col].values\n# ---------- 4. Forecast for tree-based models ----------\ntree_predictions = []\ntree_series = last_hist_values[-MAX_LAG:].tolist()\nfor i in range(hours_to_forecast):\n    hour = (last_hist.index[-1].hour + i + 1) % 24\n    month = ((last_hist.index[-1].month - 1 + ((last_hist.index[-1].hour + i + 1)//24)) % 12) + 1\n    lag_feats = tree_series[-MAX_LAG:]",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "last_hist",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "last_hist = df_day.copy()\nlast_hist_values = last_hist[target_col].values\n# ---------- 4. Forecast for tree-based models ----------\ntree_predictions = []\ntree_series = last_hist_values[-MAX_LAG:].tolist()\nfor i in range(hours_to_forecast):\n    hour = (last_hist.index[-1].hour + i + 1) % 24\n    month = ((last_hist.index[-1].month - 1 + ((last_hist.index[-1].hour + i + 1)//24)) % 12) + 1\n    lag_feats = tree_series[-MAX_LAG:]\n    Temperature = last_hist[\"Temperature\"].iloc[-1]",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "last_hist_values",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "last_hist_values = last_hist[target_col].values\n# ---------- 4. Forecast for tree-based models ----------\ntree_predictions = []\ntree_series = last_hist_values[-MAX_LAG:].tolist()\nfor i in range(hours_to_forecast):\n    hour = (last_hist.index[-1].hour + i + 1) % 24\n    month = ((last_hist.index[-1].month - 1 + ((last_hist.index[-1].hour + i + 1)//24)) % 12) + 1\n    lag_feats = tree_series[-MAX_LAG:]\n    Temperature = last_hist[\"Temperature\"].iloc[-1]\n    HumiditySpecific = last_hist[\"HumiditySpecific\"].iloc[-1]",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "tree_predictions",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "tree_predictions = []\ntree_series = last_hist_values[-MAX_LAG:].tolist()\nfor i in range(hours_to_forecast):\n    hour = (last_hist.index[-1].hour + i + 1) % 24\n    month = ((last_hist.index[-1].month - 1 + ((last_hist.index[-1].hour + i + 1)//24)) % 12) + 1\n    lag_feats = tree_series[-MAX_LAG:]\n    Temperature = last_hist[\"Temperature\"].iloc[-1]\n    HumiditySpecific = last_hist[\"HumiditySpecific\"].iloc[-1]\n    HumidityRelative = last_hist[\"HumidityRelative\"].iloc[-1]\n    Pressure = last_hist[\"Pressure\"].iloc[-1]",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "tree_series",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "tree_series = last_hist_values[-MAX_LAG:].tolist()\nfor i in range(hours_to_forecast):\n    hour = (last_hist.index[-1].hour + i + 1) % 24\n    month = ((last_hist.index[-1].month - 1 + ((last_hist.index[-1].hour + i + 1)//24)) % 12) + 1\n    lag_feats = tree_series[-MAX_LAG:]\n    Temperature = last_hist[\"Temperature\"].iloc[-1]\n    HumiditySpecific = last_hist[\"HumiditySpecific\"].iloc[-1]\n    HumidityRelative = last_hist[\"HumidityRelative\"].iloc[-1]\n    Pressure = last_hist[\"Pressure\"].iloc[-1]\n    WindSpeed = last_hist[\"WindSpeed\"].iloc[-1]",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "seq_features",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "seq_features = ['hour','month','Temperature','HumiditySpecific','HumidityRelative','Pressure','WindSpeed','WindDirection', target_col]\nseq_data = last_hist[seq_features].copy()\nseq_predictions = []\nseq_array = scaler_X.transform(seq_data.tail(SEQ_LEN).drop(columns=[target_col]))\nfor i in range(hours_to_forecast):\n    X_seq_input = np.array(seq_array[-SEQ_LEN:]).reshape(1, SEQ_LEN, seq_array.shape[1])\n    lstm_pred = scaler_y.inverse_transform(lstm_model.predict(X_seq_input)).flatten()[0]\n    cnn_pred  = scaler_y.inverse_transform(cnn_lstm_model.predict(X_seq_input)).flatten()[0]\n    seq_predictions.append((lstm_pred, cnn_pred))\n    new_row = seq_array[-1].copy()",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "seq_data",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "seq_data = last_hist[seq_features].copy()\nseq_predictions = []\nseq_array = scaler_X.transform(seq_data.tail(SEQ_LEN).drop(columns=[target_col]))\nfor i in range(hours_to_forecast):\n    X_seq_input = np.array(seq_array[-SEQ_LEN:]).reshape(1, SEQ_LEN, seq_array.shape[1])\n    lstm_pred = scaler_y.inverse_transform(lstm_model.predict(X_seq_input)).flatten()[0]\n    cnn_pred  = scaler_y.inverse_transform(cnn_lstm_model.predict(X_seq_input)).flatten()[0]\n    seq_predictions.append((lstm_pred, cnn_pred))\n    new_row = seq_array[-1].copy()\n    new_row[-1] = scaler_y.transform(np.array([[lstm_pred]]))[0,0]",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "seq_predictions",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "seq_predictions = []\nseq_array = scaler_X.transform(seq_data.tail(SEQ_LEN).drop(columns=[target_col]))\nfor i in range(hours_to_forecast):\n    X_seq_input = np.array(seq_array[-SEQ_LEN:]).reshape(1, SEQ_LEN, seq_array.shape[1])\n    lstm_pred = scaler_y.inverse_transform(lstm_model.predict(X_seq_input)).flatten()[0]\n    cnn_pred  = scaler_y.inverse_transform(cnn_lstm_model.predict(X_seq_input)).flatten()[0]\n    seq_predictions.append((lstm_pred, cnn_pred))\n    new_row = seq_array[-1].copy()\n    new_row[-1] = scaler_y.transform(np.array([[lstm_pred]]))[0,0]\n    seq_array = np.vstack([seq_array, new_row])",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "seq_array",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "seq_array = scaler_X.transform(seq_data.tail(SEQ_LEN).drop(columns=[target_col]))\nfor i in range(hours_to_forecast):\n    X_seq_input = np.array(seq_array[-SEQ_LEN:]).reshape(1, SEQ_LEN, seq_array.shape[1])\n    lstm_pred = scaler_y.inverse_transform(lstm_model.predict(X_seq_input)).flatten()[0]\n    cnn_pred  = scaler_y.inverse_transform(cnn_lstm_model.predict(X_seq_input)).flatten()[0]\n    seq_predictions.append((lstm_pred, cnn_pred))\n    new_row = seq_array[-1].copy()\n    new_row[-1] = scaler_y.transform(np.array([[lstm_pred]]))[0,0]\n    seq_array = np.vstack([seq_array, new_row])\n# ---------- 6. Prepare datetime index ----------",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "last_time",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "last_time = last_hist.index[-1]\nforecast_index = pd.date_range(start=last_time + pd.Timedelta(hours=1), periods=hours_to_forecast, freq='H')\n# ---------- 7. Combine results ----------\nresults_df = pd.DataFrame({\n    'datetime': forecast_index,\n    'XGBoost': [x for x,_ in tree_predictions],\n    'RandomForest': [x for _,x in tree_predictions],\n    'LSTM': [x for x,_ in seq_predictions],\n    'CNN_LSTM': [x for _,x in seq_predictions],\n})",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "forecast_index",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "forecast_index = pd.date_range(start=last_time + pd.Timedelta(hours=1), periods=hours_to_forecast, freq='H')\n# ---------- 7. Combine results ----------\nresults_df = pd.DataFrame({\n    'datetime': forecast_index,\n    'XGBoost': [x for x,_ in tree_predictions],\n    'RandomForest': [x for _,x in tree_predictions],\n    'LSTM': [x for x,_ in seq_predictions],\n    'CNN_LSTM': [x for _,x in seq_predictions],\n})\n# ---------- 8. Save to CSV ----------",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "results_df",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "results_df = pd.DataFrame({\n    'datetime': forecast_index,\n    'XGBoost': [x for x,_ in tree_predictions],\n    'RandomForest': [x for _,x in tree_predictions],\n    'LSTM': [x for x,_ in seq_predictions],\n    'CNN_LSTM': [x for _,x in seq_predictions],\n})\n# ---------- 8. Save to CSV ----------\nresults_df.to_csv(\"predicted_trend_2026.csv\", index=False)\nprint(\"✅ Next-year trend predictions saved to predicted_trend_2026.csv\")",
+        "detail": "trend",
         "documentation": {}
     }
 ]
