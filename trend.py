@@ -14,6 +14,7 @@ import pandas as pd
 import joblib
 from tensorflow.keras.models import load_model
 import matplotlib.pyplot as plt
+from datetime import datetime
 
 # ---------- 1. Load historical data ----------
 df = pd.read_csv(
@@ -32,10 +33,13 @@ df_day.dropna(subset=["SolarRadiation"], inplace=True)
 # Add cyclical encoding for hour and month
 df_day["hour"] = df_day.index.hour
 df_day["month"] = df_day.index.month
+df_day["day_of_year"] = df_day.index.dayofyear
 df_day["hour_sin"] = np.sin(2 * np.pi * df_day["hour"] / 24)
 df_day["hour_cos"] = np.cos(2 * np.pi * df_day["hour"] / 24)
 df_day["month_sin"] = np.sin(2 * np.pi * df_day["month"] / 12)
 df_day["month_cos"] = np.cos(2 * np.pi * df_day["month"] / 12)
+df_day["doy_sin"] = np.sin(2 * np.pi * df_day["day_of_year"] / 365)
+df_day["doy_cos"] = np.cos(2 * np.pi * df_day["day_of_year"] / 365)
 
 target_col = "SolarRadiation"
 
@@ -48,6 +52,19 @@ cnn_lstm_model = load_model("saved_models/cnn_lstm_model.h5")
 scaler_X = joblib.load("saved_models/scaler_X.pkl")
 scaler_y = joblib.load("saved_models/scaler_y.pkl")
 
+# Load ensemble weights
+try:
+    ensemble_weights = joblib.load("saved_models/ensemble_weights.pkl")
+    print(f"Ensemble weights loaded: {ensemble_weights}")
+except:
+    ensemble_weights = {
+        "XGBoost": 0.25,
+        "RandomForest": 0.25,
+        "LSTM": 0.25,
+        "CNN-LSTM": 0.25,
+    }
+    print("Using equal ensemble weights")
+
 # ---------- 3. Forecast settings ----------
 MAX_LAG = 24
 SEQ_LEN = 24
@@ -56,6 +73,10 @@ SEQ_LEN = 24
 year = 2025
 month = 6  # June
 day = 15  # 15th
+
+# Calculate day of year for the forecast date
+forecast_date = datetime(year, month, day)
+day_of_year = forecast_date.timetuple().tm_yday
 
 # Generate hourly datetime index for the day
 date_index = pd.date_range(
@@ -77,9 +98,12 @@ Pressure = df_day["Pressure"].iloc[-1]
 WindSpeed = df_day["WindSpeed"].iloc[-1]
 WindDirection = df_day["WindDirection"].iloc[-1]
 
-# Get typical SolarZenith for each hour from historical data for this month
+# Get typical SolarZenith and ClearSkyRadiation for each hour from historical data for this month
 # This is crucial: SolarZenith >= 90 means sun is below horizon (night)
 hourly_zenith = df_day[df_day["month"] == month].groupby("hour")["SolarZenith"].mean()
+hourly_clearsky = (
+    df_day[df_day["month"] == month].groupby("hour")["ClearSkyRadiation"].mean()
+)
 
 tree_predictions = []
 
@@ -90,20 +114,30 @@ for h in range(24):
     hour_cos = np.cos(2 * np.pi * hour / 24)
     month_sin = np.sin(2 * np.pi * month / 12)
     month_cos = np.cos(2 * np.pi * month / 12)
+    doy_sin = np.sin(2 * np.pi * day_of_year / 365)
+    doy_cos = np.cos(2 * np.pi * day_of_year / 365)
 
-    # Get typical SolarZenith for this hour in this month
+    # Get typical SolarZenith and ClearSkyRadiation for this hour in this month
     solar_zenith = hourly_zenith.get(hour, 90)  # Default to 90 (horizon) if not found
+    clear_sky_rad = hourly_clearsky.get(hour, 0)  # Default to 0 if not found
 
     lag_feats = tree_series[-MAX_LAG:]
-    # Features order must match training: hour, month, cyclical, SolarZenith, weather, lags
+    # Features order must match training:
+    # hour, month, day_of_year, hour_sin, hour_cos, month_sin, month_cos, doy_sin, doy_cos,
+    # SolarZenith, ClearSkyRadiation, Temperature, HumiditySpecific, HumidityRelative,
+    # Pressure, WindSpeed, WindDirection, lags
     X_row = [
         hour,
         month,
+        day_of_year,
         hour_sin,
         hour_cos,
         month_sin,
         month_cos,
-        solar_zenith,  # SolarZenith for this hour
+        doy_sin,
+        doy_cos,
+        solar_zenith,
+        clear_sky_rad,
         Temperature,
         HumiditySpecific,
         HumidityRelative,
@@ -124,16 +158,20 @@ for h in range(24):
     tree_series.append(xgb_pred)  # iterative update
 
 # ---------- 6. Prepare sequence-based model inputs ----------
-# Features must match training order: hour, month, hour_sin, hour_cos, month_sin, month_cos, weather, target
+# Features must match training order (same as tree models, minus lags)
 seq_features = [
     "hour",
     "month",
+    "day_of_year",
     "hour_sin",
     "hour_cos",
     "month_sin",
     "month_cos",
-    "Temperature",
+    "doy_sin",
+    "doy_cos",
     "SolarZenith",
+    "ClearSkyRadiation",
+    "Temperature",
     "HumiditySpecific",
     "HumidityRelative",
     "Pressure",
@@ -151,10 +189,6 @@ X_seq_scaled = scaler_X.transform(seq_data.drop(columns=[target_col])).astype(
 # Start with last SEQ_LEN rows
 seq_array = X_seq_scaled[-SEQ_LEN:].copy()
 seq_predictions = []
-
-# Get the feature indices for hour-related features (for updating during prediction)
-# Feature order: hour, month, hour_sin, hour_cos, month_sin, month_cos, weather...
-# We need to update these for each predicted hour
 
 for h in range(24):
     X_seq_input = seq_array[-SEQ_LEN:].reshape(1, SEQ_LEN, seq_array.shape[1])
@@ -177,22 +211,28 @@ for h in range(24):
     next_hour_cos = np.cos(2 * np.pi * next_hour / 24)
     month_sin = np.sin(2 * np.pi * month / 12)
     month_cos = np.cos(2 * np.pi * month / 12)
+    doy_sin = np.sin(2 * np.pi * day_of_year / 365)
+    doy_cos = np.cos(2 * np.pi * day_of_year / 365)
 
-    # Get typical SolarZenith for next hour
+    # Get typical SolarZenith and ClearSkyRadiation for next hour
     next_solar_zenith = hourly_zenith.get(next_hour, 90)
+    next_clear_sky = hourly_clearsky.get(next_hour, 0)
 
-    # Create next row with proper hour features (scaled)
-    # Feature order must match scaler: hour, month, hour_sin, hour_cos, month_sin, month_cos, Temperature, SolarZenith, HumiditySpecific, HumidityRelative, Pressure, WindSpeed, WindDirection
+    # Create next row with proper features (scaled)
     next_row_raw = np.array(
         [
             next_hour,
             month,
+            day_of_year,
             next_hour_sin,
             next_hour_cos,
             month_sin,
             month_cos,
-            Temperature,
+            doy_sin,
+            doy_cos,
             next_solar_zenith,
+            next_clear_sky,
+            Temperature,
             HumiditySpecific,
             HumidityRelative,
             Pressure,
@@ -205,13 +245,30 @@ for h in range(24):
     seq_array = np.vstack([seq_array, next_row])
 
 # ---------- 7. Combine results ----------
+xgb_preds = [x for x, _ in tree_predictions]
+rf_preds = [x for _, x in tree_predictions]
+lstm_preds = [x for x, _ in seq_predictions]
+cnn_preds = [x for _, x in seq_predictions]
+
+# Calculate ensemble prediction (weighted average)
+ensemble_preds = []
+for i in range(24):
+    ensemble_pred = (
+        ensemble_weights.get("XGBoost", 0.25) * xgb_preds[i]
+        + ensemble_weights.get("RandomForest", 0.25) * rf_preds[i]
+        + ensemble_weights.get("LSTM", 0.25) * lstm_preds[i]
+        + ensemble_weights.get("CNN-LSTM", 0.25) * cnn_preds[i]
+    )
+    ensemble_preds.append(max(0, ensemble_pred))
+
 results_day = pd.DataFrame(
     {
         "datetime": date_index,
-        "XGBoost": [x for x, _ in tree_predictions],
-        "RandomForest": [x for _, x in tree_predictions],
-        "LSTM": [x for x, _ in seq_predictions],
-        "CNN_LSTM": [x for _, x in seq_predictions],
+        "XGBoost": xgb_preds,
+        "RandomForest": rf_preds,
+        "LSTM": lstm_preds,
+        "CNN_LSTM": cnn_preds,
+        "Ensemble": ensemble_preds,
     }
 )
 
@@ -222,24 +279,82 @@ print(f"✅ Forecast saved to solar_forecast_{year}_{month:02d}_{day:02d}.csv")
 # ---------- 9. Print hourly predictions ----------
 print(f"\nHourly Solar Radiation Forecast for {year}-{month:02d}-{day:02d}:")
 print(
-    f"{'Hour':>4} | {'XGBoost':>10} | {'RandomForest':>13} | {'LSTM':>8} | {'CNN-LSTM':>10}"
+    f"{'Hour':>4} | {'XGBoost':>10} | {'RandomForest':>13} | {'LSTM':>8} | {'CNN-LSTM':>10} | {'Ensemble':>10}"
 )
-print("-" * 55)
+print("-" * 70)
 for i, row in results_day.iterrows():
     hour = row["datetime"].hour
     print(
-        f"{hour:02d}:00 | {row['XGBoost']:10.2f} | {row['RandomForest']:13.2f} | {row['LSTM']:8.2f} | {row['CNN_LSTM']:10.2f}"
+        f"{hour:02d}:00 | {row['XGBoost']:10.2f} | {row['RandomForest']:13.2f} | {row['LSTM']:8.2f} | {row['CNN_LSTM']:10.2f} | {row['Ensemble']:10.2f}"
     )
 
 # ---------- 10. Plot results ----------
-plt.figure(figsize=(12, 5))
-plt.plot(results_day["datetime"], results_day["XGBoost"], label="XGBoost")
-plt.plot(results_day["datetime"], results_day["RandomForest"], label="RandomForest")
-plt.plot(results_day["datetime"], results_day["LSTM"], label="LSTM")
-plt.plot(results_day["datetime"], results_day["CNN_LSTM"], label="CNN-LSTM")
-plt.xlabel("Hour")
-plt.ylabel("Solar Radiation")
-plt.title(f"Hourly Solar Radiation Forecast: {year}-{month:02d}-{day:02d}")
-plt.legend()
+fig, axes = plt.subplots(1, 2, figsize=(16, 5))
+
+# Plot 1: All models
+ax1 = axes[0]
+ax1.plot(
+    results_day["datetime"].dt.hour,
+    results_day["XGBoost"],
+    label="XGBoost",
+    marker="o",
+    markersize=3,
+)
+ax1.plot(
+    results_day["datetime"].dt.hour,
+    results_day["RandomForest"],
+    label="RandomForest",
+    marker="s",
+    markersize=3,
+)
+ax1.plot(
+    results_day["datetime"].dt.hour,
+    results_day["LSTM"],
+    label="LSTM",
+    marker="^",
+    markersize=3,
+)
+ax1.plot(
+    results_day["datetime"].dt.hour,
+    results_day["CNN_LSTM"],
+    label="CNN-LSTM",
+    marker="d",
+    markersize=3,
+)
+ax1.plot(
+    results_day["datetime"].dt.hour,
+    results_day["Ensemble"],
+    label="Ensemble",
+    linewidth=3,
+    color="black",
+    linestyle="--",
+)
+ax1.set_xlabel("Hour of Day")
+ax1.set_ylabel("Solar Radiation (W/m²)")
+ax1.set_title(f"Hourly Solar Radiation Forecast: {year}-{month:02d}-{day:02d}")
+ax1.legend()
+ax1.grid(True, alpha=0.3)
+ax1.set_xticks(range(0, 24, 2))
+
+# Plot 2: Ensemble only with confidence range
+ax2 = axes[1]
+model_preds = np.array([xgb_preds, rf_preds, lstm_preds, cnn_preds])
+pred_min = model_preds.min(axis=0)
+pred_max = model_preds.max(axis=0)
+
+ax2.fill_between(
+    range(24), pred_min, pred_max, alpha=0.3, color="blue", label="Model Range"
+)
+ax2.plot(
+    range(24), ensemble_preds, label="Ensemble", linewidth=2, color="blue", marker="o"
+)
+ax2.set_xlabel("Hour of Day")
+ax2.set_ylabel("Solar Radiation (W/m²)")
+ax2.set_title(f"Ensemble Forecast with Prediction Range")
+ax2.legend()
+ax2.grid(True, alpha=0.3)
+ax2.set_xticks(range(0, 24, 2))
+
 plt.tight_layout()
+plt.savefig(f"solar_forecast_{year}_{month:02d}_{day:02d}.png", dpi=150)
 plt.show()

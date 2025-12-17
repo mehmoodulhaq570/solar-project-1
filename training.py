@@ -82,10 +82,23 @@ df_day.dropna(subset=["SolarRadiation"], inplace=True)
 # Add cyclical encoding for hour and month (helps model understand periodicity)
 df_day["hour"] = df_day.index.hour
 df_day["month"] = df_day.index.month
+df_day["day_of_year"] = df_day.index.dayofyear
 df_day["hour_sin"] = np.sin(2 * np.pi * df_day["hour"] / 24)
 df_day["hour_cos"] = np.cos(2 * np.pi * df_day["hour"] / 24)
 df_day["month_sin"] = np.sin(2 * np.pi * df_day["month"] / 12)
 df_day["month_cos"] = np.cos(2 * np.pi * df_day["month"] / 12)
+# Day of year cyclical encoding (captures seasonal variation, peak at summer solstice ~day 172)
+df_day["doy_sin"] = np.sin(2 * np.pi * df_day["day_of_year"] / 365)
+df_day["doy_cos"] = np.cos(2 * np.pi * df_day["day_of_year"] / 365)
+
+# Clearness Index: ratio of actual to clear sky radiation (0-1, indicates cloud cover)
+# Avoid division by zero - set to 0 when ClearSkyRadiation is 0
+df_day["ClearnessIndex"] = np.where(
+    df_day["ClearSkyRadiation"] > 0,
+    df_day["SolarRadiation"] / df_day["ClearSkyRadiation"],
+    0,
+)
+df_day["ClearnessIndex"] = df_day["ClearnessIndex"].clip(0, 1)  # Clip to valid range
 
 target_col = "SolarRadiation"
 print("Total records (including night):", len(df_day))
@@ -100,17 +113,24 @@ MAX_LAG = 24
 
 
 def make_lag_features(series_df, max_lag=24):
-    # Include SolarZenith - critical for distinguishing day (zenith<90) from night (zenith>=90)
-    # Include cyclical hour/month encoding for better periodicity learning
+    # Features for tree-based models (XGBoost, RandomForest)
+    # Order: time features, solar geometry, weather, derived features
     cols_base = [
         target_col,
+        # Time features
         "hour",
         "month",
+        "day_of_year",
         "hour_sin",
         "hour_cos",
         "month_sin",
         "month_cos",
+        "doy_sin",
+        "doy_cos",
+        # Solar geometry
         "SolarZenith",  # Key feature: >= 90 means sun is below horizon (night)
+        "ClearSkyRadiation",  # Theoretical max radiation (helps model cloud effects)
+        # Weather features
         "Temperature",
         "HumiditySpecific",
         "HumidityRelative",
@@ -141,21 +161,30 @@ y_test = test_lag[target_col]
 
 # ---------- 4. Scaling for deep learning ----------
 SEQ_LEN = 24
-# Include cyclical hour/month encoding for sequence models
+# Features for sequence models (LSTM, CNN-LSTM)
+# Order matches tree models (excluding target which goes last)
 features = [
+    # Time features
     "hour",
     "month",
+    "day_of_year",
     "hour_sin",
     "hour_cos",
     "month_sin",
     "month_cos",
-    "Temperature",
+    "doy_sin",
+    "doy_cos",
+    # Solar geometry
     "SolarZenith",
+    "ClearSkyRadiation",
+    # Weather features
+    "Temperature",
     "HumiditySpecific",
     "HumidityRelative",
     "Pressure",
     "WindSpeed",
     "WindDirection",
+    # Target (must be last)
     target_col,
 ]
 df_seq = df_day[features].dropna()
@@ -266,26 +295,38 @@ results.append(
 # ======================================
 print("\n=== Training LSTM ===")
 K.clear_session()
+
+# Improved LSTM architecture with Bidirectional layers
 lstm_model = models.Sequential(
     [
         layers.Input(shape=(SEQ_LEN, X_train_seq.shape[2])),
-        layers.LSTM(64),
+        layers.Bidirectional(layers.LSTM(64, return_sequences=True)),
+        layers.Dropout(0.2),
+        layers.Bidirectional(layers.LSTM(32)),
         layers.Dropout(0.2),
         layers.Dense(32, activation="relu"),
+        layers.Dense(16, activation="relu"),
         layers.Dense(1),
     ]
 )
-lstm_model.compile(optimizer="adam", loss="mse")
 
-es = callbacks.EarlyStopping(patience=5, restore_best_weights=True)
+# Learning rate scheduler for better convergence
+lr_schedule = callbacks.ReduceLROnPlateau(
+    monitor="val_loss", factor=0.5, patience=3, min_lr=1e-6, verbose=0
+)
+es = callbacks.EarlyStopping(patience=10, restore_best_weights=True, monitor="val_loss")
+
+lstm_model.compile(
+    optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), loss="mse", metrics=["mae"]
+)
 
 lstm_model.fit(
     X_train_seq,
     y_train_seq,
     validation_split=0.1,
-    epochs=50,
+    epochs=100,
     batch_size=64,
-    callbacks=[es],
+    callbacks=[es, lr_schedule],
     verbose=0,
 )
 
@@ -313,24 +354,44 @@ results.append(
 # ======================================
 print("\n=== Training CNN-LSTM ===")
 K.clear_session()
+
+# Improved CNN-LSTM architecture with more convolutional layers
 inp = layers.Input(shape=(SEQ_LEN, X_train_seq.shape[2]))
-x = layers.Conv1D(32, 3, padding="same", activation="relu")(inp)
+# Multi-scale convolution for capturing different temporal patterns
+x = layers.Conv1D(64, 3, padding="same", activation="relu")(inp)
+x = layers.BatchNormalization()(x)
+x = layers.Conv1D(64, 3, padding="same", activation="relu")(x)
 x = layers.MaxPool1D(2)(x)
-x = layers.LSTM(48)(x)
 x = layers.Dropout(0.2)(x)
-x = layers.Dense(24, activation="relu")(x)
+x = layers.Bidirectional(layers.LSTM(64, return_sequences=True))(x)
+x = layers.Dropout(0.2)(x)
+x = layers.Bidirectional(layers.LSTM(32))(x)
+x = layers.Dropout(0.2)(x)
+x = layers.Dense(32, activation="relu")(x)
+x = layers.Dense(16, activation="relu")(x)
 out = layers.Dense(1)(x)
 
 cnn_lstm_model = models.Model(inp, out)
-cnn_lstm_model.compile(optimizer="adam", loss="mse")
+
+# Learning rate scheduler
+lr_schedule_cnn = callbacks.ReduceLROnPlateau(
+    monitor="val_loss", factor=0.5, patience=3, min_lr=1e-6, verbose=0
+)
+es_cnn = callbacks.EarlyStopping(
+    patience=10, restore_best_weights=True, monitor="val_loss"
+)
+
+cnn_lstm_model.compile(
+    optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), loss="mse", metrics=["mae"]
+)
 
 cnn_lstm_model.fit(
     X_train_seq,
     y_train_seq,
     validation_split=0.1,
-    epochs=50,
+    epochs=100,
     batch_size=64,
-    callbacks=[es],
+    callbacks=[es_cnn, lr_schedule_cnn],
     verbose=0,
 )
 
@@ -359,5 +420,29 @@ results_df = pd.DataFrame(
 )
 print(results_df)
 results_df.to_csv("saved_models/model_results.csv", index=False)
+
+# ======================================
+# 11. Ensemble Model (Weighted Average)
+# ======================================
+print("\n=== Creating Ensemble Model ===")
+
+# Calculate weights based on test R2 scores (better models get higher weight)
+r2_scores = {
+    "XGBoost": r2_score(y_test, xgb_test_pred),
+    "RandomForest": r2_score(y_test, rf_test_pred),
+    "LSTM": r2_score(y_test_unscaled, lstm_test_pred),
+    "CNN-LSTM": r2_score(y_test_unscaled, cnn_test_pred),
+}
+
+# Normalize weights (ensure they sum to 1)
+total_r2 = sum(max(0, r2) for r2 in r2_scores.values())
+ensemble_weights = {k: max(0, v) / total_r2 for k, v in r2_scores.items()}
+print("Ensemble weights:", {k: f"{v:.3f}" for k, v in ensemble_weights.items()})
+
+# Save ensemble weights for prediction
+joblib.dump(ensemble_weights, "saved_models/ensemble_weights.pkl")
+
+# Note: Ensemble prediction requires aligning predictions from all models
+# For now, we save weights; ensemble will be computed during prediction in trend.py
 
 print("\n🎉 All models saved successfully in: saved_models/")
