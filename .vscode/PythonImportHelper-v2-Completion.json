@@ -461,7 +461,7 @@
         "kind": 2,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "def make_lag_features(series_df, max_lag=24):\n    # Include cyclical hour/month encoding for better periodicity learning\n    cols_base = [\n        target_col,\n        \"hour\",\n        \"month\",\n        \"hour_sin\",\n        \"hour_cos\",\n        \"month_sin\",\n        \"month_cos\",",
+        "peekOfCode": "def make_lag_features(series_df, max_lag=24):\n    # Include SolarZenith - critical for distinguishing day (zenith<90) from night (zenith>=90)\n    # Include cyclical hour/month encoding for better periodicity learning\n    cols_base = [\n        target_col,\n        \"hour\",\n        \"month\",\n        \"hour_sin\",\n        \"hour_cos\",\n        \"month_sin\",",
         "detail": "training",
         "documentation": {}
     },
@@ -641,7 +641,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "target_col = \"SolarRadiation\"\nprint(\"Total records (including night):\", len(df_day))\n# ---------- 2. Train/Test split ----------\nsplit_idx = int(len(df_day) * 0.8)\ntrain = df_day.iloc[:split_idx].copy()\ntest = df_day.iloc[split_idx:].copy()\n# ---------- 3. Lag features ----------\nMAX_LAG = 24\ndef make_lag_features(series_df, max_lag=24):\n    # Include cyclical hour/month encoding for better periodicity learning",
+        "peekOfCode": "target_col = \"SolarRadiation\"\nprint(\"Total records (including night):\", len(df_day))\n# ---------- 2. Train/Test split ----------\nsplit_idx = int(len(df_day) * 0.8)\ntrain = df_day.iloc[:split_idx].copy()\ntest = df_day.iloc[split_idx:].copy()\n# ---------- 3. Lag features ----------\nMAX_LAG = 24\ndef make_lag_features(series_df, max_lag=24):\n    # Include SolarZenith - critical for distinguishing day (zenith<90) from night (zenith>=90)",
         "detail": "training",
         "documentation": {}
     },
@@ -650,7 +650,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "split_idx = int(len(df_day) * 0.8)\ntrain = df_day.iloc[:split_idx].copy()\ntest = df_day.iloc[split_idx:].copy()\n# ---------- 3. Lag features ----------\nMAX_LAG = 24\ndef make_lag_features(series_df, max_lag=24):\n    # Include cyclical hour/month encoding for better periodicity learning\n    cols_base = [\n        target_col,\n        \"hour\",",
+        "peekOfCode": "split_idx = int(len(df_day) * 0.8)\ntrain = df_day.iloc[:split_idx].copy()\ntest = df_day.iloc[split_idx:].copy()\n# ---------- 3. Lag features ----------\nMAX_LAG = 24\ndef make_lag_features(series_df, max_lag=24):\n    # Include SolarZenith - critical for distinguishing day (zenith<90) from night (zenith>=90)\n    # Include cyclical hour/month encoding for better periodicity learning\n    cols_base = [\n        target_col,",
         "detail": "training",
         "documentation": {}
     },
@@ -659,7 +659,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "train = df_day.iloc[:split_idx].copy()\ntest = df_day.iloc[split_idx:].copy()\n# ---------- 3. Lag features ----------\nMAX_LAG = 24\ndef make_lag_features(series_df, max_lag=24):\n    # Include cyclical hour/month encoding for better periodicity learning\n    cols_base = [\n        target_col,\n        \"hour\",\n        \"month\",",
+        "peekOfCode": "train = df_day.iloc[:split_idx].copy()\ntest = df_day.iloc[split_idx:].copy()\n# ---------- 3. Lag features ----------\nMAX_LAG = 24\ndef make_lag_features(series_df, max_lag=24):\n    # Include SolarZenith - critical for distinguishing day (zenith<90) from night (zenith>=90)\n    # Include cyclical hour/month encoding for better periodicity learning\n    cols_base = [\n        target_col,\n        \"hour\",",
         "detail": "training",
         "documentation": {}
     },
@@ -668,7 +668,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "test = df_day.iloc[split_idx:].copy()\n# ---------- 3. Lag features ----------\nMAX_LAG = 24\ndef make_lag_features(series_df, max_lag=24):\n    # Include cyclical hour/month encoding for better periodicity learning\n    cols_base = [\n        target_col,\n        \"hour\",\n        \"month\",\n        \"hour_sin\",",
+        "peekOfCode": "test = df_day.iloc[split_idx:].copy()\n# ---------- 3. Lag features ----------\nMAX_LAG = 24\ndef make_lag_features(series_df, max_lag=24):\n    # Include SolarZenith - critical for distinguishing day (zenith<90) from night (zenith>=90)\n    # Include cyclical hour/month encoding for better periodicity learning\n    cols_base = [\n        target_col,\n        \"hour\",\n        \"month\",",
         "detail": "training",
         "documentation": {}
     },
@@ -677,7 +677,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "MAX_LAG = 24\ndef make_lag_features(series_df, max_lag=24):\n    # Include cyclical hour/month encoding for better periodicity learning\n    cols_base = [\n        target_col,\n        \"hour\",\n        \"month\",\n        \"hour_sin\",\n        \"hour_cos\",\n        \"month_sin\",",
+        "peekOfCode": "MAX_LAG = 24\ndef make_lag_features(series_df, max_lag=24):\n    # Include SolarZenith - critical for distinguishing day (zenith<90) from night (zenith>=90)\n    # Include cyclical hour/month encoding for better periodicity learning\n    cols_base = [\n        target_col,\n        \"hour\",\n        \"month\",\n        \"hour_sin\",\n        \"hour_cos\",",
         "detail": "training",
         "documentation": {}
     },
@@ -758,7 +758,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "features = [\n    \"hour\",\n    \"month\",\n    \"hour_sin\",\n    \"hour_cos\",\n    \"month_sin\",\n    \"month_cos\",\n    \"Temperature\",\n    'SolarZenith',\n    \"HumiditySpecific\",",
+        "peekOfCode": "features = [\n    \"hour\",\n    \"month\",\n    \"hour_sin\",\n    \"hour_cos\",\n    \"month_sin\",\n    \"month_cos\",\n    \"Temperature\",\n    \"SolarZenith\",\n    \"HumiditySpecific\",",
         "detail": "training",
         "documentation": {}
     },
@@ -1172,7 +1172,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df_day[\"hour\"] = df_day.index.hour\ndf_day[\"month\"] = df_day.index.month\ndf_day[\"hour_sin\"] = np.sin(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model = joblib.load(\"save_model/random_forest_model.pkl\")",
+        "peekOfCode": "df_day[\"hour\"] = df_day.index.hour\ndf_day[\"month\"] = df_day.index.month\ndf_day[\"hour_sin\"] = np.sin(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"saved_models/xgboost_model.pkl\")\nrf_model = joblib.load(\"saved_models/random_forest_model.pkl\")",
         "detail": "trend",
         "documentation": {}
     },
@@ -1181,7 +1181,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df_day[\"month\"] = df_day.index.month\ndf_day[\"hour_sin\"] = np.sin(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model = joblib.load(\"save_model/random_forest_model.pkl\")\nlstm_model = load_model(\"save_model/lstm_model.h5\")",
+        "peekOfCode": "df_day[\"month\"] = df_day.index.month\ndf_day[\"hour_sin\"] = np.sin(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"saved_models/xgboost_model.pkl\")\nrf_model = joblib.load(\"saved_models/random_forest_model.pkl\")\nlstm_model = load_model(\"saved_models/lstm_model.h5\")",
         "detail": "trend",
         "documentation": {}
     },
@@ -1190,7 +1190,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df_day[\"hour_sin\"] = np.sin(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model = joblib.load(\"save_model/random_forest_model.pkl\")\nlstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")",
+        "peekOfCode": "df_day[\"hour_sin\"] = np.sin(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"saved_models/xgboost_model.pkl\")\nrf_model = joblib.load(\"saved_models/random_forest_model.pkl\")\nlstm_model = load_model(\"saved_models/lstm_model.h5\")\ncnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")",
         "detail": "trend",
         "documentation": {}
     },
@@ -1199,7 +1199,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model = joblib.load(\"save_model/random_forest_model.pkl\")\nlstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")",
+        "peekOfCode": "df_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"saved_models/xgboost_model.pkl\")\nrf_model = joblib.load(\"saved_models/random_forest_model.pkl\")\nlstm_model = load_model(\"saved_models/lstm_model.h5\")\ncnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")",
         "detail": "trend",
         "documentation": {}
     },
@@ -1208,7 +1208,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model = joblib.load(\"save_model/random_forest_model.pkl\")\nlstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")",
+        "peekOfCode": "df_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"saved_models/xgboost_model.pkl\")\nrf_model = joblib.load(\"saved_models/random_forest_model.pkl\")\nlstm_model = load_model(\"saved_models/lstm_model.h5\")\ncnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")",
         "detail": "trend",
         "documentation": {}
     },
@@ -1217,7 +1217,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model = joblib.load(\"save_model/random_forest_model.pkl\")\nlstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------",
+        "peekOfCode": "df_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"saved_models/xgboost_model.pkl\")\nrf_model = joblib.load(\"saved_models/random_forest_model.pkl\")\nlstm_model = load_model(\"saved_models/lstm_model.h5\")\ncnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------",
         "detail": "trend",
         "documentation": {}
     },
@@ -1226,7 +1226,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "target_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model = joblib.load(\"save_model/random_forest_model.pkl\")\nlstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24",
+        "peekOfCode": "target_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"saved_models/xgboost_model.pkl\")\nrf_model = joblib.load(\"saved_models/random_forest_model.pkl\")\nlstm_model = load_model(\"saved_models/lstm_model.h5\")\ncnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24",
         "detail": "trend",
         "documentation": {}
     },
@@ -1235,7 +1235,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "xgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model = joblib.load(\"save_model/random_forest_model.pkl\")\nlstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------",
+        "peekOfCode": "xgb_model = joblib.load(\"saved_models/xgboost_model.pkl\")\nrf_model = joblib.load(\"saved_models/random_forest_model.pkl\")\nlstm_model = load_model(\"saved_models/lstm_model.h5\")\ncnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------",
         "detail": "trend",
         "documentation": {}
     },
@@ -1244,7 +1244,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "rf_model = joblib.load(\"save_model/random_forest_model.pkl\")\nlstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------\nyear = 2025",
+        "peekOfCode": "rf_model = joblib.load(\"saved_models/random_forest_model.pkl\")\nlstm_model = load_model(\"saved_models/lstm_model.h5\")\ncnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------\nyear = 2025",
         "detail": "trend",
         "documentation": {}
     },
@@ -1253,7 +1253,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "lstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------\nyear = 2025\nmonth = 6  # June",
+        "peekOfCode": "lstm_model = load_model(\"saved_models/lstm_model.h5\")\ncnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------\nyear = 2025\nmonth = 6  # June",
         "detail": "trend",
         "documentation": {}
     },
@@ -1262,7 +1262,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "cnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------\nyear = 2025\nmonth = 6  # June\nday = 15  # 15th",
+        "peekOfCode": "cnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------\nyear = 2025\nmonth = 6  # June\nday = 15  # 15th",
         "detail": "trend",
         "documentation": {}
     },
@@ -1271,7 +1271,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "scaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------\nyear = 2025\nmonth = 6  # June\nday = 15  # 15th\n# Generate hourly datetime index for the day",
+        "peekOfCode": "scaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------\nyear = 2025\nmonth = 6  # June\nday = 15  # 15th\n# Generate hourly datetime index for the day",
         "detail": "trend",
         "documentation": {}
     },
@@ -1280,7 +1280,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "scaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------\nyear = 2025\nmonth = 6  # June\nday = 15  # 15th\n# Generate hourly datetime index for the day\ndate_index = pd.date_range(",
+        "peekOfCode": "scaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------\nyear = 2025\nmonth = 6  # June\nday = 15  # 15th\n# Generate hourly datetime index for the day\ndate_index = pd.date_range(",
         "detail": "trend",
         "documentation": {}
     },
@@ -1343,7 +1343,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "hours = date_index.hour\n# ---------- 5. Prepare tree-based model inputs ----------\nlast_hist_values = df_day[target_col].values\ntree_series = last_hist_values[-MAX_LAG:].tolist()  # last 24 hours\n# Use last known weather values\nTemperature = df_day[\"Temperature\"].iloc[-1]\nSolarZenith = df_day[\"SolarZenith\"].iloc[-1]\nHumiditySpecific = df_day[\"HumiditySpecific\"].iloc[-1]\nHumidityRelative = df_day[\"HumidityRelative\"].iloc[-1]\nPressure = df_day[\"Pressure\"].iloc[-1]",
+        "peekOfCode": "hours = date_index.hour\n# ---------- 5. Prepare tree-based model inputs ----------\nlast_hist_values = df_day[target_col].values\ntree_series = last_hist_values[-MAX_LAG:].tolist()  # last 24 hours\n# Use last known weather values\nTemperature = df_day[\"Temperature\"].iloc[-1]\nHumiditySpecific = df_day[\"HumiditySpecific\"].iloc[-1]\nHumidityRelative = df_day[\"HumidityRelative\"].iloc[-1]\nPressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]",
         "detail": "trend",
         "documentation": {}
     },
@@ -1352,7 +1352,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "last_hist_values = df_day[target_col].values\ntree_series = last_hist_values[-MAX_LAG:].tolist()  # last 24 hours\n# Use last known weather values\nTemperature = df_day[\"Temperature\"].iloc[-1]\nSolarZenith = df_day[\"SolarZenith\"].iloc[-1]\nHumiditySpecific = df_day[\"HumiditySpecific\"].iloc[-1]\nHumidityRelative = df_day[\"HumidityRelative\"].iloc[-1]\nPressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]",
+        "peekOfCode": "last_hist_values = df_day[target_col].values\ntree_series = last_hist_values[-MAX_LAG:].tolist()  # last 24 hours\n# Use last known weather values\nTemperature = df_day[\"Temperature\"].iloc[-1]\nHumiditySpecific = df_day[\"HumiditySpecific\"].iloc[-1]\nHumidityRelative = df_day[\"HumidityRelative\"].iloc[-1]\nPressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\n# Get typical SolarZenith for each hour from historical data for this month",
         "detail": "trend",
         "documentation": {}
     },
@@ -1361,7 +1361,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "tree_series = last_hist_values[-MAX_LAG:].tolist()  # last 24 hours\n# Use last known weather values\nTemperature = df_day[\"Temperature\"].iloc[-1]\nSolarZenith = df_day[\"SolarZenith\"].iloc[-1]\nHumiditySpecific = df_day[\"HumiditySpecific\"].iloc[-1]\nHumidityRelative = df_day[\"HumidityRelative\"].iloc[-1]\nPressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\ntree_predictions = []",
+        "peekOfCode": "tree_series = last_hist_values[-MAX_LAG:].tolist()  # last 24 hours\n# Use last known weather values\nTemperature = df_day[\"Temperature\"].iloc[-1]\nHumiditySpecific = df_day[\"HumiditySpecific\"].iloc[-1]\nHumidityRelative = df_day[\"HumidityRelative\"].iloc[-1]\nPressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\n# Get typical SolarZenith for each hour from historical data for this month\n# This is crucial: SolarZenith >= 90 means sun is below horizon (night)",
         "detail": "trend",
         "documentation": {}
     },
@@ -1370,16 +1370,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "Temperature = df_day[\"Temperature\"].iloc[-1]\nSolarZenith = df_day[\"SolarZenith\"].iloc[-1]\nHumiditySpecific = df_day[\"HumiditySpecific\"].iloc[-1]\nHumidityRelative = df_day[\"HumidityRelative\"].iloc[-1]\nPressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\ntree_predictions = []\nfor h in range(24):\n    hour = hours[h]",
-        "detail": "trend",
-        "documentation": {}
-    },
-    {
-        "label": "SolarZenith",
-        "kind": 5,
-        "importPath": "trend",
-        "description": "trend",
-        "peekOfCode": "SolarZenith = df_day[\"SolarZenith\"].iloc[-1]\nHumiditySpecific = df_day[\"HumiditySpecific\"].iloc[-1]\nHumidityRelative = df_day[\"HumidityRelative\"].iloc[-1]\nPressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\ntree_predictions = []\nfor h in range(24):\n    hour = hours[h]\n    # Compute cyclical features for current hour",
+        "peekOfCode": "Temperature = df_day[\"Temperature\"].iloc[-1]\nHumiditySpecific = df_day[\"HumiditySpecific\"].iloc[-1]\nHumidityRelative = df_day[\"HumidityRelative\"].iloc[-1]\nPressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\n# Get typical SolarZenith for each hour from historical data for this month\n# This is crucial: SolarZenith >= 90 means sun is below horizon (night)\nhourly_zenith = df_day[df_day[\"month\"] == month].groupby(\"hour\")[\"SolarZenith\"].mean()\ntree_predictions = []",
         "detail": "trend",
         "documentation": {}
     },
@@ -1388,7 +1379,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "HumiditySpecific = df_day[\"HumiditySpecific\"].iloc[-1]\nHumidityRelative = df_day[\"HumidityRelative\"].iloc[-1]\nPressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\ntree_predictions = []\nfor h in range(24):\n    hour = hours[h]\n    # Compute cyclical features for current hour\n    hour_sin = np.sin(2 * np.pi * hour / 24)",
+        "peekOfCode": "HumiditySpecific = df_day[\"HumiditySpecific\"].iloc[-1]\nHumidityRelative = df_day[\"HumidityRelative\"].iloc[-1]\nPressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\n# Get typical SolarZenith for each hour from historical data for this month\n# This is crucial: SolarZenith >= 90 means sun is below horizon (night)\nhourly_zenith = df_day[df_day[\"month\"] == month].groupby(\"hour\")[\"SolarZenith\"].mean()\ntree_predictions = []\nfor h in range(24):",
         "detail": "trend",
         "documentation": {}
     },
@@ -1397,7 +1388,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "HumidityRelative = df_day[\"HumidityRelative\"].iloc[-1]\nPressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\ntree_predictions = []\nfor h in range(24):\n    hour = hours[h]\n    # Compute cyclical features for current hour\n    hour_sin = np.sin(2 * np.pi * hour / 24)\n    hour_cos = np.cos(2 * np.pi * hour / 24)",
+        "peekOfCode": "HumidityRelative = df_day[\"HumidityRelative\"].iloc[-1]\nPressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\n# Get typical SolarZenith for each hour from historical data for this month\n# This is crucial: SolarZenith >= 90 means sun is below horizon (night)\nhourly_zenith = df_day[df_day[\"month\"] == month].groupby(\"hour\")[\"SolarZenith\"].mean()\ntree_predictions = []\nfor h in range(24):\n    hour = hours[h]",
         "detail": "trend",
         "documentation": {}
     },
@@ -1406,7 +1397,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "Pressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\ntree_predictions = []\nfor h in range(24):\n    hour = hours[h]\n    # Compute cyclical features for current hour\n    hour_sin = np.sin(2 * np.pi * hour / 24)\n    hour_cos = np.cos(2 * np.pi * hour / 24)\n    month_sin = np.sin(2 * np.pi * month / 12)",
+        "peekOfCode": "Pressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\n# Get typical SolarZenith for each hour from historical data for this month\n# This is crucial: SolarZenith >= 90 means sun is below horizon (night)\nhourly_zenith = df_day[df_day[\"month\"] == month].groupby(\"hour\")[\"SolarZenith\"].mean()\ntree_predictions = []\nfor h in range(24):\n    hour = hours[h]\n    # Compute cyclical features for current hour",
         "detail": "trend",
         "documentation": {}
     },
@@ -1415,7 +1406,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "WindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\ntree_predictions = []\nfor h in range(24):\n    hour = hours[h]\n    # Compute cyclical features for current hour\n    hour_sin = np.sin(2 * np.pi * hour / 24)\n    hour_cos = np.cos(2 * np.pi * hour / 24)\n    month_sin = np.sin(2 * np.pi * month / 12)\n    month_cos = np.cos(2 * np.pi * month / 12)",
+        "peekOfCode": "WindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\n# Get typical SolarZenith for each hour from historical data for this month\n# This is crucial: SolarZenith >= 90 means sun is below horizon (night)\nhourly_zenith = df_day[df_day[\"month\"] == month].groupby(\"hour\")[\"SolarZenith\"].mean()\ntree_predictions = []\nfor h in range(24):\n    hour = hours[h]\n    # Compute cyclical features for current hour\n    hour_sin = np.sin(2 * np.pi * hour / 24)",
         "detail": "trend",
         "documentation": {}
     },
@@ -1424,7 +1415,16 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "WindDirection = df_day[\"WindDirection\"].iloc[-1]\ntree_predictions = []\nfor h in range(24):\n    hour = hours[h]\n    # Compute cyclical features for current hour\n    hour_sin = np.sin(2 * np.pi * hour / 24)\n    hour_cos = np.cos(2 * np.pi * hour / 24)\n    month_sin = np.sin(2 * np.pi * month / 12)\n    month_cos = np.cos(2 * np.pi * month / 12)\n    lag_feats = tree_series[-MAX_LAG:]",
+        "peekOfCode": "WindDirection = df_day[\"WindDirection\"].iloc[-1]\n# Get typical SolarZenith for each hour from historical data for this month\n# This is crucial: SolarZenith >= 90 means sun is below horizon (night)\nhourly_zenith = df_day[df_day[\"month\"] == month].groupby(\"hour\")[\"SolarZenith\"].mean()\ntree_predictions = []\nfor h in range(24):\n    hour = hours[h]\n    # Compute cyclical features for current hour\n    hour_sin = np.sin(2 * np.pi * hour / 24)\n    hour_cos = np.cos(2 * np.pi * hour / 24)",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "hourly_zenith",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "hourly_zenith = df_day[df_day[\"month\"] == month].groupby(\"hour\")[\"SolarZenith\"].mean()\ntree_predictions = []\nfor h in range(24):\n    hour = hours[h]\n    # Compute cyclical features for current hour\n    hour_sin = np.sin(2 * np.pi * hour / 24)\n    hour_cos = np.cos(2 * np.pi * hour / 24)\n    month_sin = np.sin(2 * np.pi * month / 12)\n    month_cos = np.cos(2 * np.pi * month / 12)\n    # Get typical SolarZenith for this hour in this month",
         "detail": "trend",
         "documentation": {}
     },
@@ -1433,7 +1433,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "tree_predictions = []\nfor h in range(24):\n    hour = hours[h]\n    # Compute cyclical features for current hour\n    hour_sin = np.sin(2 * np.pi * hour / 24)\n    hour_cos = np.cos(2 * np.pi * hour / 24)\n    month_sin = np.sin(2 * np.pi * month / 12)\n    month_cos = np.cos(2 * np.pi * month / 12)\n    lag_feats = tree_series[-MAX_LAG:]\n    # Features order must match training: hour, month, hour_sin, hour_cos, month_sin, month_cos, weather, lags",
+        "peekOfCode": "tree_predictions = []\nfor h in range(24):\n    hour = hours[h]\n    # Compute cyclical features for current hour\n    hour_sin = np.sin(2 * np.pi * hour / 24)\n    hour_cos = np.cos(2 * np.pi * hour / 24)\n    month_sin = np.sin(2 * np.pi * month / 12)\n    month_cos = np.cos(2 * np.pi * month / 12)\n    # Get typical SolarZenith for this hour in this month\n    solar_zenith = hourly_zenith.get(hour, 90)  # Default to 90 (horizon) if not found",
         "detail": "trend",
         "documentation": {}
     },

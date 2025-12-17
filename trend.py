@@ -40,13 +40,13 @@ df_day["month_cos"] = np.cos(2 * np.pi * df_day["month"] / 12)
 target_col = "SolarRadiation"
 
 # ---------- 2. Load trained models ----------
-xgb_model = joblib.load("save_model/xgboost_model.pkl")
-rf_model = joblib.load("save_model/random_forest_model.pkl")
-lstm_model = load_model("save_model/lstm_model.h5")
-cnn_lstm_model = load_model("save_model/cnn_lstm_model.h5")
+xgb_model = joblib.load("saved_models/xgboost_model.pkl")
+rf_model = joblib.load("saved_models/random_forest_model.pkl")
+lstm_model = load_model("saved_models/lstm_model.h5")
+cnn_lstm_model = load_model("saved_models/cnn_lstm_model.h5")
 
-scaler_X = joblib.load("save_model/scaler_X.pkl")
-scaler_y = joblib.load("save_model/scaler_y.pkl")
+scaler_X = joblib.load("saved_models/scaler_X.pkl")
+scaler_y = joblib.load("saved_models/scaler_y.pkl")
 
 # ---------- 3. Forecast settings ----------
 MAX_LAG = 24
@@ -71,12 +71,15 @@ tree_series = last_hist_values[-MAX_LAG:].tolist()  # last 24 hours
 
 # Use last known weather values
 Temperature = df_day["Temperature"].iloc[-1]
-SolarZenith = df_day["SolarZenith"].iloc[-1]
 HumiditySpecific = df_day["HumiditySpecific"].iloc[-1]
 HumidityRelative = df_day["HumidityRelative"].iloc[-1]
 Pressure = df_day["Pressure"].iloc[-1]
 WindSpeed = df_day["WindSpeed"].iloc[-1]
 WindDirection = df_day["WindDirection"].iloc[-1]
+
+# Get typical SolarZenith for each hour from historical data for this month
+# This is crucial: SolarZenith >= 90 means sun is below horizon (night)
+hourly_zenith = df_day[df_day["month"] == month].groupby("hour")["SolarZenith"].mean()
 
 tree_predictions = []
 
@@ -88,8 +91,11 @@ for h in range(24):
     month_sin = np.sin(2 * np.pi * month / 12)
     month_cos = np.cos(2 * np.pi * month / 12)
 
+    # Get typical SolarZenith for this hour in this month
+    solar_zenith = hourly_zenith.get(hour, 90)  # Default to 90 (horizon) if not found
+
     lag_feats = tree_series[-MAX_LAG:]
-    # Features order must match training: hour, month, hour_sin, hour_cos, month_sin, month_cos, weather, lags
+    # Features order must match training: hour, month, cyclical, SolarZenith, weather, lags
     X_row = [
         hour,
         month,
@@ -97,6 +103,7 @@ for h in range(24):
         hour_cos,
         month_sin,
         month_cos,
+        solar_zenith,  # SolarZenith for this hour
         Temperature,
         HumiditySpecific,
         HumidityRelative,
@@ -171,6 +178,9 @@ for h in range(24):
     month_sin = np.sin(2 * np.pi * month / 12)
     month_cos = np.cos(2 * np.pi * month / 12)
 
+    # Get typical SolarZenith for next hour
+    next_solar_zenith = hourly_zenith.get(next_hour, 90)
+
     # Create next row with proper hour features (scaled)
     # Feature order must match scaler: hour, month, hour_sin, hour_cos, month_sin, month_cos, Temperature, SolarZenith, HumiditySpecific, HumidityRelative, Pressure, WindSpeed, WindDirection
     next_row_raw = np.array(
@@ -182,7 +192,7 @@ for h in range(24):
             month_sin,
             month_cos,
             Temperature,
-            SolarZenith,
+            next_solar_zenith,
             HumiditySpecific,
             HumidityRelative,
             Pressure,

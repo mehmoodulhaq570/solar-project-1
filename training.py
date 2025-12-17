@@ -100,6 +100,7 @@ MAX_LAG = 24
 
 
 def make_lag_features(series_df, max_lag=24):
+    # Include SolarZenith - critical for distinguishing day (zenith<90) from night (zenith>=90)
     # Include cyclical hour/month encoding for better periodicity learning
     cols_base = [
         target_col,
@@ -109,6 +110,7 @@ def make_lag_features(series_df, max_lag=24):
         "hour_cos",
         "month_sin",
         "month_cos",
+        "SolarZenith",  # Key feature: >= 90 means sun is below horizon (night)
         "Temperature",
         "HumiditySpecific",
         "HumidityRelative",
@@ -148,7 +150,7 @@ features = [
     "month_sin",
     "month_cos",
     "Temperature",
-    'SolarZenith',
+    "SolarZenith",
     "HumiditySpecific",
     "HumidityRelative",
     "Pressure",
