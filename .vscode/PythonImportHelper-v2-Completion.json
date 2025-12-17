@@ -35,12 +35,37 @@
         "documentation": {}
     },
     {
+        "label": "streamlit",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "streamlit",
+        "description": "streamlit",
+        "detail": "streamlit",
+        "documentation": {}
+    },
+    {
         "label": "os,",
         "kind": 6,
         "isExtraImport": true,
         "importPath": "os.",
         "description": "os.",
         "detail": "os.",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
         "documentation": {}
     },
     {
@@ -59,6 +84,15 @@
         "importPath": "matplotlib.pyplot",
         "description": "matplotlib.pyplot",
         "detail": "matplotlib.pyplot",
+        "documentation": {}
+    },
+    {
+        "label": "joblib",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "joblib",
+        "description": "joblib",
+        "detail": "joblib",
         "documentation": {}
     },
     {
@@ -111,15 +145,6 @@
         "documentation": {}
     },
     {
-        "label": "joblib",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "joblib",
-        "description": "joblib",
-        "detail": "joblib",
-        "documentation": {}
-    },
-    {
         "label": "tensorflow",
         "kind": 6,
         "isExtraImport": true,
@@ -166,14 +191,6 @@
         "description": "tensorflow.keras.models",
         "isExtraImport": true,
         "detail": "tensorflow.keras.models",
-        "documentation": {}
-    },
-    {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
         "documentation": {}
     },
     {
@@ -363,6 +380,51 @@
         "description": "NASA meteriological and solar radiaton data.API_call",
         "peekOfCode": "daily_dataframe = pd.DataFrame(data=daily_data)\nprint(\"\\nDaily data\\n\", daily_dataframe.head())\n# 💾 Save data to CSV files\nhourly_dataframe.to_csv(\"hourly_weather_data.csv\", index=False)\ndaily_dataframe.to_csv(\"daily_weather_data.csv\", index=False)\nprint(\"\\nData saved successfully:\")\nprint(\" - hourly_weather_data.csv\")\nprint(\" - daily_weather_data.csv\")",
         "detail": "NASA meteriological and solar radiaton data.API_call",
+        "documentation": {}
+    },
+    {
+        "label": "os.environ[\"TF_CPP_MIN_LOG_LEVEL\"]",
+        "kind": 5,
+        "importPath": "frontend",
+        "description": "frontend",
+        "peekOfCode": "os.environ[\"TF_CPP_MIN_LOG_LEVEL\"] = \"2\"\ntry:\n    from tensorflow.keras.models import load_model\n    TENSORFLOW_AVAILABLE = True\nexcept:\n    TENSORFLOW_AVAILABLE = False\ntry:\n    import xgboost as xgb\n    XGBOOST_AVAILABLE = True\nexcept:",
+        "detail": "frontend",
+        "documentation": {}
+    },
+    {
+        "label": "selected_date",
+        "kind": 5,
+        "importPath": "frontend",
+        "description": "frontend",
+        "peekOfCode": "selected_date = st.sidebar.date_input(\n    \"📅 Forecast Date\",\n    datetime.today(),\n    help=\"Select the date for solar radiation forecast\",\n)\n# Model folder selection\nmodel_folder = st.sidebar.selectbox(\n    \"📁 Model Folder\",\n    [\"saved_models\", \"save_model\", \"saved_models_1\"],\n    help=\"Select folder containing trained models\",",
+        "detail": "frontend",
+        "documentation": {}
+    },
+    {
+        "label": "model_folder",
+        "kind": 5,
+        "importPath": "frontend",
+        "description": "frontend",
+        "peekOfCode": "model_folder = st.sidebar.selectbox(\n    \"📁 Model Folder\",\n    [\"saved_models\", \"save_model\", \"saved_models_1\"],\n    help=\"Select folder containing trained models\",\n)\n# Model selection\navailable_models = [\"XGBoost\", \"Random Forest\", \"LSTM\", \"CNN-LSTM\", \"Ensemble\"]\nselected_models = st.sidebar.multiselect(\n    \"🤖 Select Models\",\n    available_models,",
+        "detail": "frontend",
+        "documentation": {}
+    },
+    {
+        "label": "available_models",
+        "kind": 5,
+        "importPath": "frontend",
+        "description": "frontend",
+        "peekOfCode": "available_models = [\"XGBoost\", \"Random Forest\", \"LSTM\", \"CNN-LSTM\", \"Ensemble\"]\nselected_models = st.sidebar.multiselect(\n    \"🤖 Select Models\",\n    available_models,\n    default=[\"XGBoost\", \"Random Forest\", \"Ensemble\"],\n    help=\"Choose which models to use for prediction\",\n)\nst.sidebar.markdown(\"---\")\nst.sidebar.markdown(\"### 📊 Model Info\")\nst.sidebar.info(",
+        "detail": "frontend",
+        "documentation": {}
+    },
+    {
+        "label": "selected_models",
+        "kind": 5,
+        "importPath": "frontend",
+        "description": "frontend",
+        "peekOfCode": "selected_models = st.sidebar.multiselect(\n    \"🤖 Select Models\",\n    available_models,\n    default=[\"XGBoost\", \"Random Forest\", \"Ensemble\"],\n    help=\"Choose which models to use for prediction\",\n)\nst.sidebar.markdown(\"---\")\nst.sidebar.markdown(\"### 📊 Model Info\")\nst.sidebar.info(\n    \"\"\"",
+        "detail": "frontend",
         "documentation": {}
     },
     {
