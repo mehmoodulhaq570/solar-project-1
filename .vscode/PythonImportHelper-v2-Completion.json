@@ -452,7 +452,7 @@
         "kind": 2,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "def rmse(a, b):\n    return np.sqrt(mean_squared_error(a, b))\n# ---------- 1. Load data ----------\ndf = pd.read_csv('NASA meteriological and solar radiaton data/lahore_hourly_filled.csv')\ndf.columns = df.columns.str.strip()\nif 'datetime' not in df.columns:\n    raise ValueError(f\"'datetime' column not found\")\ndf['datetime'] = pd.to_datetime(df['datetime'], errors='coerce')\ndf = df.dropna(subset=['datetime'])\ndf.set_index('datetime', inplace=True)",
+        "peekOfCode": "def rmse(a, b):\n    return np.sqrt(mean_squared_error(a, b))\n# ---------- 1. Load data ----------\ndf = pd.read_csv(\"NASA meteriological and solar radiaton data/lahore_hourly_filled.csv\")\ndf.columns = df.columns.str.strip()\nif \"datetime\" not in df.columns:\n    raise ValueError(f\"'datetime' column not found\")\ndf[\"datetime\"] = pd.to_datetime(df[\"datetime\"], errors=\"coerce\")\ndf = df.dropna(subset=[\"datetime\"])\ndf.set_index(\"datetime\", inplace=True)",
         "detail": "training",
         "documentation": {}
     },
@@ -461,7 +461,7 @@
         "kind": 2,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "def make_lag_features(series_df, max_lag=24):\n    cols_base = [target_col,'hour','month','Temperature','HumiditySpecific',\n                 'HumidityRelative','Pressure','WindSpeed','WindDirection']\n    df_feat = series_df[cols_base].copy()\n    for lag in range(1, max_lag+1):\n        df_feat[f\"lag_{lag}\"] = df_feat[target_col].shift(lag)\n    return df_feat.dropna()\ndf_lag = make_lag_features(df_day, MAX_LAG)\ntrain_lag = df_lag.loc[df_lag.index.intersection(train.index)]\ntest_lag  = df_lag.loc[df_lag.index.intersection(test.index)]",
+        "peekOfCode": "def make_lag_features(series_df, max_lag=24):\n    # Include cyclical hour/month encoding for better periodicity learning\n    cols_base = [\n        target_col,\n        \"hour\",\n        \"month\",\n        \"hour_sin\",\n        \"hour_cos\",\n        \"month_sin\",\n        \"month_cos\",",
         "detail": "training",
         "documentation": {}
     },
@@ -470,16 +470,16 @@
         "kind": 2,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "def create_sequences(df_in, seq_len=24):\n    Xs, ys, idxs = [], [], []\n    X_arr = scaler_X.transform(df_in.drop(columns=[target_col]))\n    y_arr = scaler_y.transform(df_in[[target_col]]).flatten()\n    for i in range(seq_len, len(df_in)):\n        Xs.append(X_arr[i-seq_len:i])\n        ys.append(y_arr[i])\n        idxs.append(df_in.index[i])\n    return np.array(Xs), np.array(ys), np.array(idxs)\nX_seq_all, y_seq_all, idxs_all = create_sequences(df_seq)",
+        "peekOfCode": "def create_sequences(df_in, seq_len=24):\n    Xs, ys, idxs = [], [], []\n    X_arr = scaler_X.transform(df_in.drop(columns=[target_col]))\n    y_arr = scaler_y.transform(df_in[[target_col]]).flatten()\n    for i in range(seq_len, len(df_in)):\n        Xs.append(X_arr[i - seq_len : i])\n        ys.append(y_arr[i])\n        idxs.append(df_in.index[i])\n    return np.array(Xs), np.array(ys), np.array(idxs)\nX_seq_all, y_seq_all, idxs_all = create_sequences(df_seq)",
         "detail": "training",
         "documentation": {}
     },
     {
-        "label": "os.environ['TF_CPP_MIN_LOG_LEVEL']",
+        "label": "os.environ[\"TF_CPP_MIN_LOG_LEVEL\"]",
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'\nimport numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\nfrom sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score\nfrom sklearn.ensemble import RandomForestRegressor\nfrom sklearn.preprocessing import StandardScaler\nimport xgboost as xgb\nimport joblib\nimport tensorflow as tf",
+        "peekOfCode": "os.environ[\"TF_CPP_MIN_LOG_LEVEL\"] = \"2\"\nimport numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\nfrom sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score\nfrom sklearn.ensemble import RandomForestRegressor\nfrom sklearn.preprocessing import StandardScaler\nimport xgboost as xgb\nimport joblib\nimport tensorflow as tf",
         "detail": "training",
         "documentation": {}
     },
@@ -488,7 +488,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "RANDOM_STATE = 42\nnp.random.seed(RANDOM_STATE)\ntf.random.set_seed(RANDOM_STATE)\n# create save directory\nos.makedirs(\"saved_models\", exist_ok=True)\n# TF GPU memory growth (Colab safe)\ngpus = tf.config.experimental.list_physical_devices('GPU')\nif gpus:\n    try:\n        for gpu in gpus:",
+        "peekOfCode": "RANDOM_STATE = 42\nnp.random.seed(RANDOM_STATE)\ntf.random.set_seed(RANDOM_STATE)\n# create save directory\nos.makedirs(\"saved_models\", exist_ok=True)\n# TF GPU memory growth (Colab safe)\ngpus = tf.config.experimental.list_physical_devices(\"GPU\")\nif gpus:\n    try:\n        for gpu in gpus:",
         "detail": "training",
         "documentation": {}
     },
@@ -497,7 +497,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "gpus = tf.config.experimental.list_physical_devices('GPU')\nif gpus:\n    try:\n        for gpu in gpus:\n            tf.config.experimental.set_memory_growth(gpu, True)\n    except Exception:\n        pass\ndef rmse(a, b):\n    return np.sqrt(mean_squared_error(a, b))\n# ---------- 1. Load data ----------",
+        "peekOfCode": "gpus = tf.config.experimental.list_physical_devices(\"GPU\")\nif gpus:\n    try:\n        for gpu in gpus:\n            tf.config.experimental.set_memory_growth(gpu, True)\n    except Exception:\n        pass\ndef rmse(a, b):\n    return np.sqrt(mean_squared_error(a, b))\n# ---------- 1. Load data ----------",
         "detail": "training",
         "documentation": {}
     },
@@ -506,7 +506,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "df = pd.read_csv('NASA meteriological and solar radiaton data/lahore_hourly_filled.csv')\ndf.columns = df.columns.str.strip()\nif 'datetime' not in df.columns:\n    raise ValueError(f\"'datetime' column not found\")\ndf['datetime'] = pd.to_datetime(df['datetime'], errors='coerce')\ndf = df.dropna(subset=['datetime'])\ndf.set_index('datetime', inplace=True)\ndf = df.sort_index()\ndf = df.apply(pd.to_numeric, errors='coerce')\nprint(\"Loaded CSV range:\", df.index.min(), \"→\", df.index.max())",
+        "peekOfCode": "df = pd.read_csv(\"NASA meteriological and solar radiaton data/lahore_hourly_filled.csv\")\ndf.columns = df.columns.str.strip()\nif \"datetime\" not in df.columns:\n    raise ValueError(f\"'datetime' column not found\")\ndf[\"datetime\"] = pd.to_datetime(df[\"datetime\"], errors=\"coerce\")\ndf = df.dropna(subset=[\"datetime\"])\ndf.set_index(\"datetime\", inplace=True)\ndf = df.sort_index()\ndf = df.apply(pd.to_numeric, errors=\"coerce\")\nprint(\"Loaded CSV range:\", df.index.min(), \"→\", df.index.max())",
         "detail": "training",
         "documentation": {}
     },
@@ -515,25 +515,16 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "df.columns = df.columns.str.strip()\nif 'datetime' not in df.columns:\n    raise ValueError(f\"'datetime' column not found\")\ndf['datetime'] = pd.to_datetime(df['datetime'], errors='coerce')\ndf = df.dropna(subset=['datetime'])\ndf.set_index('datetime', inplace=True)\ndf = df.sort_index()\ndf = df.apply(pd.to_numeric, errors='coerce')\nprint(\"Loaded CSV range:\", df.index.min(), \"→\", df.index.max())\nrequired = ['ClearSkyRadiation','SolarRadiation','DirectRadiation','DiffuseRadiation',",
+        "peekOfCode": "df.columns = df.columns.str.strip()\nif \"datetime\" not in df.columns:\n    raise ValueError(f\"'datetime' column not found\")\ndf[\"datetime\"] = pd.to_datetime(df[\"datetime\"], errors=\"coerce\")\ndf = df.dropna(subset=[\"datetime\"])\ndf.set_index(\"datetime\", inplace=True)\ndf = df.sort_index()\ndf = df.apply(pd.to_numeric, errors=\"coerce\")\nprint(\"Loaded CSV range:\", df.index.min(), \"→\", df.index.max())\nrequired = [",
         "detail": "training",
         "documentation": {}
     },
     {
-        "label": "df['datetime']",
+        "label": "df[\"datetime\"]",
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "df['datetime'] = pd.to_datetime(df['datetime'], errors='coerce')\ndf = df.dropna(subset=['datetime'])\ndf.set_index('datetime', inplace=True)\ndf = df.sort_index()\ndf = df.apply(pd.to_numeric, errors='coerce')\nprint(\"Loaded CSV range:\", df.index.min(), \"→\", df.index.max())\nrequired = ['ClearSkyRadiation','SolarRadiation','DirectRadiation','DiffuseRadiation',\n            'SolarZenith','Temperature','HumiditySpecific','HumidityRelative',\n            'Pressure','WindSpeed','WindDirection']\nmissing = [c for c in required if c not in df.columns]",
-        "detail": "training",
-        "documentation": {}
-    },
-    {
-        "label": "df",
-        "kind": 5,
-        "importPath": "training",
-        "description": "training",
-        "peekOfCode": "df = df.dropna(subset=['datetime'])\ndf.set_index('datetime', inplace=True)\ndf = df.sort_index()\ndf = df.apply(pd.to_numeric, errors='coerce')\nprint(\"Loaded CSV range:\", df.index.min(), \"→\", df.index.max())\nrequired = ['ClearSkyRadiation','SolarRadiation','DirectRadiation','DiffuseRadiation',\n            'SolarZenith','Temperature','HumiditySpecific','HumidityRelative',\n            'Pressure','WindSpeed','WindDirection']\nmissing = [c for c in required if c not in df.columns]\nif missing:",
+        "peekOfCode": "df[\"datetime\"] = pd.to_datetime(df[\"datetime\"], errors=\"coerce\")\ndf = df.dropna(subset=[\"datetime\"])\ndf.set_index(\"datetime\", inplace=True)\ndf = df.sort_index()\ndf = df.apply(pd.to_numeric, errors=\"coerce\")\nprint(\"Loaded CSV range:\", df.index.min(), \"→\", df.index.max())\nrequired = [\n    \"ClearSkyRadiation\",\n    \"SolarRadiation\",\n    \"DirectRadiation\",",
         "detail": "training",
         "documentation": {}
     },
@@ -542,7 +533,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "df = df.sort_index()\ndf = df.apply(pd.to_numeric, errors='coerce')\nprint(\"Loaded CSV range:\", df.index.min(), \"→\", df.index.max())\nrequired = ['ClearSkyRadiation','SolarRadiation','DirectRadiation','DiffuseRadiation',\n            'SolarZenith','Temperature','HumiditySpecific','HumidityRelative',\n            'Pressure','WindSpeed','WindDirection']\nmissing = [c for c in required if c not in df.columns]\nif missing:\n    raise ValueError(\"Missing columns: \", missing)\ndf_day = df[df['SolarZenith'] < 90].copy()",
+        "peekOfCode": "df = df.dropna(subset=[\"datetime\"])\ndf.set_index(\"datetime\", inplace=True)\ndf = df.sort_index()\ndf = df.apply(pd.to_numeric, errors=\"coerce\")\nprint(\"Loaded CSV range:\", df.index.min(), \"→\", df.index.max())\nrequired = [\n    \"ClearSkyRadiation\",\n    \"SolarRadiation\",\n    \"DirectRadiation\",\n    \"DiffuseRadiation\",",
         "detail": "training",
         "documentation": {}
     },
@@ -551,7 +542,16 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "df = df.apply(pd.to_numeric, errors='coerce')\nprint(\"Loaded CSV range:\", df.index.min(), \"→\", df.index.max())\nrequired = ['ClearSkyRadiation','SolarRadiation','DirectRadiation','DiffuseRadiation',\n            'SolarZenith','Temperature','HumiditySpecific','HumidityRelative',\n            'Pressure','WindSpeed','WindDirection']\nmissing = [c for c in required if c not in df.columns]\nif missing:\n    raise ValueError(\"Missing columns: \", missing)\ndf_day = df[df['SolarZenith'] < 90].copy()\ndf_day.dropna(subset=['SolarRadiation'], inplace=True)",
+        "peekOfCode": "df = df.sort_index()\ndf = df.apply(pd.to_numeric, errors=\"coerce\")\nprint(\"Loaded CSV range:\", df.index.min(), \"→\", df.index.max())\nrequired = [\n    \"ClearSkyRadiation\",\n    \"SolarRadiation\",\n    \"DirectRadiation\",\n    \"DiffuseRadiation\",\n    \"SolarZenith\",\n    \"Temperature\",",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "df",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "df = df.apply(pd.to_numeric, errors=\"coerce\")\nprint(\"Loaded CSV range:\", df.index.min(), \"→\", df.index.max())\nrequired = [\n    \"ClearSkyRadiation\",\n    \"SolarRadiation\",\n    \"DirectRadiation\",\n    \"DiffuseRadiation\",\n    \"SolarZenith\",\n    \"Temperature\",\n    \"HumiditySpecific\",",
         "detail": "training",
         "documentation": {}
     },
@@ -560,7 +560,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "required = ['ClearSkyRadiation','SolarRadiation','DirectRadiation','DiffuseRadiation',\n            'SolarZenith','Temperature','HumiditySpecific','HumidityRelative',\n            'Pressure','WindSpeed','WindDirection']\nmissing = [c for c in required if c not in df.columns]\nif missing:\n    raise ValueError(\"Missing columns: \", missing)\ndf_day = df[df['SolarZenith'] < 90].copy()\ndf_day.dropna(subset=['SolarRadiation'], inplace=True)\ndf_day['hour'] = df_day.index.hour\ndf_day['month'] = df_day.index.month",
+        "peekOfCode": "required = [\n    \"ClearSkyRadiation\",\n    \"SolarRadiation\",\n    \"DirectRadiation\",\n    \"DiffuseRadiation\",\n    \"SolarZenith\",\n    \"Temperature\",\n    \"HumiditySpecific\",\n    \"HumidityRelative\",\n    \"Pressure\",",
         "detail": "training",
         "documentation": {}
     },
@@ -569,7 +569,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "missing = [c for c in required if c not in df.columns]\nif missing:\n    raise ValueError(\"Missing columns: \", missing)\ndf_day = df[df['SolarZenith'] < 90].copy()\ndf_day.dropna(subset=['SolarRadiation'], inplace=True)\ndf_day['hour'] = df_day.index.hour\ndf_day['month'] = df_day.index.month\ntarget_col = 'SolarRadiation'\nprint(\"Daylight records:\", len(df_day))\n# ---------- 2. Train/Test split ----------",
+        "peekOfCode": "missing = [c for c in required if c not in df.columns]\nif missing:\n    raise ValueError(\"Missing columns: \", missing)\n# IMPORTANT: Use ALL hours (not just daylight) so model learns night = 0\ndf_day = df.copy()\ndf_day.dropna(subset=[\"SolarRadiation\"], inplace=True)\n# Add cyclical encoding for hour and month (helps model understand periodicity)\ndf_day[\"hour\"] = df_day.index.hour\ndf_day[\"month\"] = df_day.index.month\ndf_day[\"hour_sin\"] = np.sin(2 * np.pi * df_day[\"hour\"] / 24)",
         "detail": "training",
         "documentation": {}
     },
@@ -578,25 +578,61 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "df_day = df[df['SolarZenith'] < 90].copy()\ndf_day.dropna(subset=['SolarRadiation'], inplace=True)\ndf_day['hour'] = df_day.index.hour\ndf_day['month'] = df_day.index.month\ntarget_col = 'SolarRadiation'\nprint(\"Daylight records:\", len(df_day))\n# ---------- 2. Train/Test split ----------\nsplit_idx = int(len(df_day) * 0.8)\ntrain = df_day.iloc[:split_idx].copy()\ntest  = df_day.iloc[split_idx:].copy()",
+        "peekOfCode": "df_day = df.copy()\ndf_day.dropna(subset=[\"SolarRadiation\"], inplace=True)\n# Add cyclical encoding for hour and month (helps model understand periodicity)\ndf_day[\"hour\"] = df_day.index.hour\ndf_day[\"month\"] = df_day.index.month\ndf_day[\"hour_sin\"] = np.sin(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ntarget_col = \"SolarRadiation\"",
         "detail": "training",
         "documentation": {}
     },
     {
-        "label": "df_day['hour']",
+        "label": "df_day[\"hour\"]",
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "df_day['hour'] = df_day.index.hour\ndf_day['month'] = df_day.index.month\ntarget_col = 'SolarRadiation'\nprint(\"Daylight records:\", len(df_day))\n# ---------- 2. Train/Test split ----------\nsplit_idx = int(len(df_day) * 0.8)\ntrain = df_day.iloc[:split_idx].copy()\ntest  = df_day.iloc[split_idx:].copy()\n# ---------- 3. Lag features ----------\nMAX_LAG = 24",
+        "peekOfCode": "df_day[\"hour\"] = df_day.index.hour\ndf_day[\"month\"] = df_day.index.month\ndf_day[\"hour_sin\"] = np.sin(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ntarget_col = \"SolarRadiation\"\nprint(\"Total records (including night):\", len(df_day))\n# ---------- 2. Train/Test split ----------\nsplit_idx = int(len(df_day) * 0.8)",
         "detail": "training",
         "documentation": {}
     },
     {
-        "label": "df_day['month']",
+        "label": "df_day[\"month\"]",
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "df_day['month'] = df_day.index.month\ntarget_col = 'SolarRadiation'\nprint(\"Daylight records:\", len(df_day))\n# ---------- 2. Train/Test split ----------\nsplit_idx = int(len(df_day) * 0.8)\ntrain = df_day.iloc[:split_idx].copy()\ntest  = df_day.iloc[split_idx:].copy()\n# ---------- 3. Lag features ----------\nMAX_LAG = 24\ndef make_lag_features(series_df, max_lag=24):",
+        "peekOfCode": "df_day[\"month\"] = df_day.index.month\ndf_day[\"hour_sin\"] = np.sin(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ntarget_col = \"SolarRadiation\"\nprint(\"Total records (including night):\", len(df_day))\n# ---------- 2. Train/Test split ----------\nsplit_idx = int(len(df_day) * 0.8)\ntrain = df_day.iloc[:split_idx].copy()",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "df_day[\"hour_sin\"]",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "df_day[\"hour_sin\"] = np.sin(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ntarget_col = \"SolarRadiation\"\nprint(\"Total records (including night):\", len(df_day))\n# ---------- 2. Train/Test split ----------\nsplit_idx = int(len(df_day) * 0.8)\ntrain = df_day.iloc[:split_idx].copy()\ntest = df_day.iloc[split_idx:].copy()",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "df_day[\"hour_cos\"]",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "df_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ntarget_col = \"SolarRadiation\"\nprint(\"Total records (including night):\", len(df_day))\n# ---------- 2. Train/Test split ----------\nsplit_idx = int(len(df_day) * 0.8)\ntrain = df_day.iloc[:split_idx].copy()\ntest = df_day.iloc[split_idx:].copy()\n# ---------- 3. Lag features ----------",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "df_day[\"month_sin\"]",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "df_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ntarget_col = \"SolarRadiation\"\nprint(\"Total records (including night):\", len(df_day))\n# ---------- 2. Train/Test split ----------\nsplit_idx = int(len(df_day) * 0.8)\ntrain = df_day.iloc[:split_idx].copy()\ntest = df_day.iloc[split_idx:].copy()\n# ---------- 3. Lag features ----------\nMAX_LAG = 24",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "df_day[\"month_cos\"]",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "df_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ntarget_col = \"SolarRadiation\"\nprint(\"Total records (including night):\", len(df_day))\n# ---------- 2. Train/Test split ----------\nsplit_idx = int(len(df_day) * 0.8)\ntrain = df_day.iloc[:split_idx].copy()\ntest = df_day.iloc[split_idx:].copy()\n# ---------- 3. Lag features ----------\nMAX_LAG = 24\ndef make_lag_features(series_df, max_lag=24):",
         "detail": "training",
         "documentation": {}
     },
@@ -605,7 +641,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "target_col = 'SolarRadiation'\nprint(\"Daylight records:\", len(df_day))\n# ---------- 2. Train/Test split ----------\nsplit_idx = int(len(df_day) * 0.8)\ntrain = df_day.iloc[:split_idx].copy()\ntest  = df_day.iloc[split_idx:].copy()\n# ---------- 3. Lag features ----------\nMAX_LAG = 24\ndef make_lag_features(series_df, max_lag=24):\n    cols_base = [target_col,'hour','month','Temperature','HumiditySpecific',",
+        "peekOfCode": "target_col = \"SolarRadiation\"\nprint(\"Total records (including night):\", len(df_day))\n# ---------- 2. Train/Test split ----------\nsplit_idx = int(len(df_day) * 0.8)\ntrain = df_day.iloc[:split_idx].copy()\ntest = df_day.iloc[split_idx:].copy()\n# ---------- 3. Lag features ----------\nMAX_LAG = 24\ndef make_lag_features(series_df, max_lag=24):\n    # Include cyclical hour/month encoding for better periodicity learning",
         "detail": "training",
         "documentation": {}
     },
@@ -614,7 +650,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "split_idx = int(len(df_day) * 0.8)\ntrain = df_day.iloc[:split_idx].copy()\ntest  = df_day.iloc[split_idx:].copy()\n# ---------- 3. Lag features ----------\nMAX_LAG = 24\ndef make_lag_features(series_df, max_lag=24):\n    cols_base = [target_col,'hour','month','Temperature','HumiditySpecific',\n                 'HumidityRelative','Pressure','WindSpeed','WindDirection']\n    df_feat = series_df[cols_base].copy()\n    for lag in range(1, max_lag+1):",
+        "peekOfCode": "split_idx = int(len(df_day) * 0.8)\ntrain = df_day.iloc[:split_idx].copy()\ntest = df_day.iloc[split_idx:].copy()\n# ---------- 3. Lag features ----------\nMAX_LAG = 24\ndef make_lag_features(series_df, max_lag=24):\n    # Include cyclical hour/month encoding for better periodicity learning\n    cols_base = [\n        target_col,\n        \"hour\",",
         "detail": "training",
         "documentation": {}
     },
@@ -623,7 +659,16 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "train = df_day.iloc[:split_idx].copy()\ntest  = df_day.iloc[split_idx:].copy()\n# ---------- 3. Lag features ----------\nMAX_LAG = 24\ndef make_lag_features(series_df, max_lag=24):\n    cols_base = [target_col,'hour','month','Temperature','HumiditySpecific',\n                 'HumidityRelative','Pressure','WindSpeed','WindDirection']\n    df_feat = series_df[cols_base].copy()\n    for lag in range(1, max_lag+1):\n        df_feat[f\"lag_{lag}\"] = df_feat[target_col].shift(lag)",
+        "peekOfCode": "train = df_day.iloc[:split_idx].copy()\ntest = df_day.iloc[split_idx:].copy()\n# ---------- 3. Lag features ----------\nMAX_LAG = 24\ndef make_lag_features(series_df, max_lag=24):\n    # Include cyclical hour/month encoding for better periodicity learning\n    cols_base = [\n        target_col,\n        \"hour\",\n        \"month\",",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "test",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "test = df_day.iloc[split_idx:].copy()\n# ---------- 3. Lag features ----------\nMAX_LAG = 24\ndef make_lag_features(series_df, max_lag=24):\n    # Include cyclical hour/month encoding for better periodicity learning\n    cols_base = [\n        target_col,\n        \"hour\",\n        \"month\",\n        \"hour_sin\",",
         "detail": "training",
         "documentation": {}
     },
@@ -632,7 +677,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "MAX_LAG = 24\ndef make_lag_features(series_df, max_lag=24):\n    cols_base = [target_col,'hour','month','Temperature','HumiditySpecific',\n                 'HumidityRelative','Pressure','WindSpeed','WindDirection']\n    df_feat = series_df[cols_base].copy()\n    for lag in range(1, max_lag+1):\n        df_feat[f\"lag_{lag}\"] = df_feat[target_col].shift(lag)\n    return df_feat.dropna()\ndf_lag = make_lag_features(df_day, MAX_LAG)\ntrain_lag = df_lag.loc[df_lag.index.intersection(train.index)]",
+        "peekOfCode": "MAX_LAG = 24\ndef make_lag_features(series_df, max_lag=24):\n    # Include cyclical hour/month encoding for better periodicity learning\n    cols_base = [\n        target_col,\n        \"hour\",\n        \"month\",\n        \"hour_sin\",\n        \"hour_cos\",\n        \"month_sin\",",
         "detail": "training",
         "documentation": {}
     },
@@ -641,7 +686,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "df_lag = make_lag_features(df_day, MAX_LAG)\ntrain_lag = df_lag.loc[df_lag.index.intersection(train.index)]\ntest_lag  = df_lag.loc[df_lag.index.intersection(test.index)]\n# fallback if no test rows\nif len(test_lag) == 0:\n    train_lag = df_lag.iloc[:-MAX_LAG].copy()\n    test_lag  = df_lag.iloc[-MAX_LAG:].copy()\nX_train_tree = train_lag.drop(columns=[target_col])\ny_train_tree = train_lag[target_col]\nX_test_tree  = test_lag.drop(columns=[target_col])",
+        "peekOfCode": "df_lag = make_lag_features(df_day, MAX_LAG)\ntrain_lag = df_lag.loc[df_lag.index.intersection(train.index)]\ntest_lag = df_lag.loc[df_lag.index.intersection(test.index)]\n# fallback if no test rows\nif len(test_lag) == 0:\n    train_lag = df_lag.iloc[:-MAX_LAG].copy()\n    test_lag = df_lag.iloc[-MAX_LAG:].copy()\nX_train_tree = train_lag.drop(columns=[target_col])\ny_train_tree = train_lag[target_col]\nX_test_tree = test_lag.drop(columns=[target_col])",
         "detail": "training",
         "documentation": {}
     },
@@ -650,7 +695,16 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "train_lag = df_lag.loc[df_lag.index.intersection(train.index)]\ntest_lag  = df_lag.loc[df_lag.index.intersection(test.index)]\n# fallback if no test rows\nif len(test_lag) == 0:\n    train_lag = df_lag.iloc[:-MAX_LAG].copy()\n    test_lag  = df_lag.iloc[-MAX_LAG:].copy()\nX_train_tree = train_lag.drop(columns=[target_col])\ny_train_tree = train_lag[target_col]\nX_test_tree  = test_lag.drop(columns=[target_col])\ny_test       = test_lag[target_col]",
+        "peekOfCode": "train_lag = df_lag.loc[df_lag.index.intersection(train.index)]\ntest_lag = df_lag.loc[df_lag.index.intersection(test.index)]\n# fallback if no test rows\nif len(test_lag) == 0:\n    train_lag = df_lag.iloc[:-MAX_LAG].copy()\n    test_lag = df_lag.iloc[-MAX_LAG:].copy()\nX_train_tree = train_lag.drop(columns=[target_col])\ny_train_tree = train_lag[target_col]\nX_test_tree = test_lag.drop(columns=[target_col])\ny_test = test_lag[target_col]",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "test_lag",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "test_lag = df_lag.loc[df_lag.index.intersection(test.index)]\n# fallback if no test rows\nif len(test_lag) == 0:\n    train_lag = df_lag.iloc[:-MAX_LAG].copy()\n    test_lag = df_lag.iloc[-MAX_LAG:].copy()\nX_train_tree = train_lag.drop(columns=[target_col])\ny_train_tree = train_lag[target_col]\nX_test_tree = test_lag.drop(columns=[target_col])\ny_test = test_lag[target_col]\n# ---------- 4. Scaling for deep learning ----------",
         "detail": "training",
         "documentation": {}
     },
@@ -659,7 +713,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "X_train_tree = train_lag.drop(columns=[target_col])\ny_train_tree = train_lag[target_col]\nX_test_tree  = test_lag.drop(columns=[target_col])\ny_test       = test_lag[target_col]\n# ---------- 4. Scaling for deep learning ----------\nSEQ_LEN = 24\nfeatures = ['hour','month','Temperature','HumiditySpecific','HumidityRelative',\n            'Pressure','WindSpeed','WindDirection', target_col]\ndf_seq = df_day[features].dropna()\ntrain_seq_df = df_seq.loc[:train.index.max()]",
+        "peekOfCode": "X_train_tree = train_lag.drop(columns=[target_col])\ny_train_tree = train_lag[target_col]\nX_test_tree = test_lag.drop(columns=[target_col])\ny_test = test_lag[target_col]\n# ---------- 4. Scaling for deep learning ----------\nSEQ_LEN = 24\n# Include cyclical hour/month encoding for sequence models\nfeatures = [\n    \"hour\",\n    \"month\",",
         "detail": "training",
         "documentation": {}
     },
@@ -668,7 +722,25 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "y_train_tree = train_lag[target_col]\nX_test_tree  = test_lag.drop(columns=[target_col])\ny_test       = test_lag[target_col]\n# ---------- 4. Scaling for deep learning ----------\nSEQ_LEN = 24\nfeatures = ['hour','month','Temperature','HumiditySpecific','HumidityRelative',\n            'Pressure','WindSpeed','WindDirection', target_col]\ndf_seq = df_day[features].dropna()\ntrain_seq_df = df_seq.loc[:train.index.max()]\nscaler_X = StandardScaler()",
+        "peekOfCode": "y_train_tree = train_lag[target_col]\nX_test_tree = test_lag.drop(columns=[target_col])\ny_test = test_lag[target_col]\n# ---------- 4. Scaling for deep learning ----------\nSEQ_LEN = 24\n# Include cyclical hour/month encoding for sequence models\nfeatures = [\n    \"hour\",\n    \"month\",\n    \"hour_sin\",",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "X_test_tree",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "X_test_tree = test_lag.drop(columns=[target_col])\ny_test = test_lag[target_col]\n# ---------- 4. Scaling for deep learning ----------\nSEQ_LEN = 24\n# Include cyclical hour/month encoding for sequence models\nfeatures = [\n    \"hour\",\n    \"month\",\n    \"hour_sin\",\n    \"hour_cos\",",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "y_test",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "y_test = test_lag[target_col]\n# ---------- 4. Scaling for deep learning ----------\nSEQ_LEN = 24\n# Include cyclical hour/month encoding for sequence models\nfeatures = [\n    \"hour\",\n    \"month\",\n    \"hour_sin\",\n    \"hour_cos\",\n    \"month_sin\",",
         "detail": "training",
         "documentation": {}
     },
@@ -677,7 +749,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "SEQ_LEN = 24\nfeatures = ['hour','month','Temperature','HumiditySpecific','HumidityRelative',\n            'Pressure','WindSpeed','WindDirection', target_col]\ndf_seq = df_day[features].dropna()\ntrain_seq_df = df_seq.loc[:train.index.max()]\nscaler_X = StandardScaler()\nscaler_y = StandardScaler()\nscaler_X.fit(train_seq_df.drop(columns=[target_col]))\nscaler_y.fit(train_seq_df[[target_col]])\n# Save scalers",
+        "peekOfCode": "SEQ_LEN = 24\n# Include cyclical hour/month encoding for sequence models\nfeatures = [\n    \"hour\",\n    \"month\",\n    \"hour_sin\",\n    \"hour_cos\",\n    \"month_sin\",\n    \"month_cos\",\n    \"Temperature\",",
         "detail": "training",
         "documentation": {}
     },
@@ -686,7 +758,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "features = ['hour','month','Temperature','HumiditySpecific','HumidityRelative',\n            'Pressure','WindSpeed','WindDirection', target_col]\ndf_seq = df_day[features].dropna()\ntrain_seq_df = df_seq.loc[:train.index.max()]\nscaler_X = StandardScaler()\nscaler_y = StandardScaler()\nscaler_X.fit(train_seq_df.drop(columns=[target_col]))\nscaler_y.fit(train_seq_df[[target_col]])\n# Save scalers\njoblib.dump(scaler_X, \"saved_models/scaler_X.pkl\")",
+        "peekOfCode": "features = [\n    \"hour\",\n    \"month\",\n    \"hour_sin\",\n    \"hour_cos\",\n    \"month_sin\",\n    \"month_cos\",\n    \"Temperature\",\n    'SolarZenith',\n    \"HumiditySpecific\",",
         "detail": "training",
         "documentation": {}
     },
@@ -695,7 +767,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "df_seq = df_day[features].dropna()\ntrain_seq_df = df_seq.loc[:train.index.max()]\nscaler_X = StandardScaler()\nscaler_y = StandardScaler()\nscaler_X.fit(train_seq_df.drop(columns=[target_col]))\nscaler_y.fit(train_seq_df[[target_col]])\n# Save scalers\njoblib.dump(scaler_X, \"saved_models/scaler_X.pkl\")\njoblib.dump(scaler_y, \"saved_models/scaler_y.pkl\")\ndef create_sequences(df_in, seq_len=24):",
+        "peekOfCode": "df_seq = df_day[features].dropna()\ntrain_seq_df = df_seq.loc[: train.index.max()]\nscaler_X = StandardScaler()\nscaler_y = StandardScaler()\nscaler_X.fit(train_seq_df.drop(columns=[target_col]))\nscaler_y.fit(train_seq_df[[target_col]])\n# Save scalers\njoblib.dump(scaler_X, \"saved_models/scaler_X.pkl\")\njoblib.dump(scaler_y, \"saved_models/scaler_y.pkl\")\ndef create_sequences(df_in, seq_len=24):",
         "detail": "training",
         "documentation": {}
     },
@@ -704,7 +776,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "train_seq_df = df_seq.loc[:train.index.max()]\nscaler_X = StandardScaler()\nscaler_y = StandardScaler()\nscaler_X.fit(train_seq_df.drop(columns=[target_col]))\nscaler_y.fit(train_seq_df[[target_col]])\n# Save scalers\njoblib.dump(scaler_X, \"saved_models/scaler_X.pkl\")\njoblib.dump(scaler_y, \"saved_models/scaler_y.pkl\")\ndef create_sequences(df_in, seq_len=24):\n    Xs, ys, idxs = [], [], []",
+        "peekOfCode": "train_seq_df = df_seq.loc[: train.index.max()]\nscaler_X = StandardScaler()\nscaler_y = StandardScaler()\nscaler_X.fit(train_seq_df.drop(columns=[target_col]))\nscaler_y.fit(train_seq_df[[target_col]])\n# Save scalers\njoblib.dump(scaler_X, \"saved_models/scaler_X.pkl\")\njoblib.dump(scaler_y, \"saved_models/scaler_y.pkl\")\ndef create_sequences(df_in, seq_len=24):\n    Xs, ys, idxs = [], [], []",
         "detail": "training",
         "documentation": {}
     },
@@ -731,7 +803,16 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "train_idx_set = set(train.index)\ntest_idx_set  = set(test.index)\ntrain_mask = np.array([idx in train_idx_set for idx in idxs_all])\ntest_mask  = np.array([idx in test_idx_set  for idx in idxs_all])\nX_train_seq = X_seq_all[train_mask]\ny_train_seq = y_seq_all[train_mask]\nX_test_seq  = X_seq_all[test_mask]\ny_test_seq  = y_seq_all[test_mask]\ny_train_unscaled = scaler_y.inverse_transform(y_train_seq.reshape(-1,1)).flatten()\ny_test_unscaled  = scaler_y.inverse_transform(y_test_seq.reshape(-1,1)).flatten()",
+        "peekOfCode": "train_idx_set = set(train.index)\ntest_idx_set = set(test.index)\ntrain_mask = np.array([idx in train_idx_set for idx in idxs_all])\ntest_mask = np.array([idx in test_idx_set for idx in idxs_all])\nX_train_seq = X_seq_all[train_mask]\ny_train_seq = y_seq_all[train_mask]\nX_test_seq = X_seq_all[test_mask]\ny_test_seq = y_seq_all[test_mask]\ny_train_unscaled = scaler_y.inverse_transform(y_train_seq.reshape(-1, 1)).flatten()\ny_test_unscaled = scaler_y.inverse_transform(y_test_seq.reshape(-1, 1)).flatten()",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "test_idx_set",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "test_idx_set = set(test.index)\ntrain_mask = np.array([idx in train_idx_set for idx in idxs_all])\ntest_mask = np.array([idx in test_idx_set for idx in idxs_all])\nX_train_seq = X_seq_all[train_mask]\ny_train_seq = y_seq_all[train_mask]\nX_test_seq = X_seq_all[test_mask]\ny_test_seq = y_seq_all[test_mask]\ny_train_unscaled = scaler_y.inverse_transform(y_train_seq.reshape(-1, 1)).flatten()\ny_test_unscaled = scaler_y.inverse_transform(y_test_seq.reshape(-1, 1)).flatten()\n# ---------- RESULTS ----------",
         "detail": "training",
         "documentation": {}
     },
@@ -740,7 +821,16 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "train_mask = np.array([idx in train_idx_set for idx in idxs_all])\ntest_mask  = np.array([idx in test_idx_set  for idx in idxs_all])\nX_train_seq = X_seq_all[train_mask]\ny_train_seq = y_seq_all[train_mask]\nX_test_seq  = X_seq_all[test_mask]\ny_test_seq  = y_seq_all[test_mask]\ny_train_unscaled = scaler_y.inverse_transform(y_train_seq.reshape(-1,1)).flatten()\ny_test_unscaled  = scaler_y.inverse_transform(y_test_seq.reshape(-1,1)).flatten()\n# ---------- RESULTS ----------\nresults = []",
+        "peekOfCode": "train_mask = np.array([idx in train_idx_set for idx in idxs_all])\ntest_mask = np.array([idx in test_idx_set for idx in idxs_all])\nX_train_seq = X_seq_all[train_mask]\ny_train_seq = y_seq_all[train_mask]\nX_test_seq = X_seq_all[test_mask]\ny_test_seq = y_seq_all[test_mask]\ny_train_unscaled = scaler_y.inverse_transform(y_train_seq.reshape(-1, 1)).flatten()\ny_test_unscaled = scaler_y.inverse_transform(y_test_seq.reshape(-1, 1)).flatten()\n# ---------- RESULTS ----------\nresults = []",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "test_mask",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "test_mask = np.array([idx in test_idx_set for idx in idxs_all])\nX_train_seq = X_seq_all[train_mask]\ny_train_seq = y_seq_all[train_mask]\nX_test_seq = X_seq_all[test_mask]\ny_test_seq = y_seq_all[test_mask]\ny_train_unscaled = scaler_y.inverse_transform(y_train_seq.reshape(-1, 1)).flatten()\ny_test_unscaled = scaler_y.inverse_transform(y_test_seq.reshape(-1, 1)).flatten()\n# ---------- RESULTS ----------\nresults = []\n# ======================================",
         "detail": "training",
         "documentation": {}
     },
@@ -749,7 +839,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "X_train_seq = X_seq_all[train_mask]\ny_train_seq = y_seq_all[train_mask]\nX_test_seq  = X_seq_all[test_mask]\ny_test_seq  = y_seq_all[test_mask]\ny_train_unscaled = scaler_y.inverse_transform(y_train_seq.reshape(-1,1)).flatten()\ny_test_unscaled  = scaler_y.inverse_transform(y_test_seq.reshape(-1,1)).flatten()\n# ---------- RESULTS ----------\nresults = []\n# ======================================\n# 6. XGBoost",
+        "peekOfCode": "X_train_seq = X_seq_all[train_mask]\ny_train_seq = y_seq_all[train_mask]\nX_test_seq = X_seq_all[test_mask]\ny_test_seq = y_seq_all[test_mask]\ny_train_unscaled = scaler_y.inverse_transform(y_train_seq.reshape(-1, 1)).flatten()\ny_test_unscaled = scaler_y.inverse_transform(y_test_seq.reshape(-1, 1)).flatten()\n# ---------- RESULTS ----------\nresults = []\n# ======================================\n# 6. XGBoost",
         "detail": "training",
         "documentation": {}
     },
@@ -758,7 +848,25 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "y_train_seq = y_seq_all[train_mask]\nX_test_seq  = X_seq_all[test_mask]\ny_test_seq  = y_seq_all[test_mask]\ny_train_unscaled = scaler_y.inverse_transform(y_train_seq.reshape(-1,1)).flatten()\ny_test_unscaled  = scaler_y.inverse_transform(y_test_seq.reshape(-1,1)).flatten()\n# ---------- RESULTS ----------\nresults = []\n# ======================================\n# 6. XGBoost\n# ======================================",
+        "peekOfCode": "y_train_seq = y_seq_all[train_mask]\nX_test_seq = X_seq_all[test_mask]\ny_test_seq = y_seq_all[test_mask]\ny_train_unscaled = scaler_y.inverse_transform(y_train_seq.reshape(-1, 1)).flatten()\ny_test_unscaled = scaler_y.inverse_transform(y_test_seq.reshape(-1, 1)).flatten()\n# ---------- RESULTS ----------\nresults = []\n# ======================================\n# 6. XGBoost\n# ======================================",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "X_test_seq",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "X_test_seq = X_seq_all[test_mask]\ny_test_seq = y_seq_all[test_mask]\ny_train_unscaled = scaler_y.inverse_transform(y_train_seq.reshape(-1, 1)).flatten()\ny_test_unscaled = scaler_y.inverse_transform(y_test_seq.reshape(-1, 1)).flatten()\n# ---------- RESULTS ----------\nresults = []\n# ======================================\n# 6. XGBoost\n# ======================================\nprint(\"\\n=== Training XGBoost ===\")",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "y_test_seq",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "y_test_seq = y_seq_all[test_mask]\ny_train_unscaled = scaler_y.inverse_transform(y_train_seq.reshape(-1, 1)).flatten()\ny_test_unscaled = scaler_y.inverse_transform(y_test_seq.reshape(-1, 1)).flatten()\n# ---------- RESULTS ----------\nresults = []\n# ======================================\n# 6. XGBoost\n# ======================================\nprint(\"\\n=== Training XGBoost ===\")\nxgb_model = xgb.XGBRegressor(",
         "detail": "training",
         "documentation": {}
     },
@@ -767,7 +875,16 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "y_train_unscaled = scaler_y.inverse_transform(y_train_seq.reshape(-1,1)).flatten()\ny_test_unscaled  = scaler_y.inverse_transform(y_test_seq.reshape(-1,1)).flatten()\n# ---------- RESULTS ----------\nresults = []\n# ======================================\n# 6. XGBoost\n# ======================================\nprint(\"\\n=== Training XGBoost ===\")\nxgb_model = xgb.XGBRegressor(\n    n_estimators=800, max_depth=5, learning_rate=0.05,",
+        "peekOfCode": "y_train_unscaled = scaler_y.inverse_transform(y_train_seq.reshape(-1, 1)).flatten()\ny_test_unscaled = scaler_y.inverse_transform(y_test_seq.reshape(-1, 1)).flatten()\n# ---------- RESULTS ----------\nresults = []\n# ======================================\n# 6. XGBoost\n# ======================================\nprint(\"\\n=== Training XGBoost ===\")\nxgb_model = xgb.XGBRegressor(\n    n_estimators=800,",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "y_test_unscaled",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "y_test_unscaled = scaler_y.inverse_transform(y_test_seq.reshape(-1, 1)).flatten()\n# ---------- RESULTS ----------\nresults = []\n# ======================================\n# 6. XGBoost\n# ======================================\nprint(\"\\n=== Training XGBoost ===\")\nxgb_model = xgb.XGBRegressor(\n    n_estimators=800,\n    max_depth=5,",
         "detail": "training",
         "documentation": {}
     },
@@ -776,7 +893,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "results = []\n# ======================================\n# 6. XGBoost\n# ======================================\nprint(\"\\n=== Training XGBoost ===\")\nxgb_model = xgb.XGBRegressor(\n    n_estimators=800, max_depth=5, learning_rate=0.05,\n    subsample=0.8, colsample_bytree=0.8,\n    random_state=RANDOM_STATE, n_jobs=-1\n)",
+        "peekOfCode": "results = []\n# ======================================\n# 6. XGBoost\n# ======================================\nprint(\"\\n=== Training XGBoost ===\")\nxgb_model = xgb.XGBRegressor(\n    n_estimators=800,\n    max_depth=5,\n    learning_rate=0.05,\n    subsample=0.8,",
         "detail": "training",
         "documentation": {}
     },
@@ -785,7 +902,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "xgb_model = xgb.XGBRegressor(\n    n_estimators=800, max_depth=5, learning_rate=0.05,\n    subsample=0.8, colsample_bytree=0.8,\n    random_state=RANDOM_STATE, n_jobs=-1\n)\nxgb_model.fit(X_train_tree, y_train_tree)\n# Save model\njoblib.dump(xgb_model, \"saved_models/xgboost_model.pkl\")\nxgb_train_pred = xgb_model.predict(X_train_tree)\nxgb_test_pred  = xgb_model.predict(X_test_tree)",
+        "peekOfCode": "xgb_model = xgb.XGBRegressor(\n    n_estimators=800,\n    max_depth=5,\n    learning_rate=0.05,\n    subsample=0.8,\n    colsample_bytree=0.8,\n    random_state=RANDOM_STATE,\n    n_jobs=-1,\n)\nxgb_model.fit(X_train_tree, y_train_tree)",
         "detail": "training",
         "documentation": {}
     },
@@ -794,7 +911,16 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "xgb_train_pred = xgb_model.predict(X_train_tree)\nxgb_test_pred  = xgb_model.predict(X_test_tree)\nresults.append([\n    'XGBoost',\n    r2_score(y_train_tree, xgb_train_pred),\n    r2_score(y_test, xgb_test_pred),\n    mean_absolute_error(y_test, xgb_test_pred),\n    rmse(y_test, xgb_test_pred)\n])\n# ======================================",
+        "peekOfCode": "xgb_train_pred = xgb_model.predict(X_train_tree)\nxgb_test_pred = xgb_model.predict(X_test_tree)\nresults.append(\n    [\n        \"XGBoost\",\n        r2_score(y_train_tree, xgb_train_pred),\n        r2_score(y_test, xgb_test_pred),\n        mean_absolute_error(y_test, xgb_test_pred),\n        rmse(y_test, xgb_test_pred),\n    ]",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "xgb_test_pred",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "xgb_test_pred = xgb_model.predict(X_test_tree)\nresults.append(\n    [\n        \"XGBoost\",\n        r2_score(y_train_tree, xgb_train_pred),\n        r2_score(y_test, xgb_test_pred),\n        mean_absolute_error(y_test, xgb_test_pred),\n        rmse(y_test, xgb_test_pred),\n    ]\n)",
         "detail": "training",
         "documentation": {}
     },
@@ -803,7 +929,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "rf = RandomForestRegressor(\n    n_estimators=300, max_depth=10,\n    random_state=RANDOM_STATE, n_jobs=-1\n)\nrf.fit(X_train_tree, y_train_tree)\n# Save model\njoblib.dump(rf, \"saved_models/random_forest_model.pkl\")\nrf_train_pred = rf.predict(X_train_tree)\nrf_test_pred  = rf.predict(X_test_tree)\nresults.append([",
+        "peekOfCode": "rf = RandomForestRegressor(\n    n_estimators=300, max_depth=10, random_state=RANDOM_STATE, n_jobs=-1\n)\nrf.fit(X_train_tree, y_train_tree)\n# Save model\njoblib.dump(rf, \"saved_models/random_forest_model.pkl\")\nrf_train_pred = rf.predict(X_train_tree)\nrf_test_pred = rf.predict(X_test_tree)\nresults.append(\n    [",
         "detail": "training",
         "documentation": {}
     },
@@ -812,7 +938,16 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "rf_train_pred = rf.predict(X_train_tree)\nrf_test_pred  = rf.predict(X_test_tree)\nresults.append([\n    'Random Forest',\n    r2_score(y_train_tree, rf_train_pred),\n    r2_score(y_test, rf_test_pred),\n    mean_absolute_error(y_test, rf_test_pred),\n    rmse(y_test, rf_test_pred)\n])\n# ======================================",
+        "peekOfCode": "rf_train_pred = rf.predict(X_train_tree)\nrf_test_pred = rf.predict(X_test_tree)\nresults.append(\n    [\n        \"Random Forest\",\n        r2_score(y_train_tree, rf_train_pred),\n        r2_score(y_test, rf_test_pred),\n        mean_absolute_error(y_test, rf_test_pred),\n        rmse(y_test, rf_test_pred),\n    ]",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "rf_test_pred",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "rf_test_pred = rf.predict(X_test_tree)\nresults.append(\n    [\n        \"Random Forest\",\n        r2_score(y_train_tree, rf_train_pred),\n        r2_score(y_test, rf_test_pred),\n        mean_absolute_error(y_test, rf_test_pred),\n        rmse(y_test, rf_test_pred),\n    ]\n)",
         "detail": "training",
         "documentation": {}
     },
@@ -821,7 +956,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "lstm_model = models.Sequential([\n    layers.Input(shape=(SEQ_LEN, X_train_seq.shape[2])),\n    layers.LSTM(64),\n    layers.Dropout(0.2),\n    layers.Dense(32, activation='relu'),\n    layers.Dense(1)\n])\nlstm_model.compile(optimizer='adam', loss='mse')\nes = callbacks.EarlyStopping(patience=5, restore_best_weights=True)\nlstm_model.fit(",
+        "peekOfCode": "lstm_model = models.Sequential(\n    [\n        layers.Input(shape=(SEQ_LEN, X_train_seq.shape[2])),\n        layers.LSTM(64),\n        layers.Dropout(0.2),\n        layers.Dense(32, activation=\"relu\"),\n        layers.Dense(1),\n    ]\n)\nlstm_model.compile(optimizer=\"adam\", loss=\"mse\")",
         "detail": "training",
         "documentation": {}
     },
@@ -830,7 +965,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "es = callbacks.EarlyStopping(patience=5, restore_best_weights=True)\nlstm_model.fit(\n    X_train_seq, y_train_seq,\n    validation_split=0.1,\n    epochs=50,\n    batch_size=64,\n    callbacks=[es],\n    verbose=0\n)\n# Save model",
+        "peekOfCode": "es = callbacks.EarlyStopping(patience=5, restore_best_weights=True)\nlstm_model.fit(\n    X_train_seq,\n    y_train_seq,\n    validation_split=0.1,\n    epochs=50,\n    batch_size=64,\n    callbacks=[es],\n    verbose=0,\n)",
         "detail": "training",
         "documentation": {}
     },
@@ -839,7 +974,16 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "lstm_train_pred = scaler_y.inverse_transform(lstm_model.predict(X_train_seq))\nlstm_test_pred  = scaler_y.inverse_transform(lstm_model.predict(X_test_seq))\nlstm_train_pred = lstm_train_pred.flatten()\nlstm_test_pred  = lstm_test_pred.flatten()\nresults.append([\n    'LSTM',\n    r2_score(y_train_unscaled, lstm_train_pred),\n    r2_score(y_test_unscaled, lstm_test_pred),\n    mean_absolute_error(y_test_unscaled, lstm_test_pred),\n    rmse(y_test_unscaled, lstm_test_pred)",
+        "peekOfCode": "lstm_train_pred = scaler_y.inverse_transform(lstm_model.predict(X_train_seq))\nlstm_test_pred = scaler_y.inverse_transform(lstm_model.predict(X_test_seq))\nlstm_train_pred = lstm_train_pred.flatten()\nlstm_test_pred = lstm_test_pred.flatten()\nresults.append(\n    [\n        \"LSTM\",\n        r2_score(y_train_unscaled, lstm_train_pred),\n        r2_score(y_test_unscaled, lstm_test_pred),\n        mean_absolute_error(y_test_unscaled, lstm_test_pred),",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "lstm_test_pred",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "lstm_test_pred = scaler_y.inverse_transform(lstm_model.predict(X_test_seq))\nlstm_train_pred = lstm_train_pred.flatten()\nlstm_test_pred = lstm_test_pred.flatten()\nresults.append(\n    [\n        \"LSTM\",\n        r2_score(y_train_unscaled, lstm_train_pred),\n        r2_score(y_test_unscaled, lstm_test_pred),\n        mean_absolute_error(y_test_unscaled, lstm_test_pred),\n        rmse(y_test_unscaled, lstm_test_pred),",
         "detail": "training",
         "documentation": {}
     },
@@ -848,7 +992,16 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "lstm_train_pred = lstm_train_pred.flatten()\nlstm_test_pred  = lstm_test_pred.flatten()\nresults.append([\n    'LSTM',\n    r2_score(y_train_unscaled, lstm_train_pred),\n    r2_score(y_test_unscaled, lstm_test_pred),\n    mean_absolute_error(y_test_unscaled, lstm_test_pred),\n    rmse(y_test_unscaled, lstm_test_pred)\n])\n# ======================================",
+        "peekOfCode": "lstm_train_pred = lstm_train_pred.flatten()\nlstm_test_pred = lstm_test_pred.flatten()\nresults.append(\n    [\n        \"LSTM\",\n        r2_score(y_train_unscaled, lstm_train_pred),\n        r2_score(y_test_unscaled, lstm_test_pred),\n        mean_absolute_error(y_test_unscaled, lstm_test_pred),\n        rmse(y_test_unscaled, lstm_test_pred),\n    ]",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "lstm_test_pred",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "lstm_test_pred = lstm_test_pred.flatten()\nresults.append(\n    [\n        \"LSTM\",\n        r2_score(y_train_unscaled, lstm_train_pred),\n        r2_score(y_test_unscaled, lstm_test_pred),\n        mean_absolute_error(y_test_unscaled, lstm_test_pred),\n        rmse(y_test_unscaled, lstm_test_pred),\n    ]\n)",
         "detail": "training",
         "documentation": {}
     },
@@ -857,7 +1010,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "inp = layers.Input(shape=(SEQ_LEN, X_train_seq.shape[2]))\nx = layers.Conv1D(32, 3, padding='same', activation='relu')(inp)\nx = layers.MaxPool1D(2)(x)\nx = layers.LSTM(48)(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(24, activation='relu')(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\ncnn_lstm_model.compile(optimizer='adam', loss='mse')\ncnn_lstm_model.fit(",
+        "peekOfCode": "inp = layers.Input(shape=(SEQ_LEN, X_train_seq.shape[2]))\nx = layers.Conv1D(32, 3, padding=\"same\", activation=\"relu\")(inp)\nx = layers.MaxPool1D(2)(x)\nx = layers.LSTM(48)(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(24, activation=\"relu\")(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\ncnn_lstm_model.compile(optimizer=\"adam\", loss=\"mse\")\ncnn_lstm_model.fit(",
         "detail": "training",
         "documentation": {}
     },
@@ -866,7 +1019,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "x = layers.Conv1D(32, 3, padding='same', activation='relu')(inp)\nx = layers.MaxPool1D(2)(x)\nx = layers.LSTM(48)(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(24, activation='relu')(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\ncnn_lstm_model.compile(optimizer='adam', loss='mse')\ncnn_lstm_model.fit(\n    X_train_seq, y_train_seq,",
+        "peekOfCode": "x = layers.Conv1D(32, 3, padding=\"same\", activation=\"relu\")(inp)\nx = layers.MaxPool1D(2)(x)\nx = layers.LSTM(48)(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(24, activation=\"relu\")(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\ncnn_lstm_model.compile(optimizer=\"adam\", loss=\"mse\")\ncnn_lstm_model.fit(\n    X_train_seq,",
         "detail": "training",
         "documentation": {}
     },
@@ -875,7 +1028,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "x = layers.MaxPool1D(2)(x)\nx = layers.LSTM(48)(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(24, activation='relu')(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\ncnn_lstm_model.compile(optimizer='adam', loss='mse')\ncnn_lstm_model.fit(\n    X_train_seq, y_train_seq,\n    validation_split=0.1,",
+        "peekOfCode": "x = layers.MaxPool1D(2)(x)\nx = layers.LSTM(48)(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(24, activation=\"relu\")(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\ncnn_lstm_model.compile(optimizer=\"adam\", loss=\"mse\")\ncnn_lstm_model.fit(\n    X_train_seq,\n    y_train_seq,",
         "detail": "training",
         "documentation": {}
     },
@@ -884,7 +1037,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "x = layers.LSTM(48)(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(24, activation='relu')(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\ncnn_lstm_model.compile(optimizer='adam', loss='mse')\ncnn_lstm_model.fit(\n    X_train_seq, y_train_seq,\n    validation_split=0.1,\n    epochs=50,",
+        "peekOfCode": "x = layers.LSTM(48)(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(24, activation=\"relu\")(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\ncnn_lstm_model.compile(optimizer=\"adam\", loss=\"mse\")\ncnn_lstm_model.fit(\n    X_train_seq,\n    y_train_seq,\n    validation_split=0.1,",
         "detail": "training",
         "documentation": {}
     },
@@ -893,7 +1046,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "x = layers.Dropout(0.2)(x)\nx = layers.Dense(24, activation='relu')(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\ncnn_lstm_model.compile(optimizer='adam', loss='mse')\ncnn_lstm_model.fit(\n    X_train_seq, y_train_seq,\n    validation_split=0.1,\n    epochs=50,\n    batch_size=64,",
+        "peekOfCode": "x = layers.Dropout(0.2)(x)\nx = layers.Dense(24, activation=\"relu\")(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\ncnn_lstm_model.compile(optimizer=\"adam\", loss=\"mse\")\ncnn_lstm_model.fit(\n    X_train_seq,\n    y_train_seq,\n    validation_split=0.1,\n    epochs=50,",
         "detail": "training",
         "documentation": {}
     },
@@ -902,7 +1055,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "x = layers.Dense(24, activation='relu')(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\ncnn_lstm_model.compile(optimizer='adam', loss='mse')\ncnn_lstm_model.fit(\n    X_train_seq, y_train_seq,\n    validation_split=0.1,\n    epochs=50,\n    batch_size=64,\n    callbacks=[es],",
+        "peekOfCode": "x = layers.Dense(24, activation=\"relu\")(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\ncnn_lstm_model.compile(optimizer=\"adam\", loss=\"mse\")\ncnn_lstm_model.fit(\n    X_train_seq,\n    y_train_seq,\n    validation_split=0.1,\n    epochs=50,\n    batch_size=64,",
         "detail": "training",
         "documentation": {}
     },
@@ -911,7 +1064,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "out = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\ncnn_lstm_model.compile(optimizer='adam', loss='mse')\ncnn_lstm_model.fit(\n    X_train_seq, y_train_seq,\n    validation_split=0.1,\n    epochs=50,\n    batch_size=64,\n    callbacks=[es],\n    verbose=0",
+        "peekOfCode": "out = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\ncnn_lstm_model.compile(optimizer=\"adam\", loss=\"mse\")\ncnn_lstm_model.fit(\n    X_train_seq,\n    y_train_seq,\n    validation_split=0.1,\n    epochs=50,\n    batch_size=64,\n    callbacks=[es],",
         "detail": "training",
         "documentation": {}
     },
@@ -920,7 +1073,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "cnn_lstm_model = models.Model(inp, out)\ncnn_lstm_model.compile(optimizer='adam', loss='mse')\ncnn_lstm_model.fit(\n    X_train_seq, y_train_seq,\n    validation_split=0.1,\n    epochs=50,\n    batch_size=64,\n    callbacks=[es],\n    verbose=0\n)",
+        "peekOfCode": "cnn_lstm_model = models.Model(inp, out)\ncnn_lstm_model.compile(optimizer=\"adam\", loss=\"mse\")\ncnn_lstm_model.fit(\n    X_train_seq,\n    y_train_seq,\n    validation_split=0.1,\n    epochs=50,\n    batch_size=64,\n    callbacks=[es],\n    verbose=0,",
         "detail": "training",
         "documentation": {}
     },
@@ -929,7 +1082,16 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "cnn_train_pred = scaler_y.inverse_transform(cnn_lstm_model.predict(X_train_seq))\ncnn_test_pred  = scaler_y.inverse_transform(cnn_lstm_model.predict(X_test_seq))\ncnn_train_pred = cnn_train_pred.flatten()\ncnn_test_pred  = cnn_test_pred.flatten()\nresults.append([\n    'CNN-LSTM',\n    r2_score(y_train_unscaled, cnn_train_pred),\n    r2_score(y_test_unscaled, cnn_test_pred),\n    mean_absolute_error(y_test_unscaled, cnn_test_pred),\n    rmse(y_test_unscaled, cnn_test_pred)",
+        "peekOfCode": "cnn_train_pred = scaler_y.inverse_transform(cnn_lstm_model.predict(X_train_seq))\ncnn_test_pred = scaler_y.inverse_transform(cnn_lstm_model.predict(X_test_seq))\ncnn_train_pred = cnn_train_pred.flatten()\ncnn_test_pred = cnn_test_pred.flatten()\nresults.append(\n    [\n        \"CNN-LSTM\",\n        r2_score(y_train_unscaled, cnn_train_pred),\n        r2_score(y_test_unscaled, cnn_test_pred),\n        mean_absolute_error(y_test_unscaled, cnn_test_pred),",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "cnn_test_pred",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "cnn_test_pred = scaler_y.inverse_transform(cnn_lstm_model.predict(X_test_seq))\ncnn_train_pred = cnn_train_pred.flatten()\ncnn_test_pred = cnn_test_pred.flatten()\nresults.append(\n    [\n        \"CNN-LSTM\",\n        r2_score(y_train_unscaled, cnn_train_pred),\n        r2_score(y_test_unscaled, cnn_test_pred),\n        mean_absolute_error(y_test_unscaled, cnn_test_pred),\n        rmse(y_test_unscaled, cnn_test_pred),",
         "detail": "training",
         "documentation": {}
     },
@@ -938,7 +1100,16 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "cnn_train_pred = cnn_train_pred.flatten()\ncnn_test_pred  = cnn_test_pred.flatten()\nresults.append([\n    'CNN-LSTM',\n    r2_score(y_train_unscaled, cnn_train_pred),\n    r2_score(y_test_unscaled, cnn_test_pred),\n    mean_absolute_error(y_test_unscaled, cnn_test_pred),\n    rmse(y_test_unscaled, cnn_test_pred)\n])\n# ---------- 10. Final Results ----------",
+        "peekOfCode": "cnn_train_pred = cnn_train_pred.flatten()\ncnn_test_pred = cnn_test_pred.flatten()\nresults.append(\n    [\n        \"CNN-LSTM\",\n        r2_score(y_train_unscaled, cnn_train_pred),\n        r2_score(y_test_unscaled, cnn_test_pred),\n        mean_absolute_error(y_test_unscaled, cnn_test_pred),\n        rmse(y_test_unscaled, cnn_test_pred),\n    ]",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "cnn_test_pred",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "cnn_test_pred = cnn_test_pred.flatten()\nresults.append(\n    [\n        \"CNN-LSTM\",\n        r2_score(y_train_unscaled, cnn_train_pred),\n        r2_score(y_test_unscaled, cnn_test_pred),\n        mean_absolute_error(y_test_unscaled, cnn_test_pred),\n        rmse(y_test_unscaled, cnn_test_pred),\n    ]\n)",
         "detail": "training",
         "documentation": {}
     },
@@ -947,7 +1118,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "results_df = pd.DataFrame(results, columns=['Model','R2_Train','R2_Test','MAE_Test','RMSE_Test'])\nprint(results_df)\nresults_df.to_csv(\"saved_models/model_results.csv\", index=False)\nprint(\"\\n🎉 All models saved successfully in: saved_models/\")",
+        "peekOfCode": "results_df = pd.DataFrame(\n    results, columns=[\"Model\", \"R2_Train\", \"R2_Test\", \"MAE_Test\", \"RMSE_Test\"]\n)\nprint(results_df)\nresults_df.to_csv(\"saved_models/model_results.csv\", index=False)\nprint(\"\\n🎉 All models saved successfully in: saved_models/\")",
         "detail": "training",
         "documentation": {}
     },
@@ -965,7 +1136,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df = pd.read_csv(\n    \"NASA meteriological and solar radiaton data/lahore_hourly_filled.csv\",\n    parse_dates=[\"datetime\"],\n    dayfirst=True,\n    index_col=\"datetime\"\n)\ndf = df.sort_index().apply(pd.to_numeric, errors=\"coerce\")\ndf.index = pd.to_datetime(df.index, dayfirst=True)\n# Filter daylight-only\ndf_day = df[df[\"SolarZenith\"] < 90].copy()",
+        "peekOfCode": "df = pd.read_csv(\n    \"NASA meteriological and solar radiaton data/lahore_hourly_filled.csv\",\n    parse_dates=[\"datetime\"],\n    dayfirst=True,\n    index_col=\"datetime\",\n)\ndf = df.sort_index().apply(pd.to_numeric, errors=\"coerce\")\ndf.index = pd.to_datetime(df.index, dayfirst=True)\n# Use ALL hours (not just daylight) - model should know night = 0\ndf_day = df.copy()",
         "detail": "trend",
         "documentation": {}
     },
@@ -974,7 +1145,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df = df.sort_index().apply(pd.to_numeric, errors=\"coerce\")\ndf.index = pd.to_datetime(df.index, dayfirst=True)\n# Filter daylight-only\ndf_day = df[df[\"SolarZenith\"] < 90].copy()\ndf_day.dropna(subset=[\"SolarRadiation\"], inplace=True)\ndf_day[\"hour\"] = df_day.index.hour\ndf_day[\"month\"] = df_day.index.month\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"save_model/xgboost_model.pkl\")",
+        "peekOfCode": "df = df.sort_index().apply(pd.to_numeric, errors=\"coerce\")\ndf.index = pd.to_datetime(df.index, dayfirst=True)\n# Use ALL hours (not just daylight) - model should know night = 0\ndf_day = df.copy()\ndf_day.dropna(subset=[\"SolarRadiation\"], inplace=True)\n# Add cyclical encoding for hour and month\ndf_day[\"hour\"] = df_day.index.hour\ndf_day[\"month\"] = df_day.index.month\ndf_day[\"hour_sin\"] = np.sin(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)",
         "detail": "trend",
         "documentation": {}
     },
@@ -983,7 +1154,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df.index = pd.to_datetime(df.index, dayfirst=True)\n# Filter daylight-only\ndf_day = df[df[\"SolarZenith\"] < 90].copy()\ndf_day.dropna(subset=[\"SolarRadiation\"], inplace=True)\ndf_day[\"hour\"] = df_day.index.hour\ndf_day[\"month\"] = df_day.index.month\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model  = joblib.load(\"save_model/random_forest_model.pkl\")",
+        "peekOfCode": "df.index = pd.to_datetime(df.index, dayfirst=True)\n# Use ALL hours (not just daylight) - model should know night = 0\ndf_day = df.copy()\ndf_day.dropna(subset=[\"SolarRadiation\"], inplace=True)\n# Add cyclical encoding for hour and month\ndf_day[\"hour\"] = df_day.index.hour\ndf_day[\"month\"] = df_day.index.month\ndf_day[\"hour_sin\"] = np.sin(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)",
         "detail": "trend",
         "documentation": {}
     },
@@ -992,7 +1163,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df_day = df[df[\"SolarZenith\"] < 90].copy()\ndf_day.dropna(subset=[\"SolarRadiation\"], inplace=True)\ndf_day[\"hour\"] = df_day.index.hour\ndf_day[\"month\"] = df_day.index.month\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model  = joblib.load(\"save_model/random_forest_model.pkl\")\nlstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")",
+        "peekOfCode": "df_day = df.copy()\ndf_day.dropna(subset=[\"SolarRadiation\"], inplace=True)\n# Add cyclical encoding for hour and month\ndf_day[\"hour\"] = df_day.index.hour\ndf_day[\"month\"] = df_day.index.month\ndf_day[\"hour_sin\"] = np.sin(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ntarget_col = \"SolarRadiation\"",
         "detail": "trend",
         "documentation": {}
     },
@@ -1001,7 +1172,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df_day[\"hour\"] = df_day.index.hour\ndf_day[\"month\"] = df_day.index.month\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model  = joblib.load(\"save_model/random_forest_model.pkl\")\nlstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")",
+        "peekOfCode": "df_day[\"hour\"] = df_day.index.hour\ndf_day[\"month\"] = df_day.index.month\ndf_day[\"hour_sin\"] = np.sin(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model = joblib.load(\"save_model/random_forest_model.pkl\")",
         "detail": "trend",
         "documentation": {}
     },
@@ -1010,7 +1181,43 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df_day[\"month\"] = df_day.index.month\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model  = joblib.load(\"save_model/random_forest_model.pkl\")\nlstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------",
+        "peekOfCode": "df_day[\"month\"] = df_day.index.month\ndf_day[\"hour_sin\"] = np.sin(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model = joblib.load(\"save_model/random_forest_model.pkl\")\nlstm_model = load_model(\"save_model/lstm_model.h5\")",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "df_day[\"hour_sin\"]",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "df_day[\"hour_sin\"] = np.sin(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model = joblib.load(\"save_model/random_forest_model.pkl\")\nlstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "df_day[\"hour_cos\"]",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "df_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model = joblib.load(\"save_model/random_forest_model.pkl\")\nlstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "df_day[\"month_sin\"]",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "df_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model = joblib.load(\"save_model/random_forest_model.pkl\")\nlstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "df_day[\"month_cos\"]",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "df_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model = joblib.load(\"save_model/random_forest_model.pkl\")\nlstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------",
         "detail": "trend",
         "documentation": {}
     },
@@ -1019,7 +1226,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "target_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model  = joblib.load(\"save_model/random_forest_model.pkl\")\nlstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24",
+        "peekOfCode": "target_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model = joblib.load(\"save_model/random_forest_model.pkl\")\nlstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24",
         "detail": "trend",
         "documentation": {}
     },
@@ -1028,7 +1235,16 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "xgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model  = joblib.load(\"save_model/random_forest_model.pkl\")\nlstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------",
+        "peekOfCode": "xgb_model = joblib.load(\"save_model/xgboost_model.pkl\")\nrf_model = joblib.load(\"save_model/random_forest_model.pkl\")\nlstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "rf_model",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "rf_model = joblib.load(\"save_model/random_forest_model.pkl\")\nlstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------\nyear = 2025",
         "detail": "trend",
         "documentation": {}
     },
@@ -1037,7 +1253,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "lstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------\nyear = 2025\nmonth = 6   # June",
+        "peekOfCode": "lstm_model = load_model(\"save_model/lstm_model.h5\")\ncnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------\nyear = 2025\nmonth = 6  # June",
         "detail": "trend",
         "documentation": {}
     },
@@ -1046,7 +1262,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "cnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------\nyear = 2025\nmonth = 6   # June\nday = 15    # 15th",
+        "peekOfCode": "cnn_lstm_model = load_model(\"save_model/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------\nyear = 2025\nmonth = 6  # June\nday = 15  # 15th",
         "detail": "trend",
         "documentation": {}
     },
@@ -1055,7 +1271,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "scaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------\nyear = 2025\nmonth = 6   # June\nday = 15    # 15th\n# Generate hourly datetime index for the day",
+        "peekOfCode": "scaler_X = joblib.load(\"save_model/scaler_X.pkl\")\nscaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------\nyear = 2025\nmonth = 6  # June\nday = 15  # 15th\n# Generate hourly datetime index for the day",
         "detail": "trend",
         "documentation": {}
     },
@@ -1064,7 +1280,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "scaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------\nyear = 2025\nmonth = 6   # June\nday = 15    # 15th\n# Generate hourly datetime index for the day\ndate_index = pd.date_range(",
+        "peekOfCode": "scaler_y = joblib.load(\"save_model/scaler_y.pkl\")\n# ---------- 3. Forecast settings ----------\nMAX_LAG = 24\nSEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------\nyear = 2025\nmonth = 6  # June\nday = 15  # 15th\n# Generate hourly datetime index for the day\ndate_index = pd.date_range(",
         "detail": "trend",
         "documentation": {}
     },
@@ -1073,7 +1289,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "MAX_LAG = 24\nSEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------\nyear = 2025\nmonth = 6   # June\nday = 15    # 15th\n# Generate hourly datetime index for the day\ndate_index = pd.date_range(\n    start=f\"{year}-{month:02d}-{day:02d} 00:00\",\n    end=f\"{year}-{month:02d}-{day:02d} 23:00\",",
+        "peekOfCode": "MAX_LAG = 24\nSEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------\nyear = 2025\nmonth = 6  # June\nday = 15  # 15th\n# Generate hourly datetime index for the day\ndate_index = pd.date_range(\n    start=f\"{year}-{month:02d}-{day:02d} 00:00\",\n    end=f\"{year}-{month:02d}-{day:02d} 23:00\",",
         "detail": "trend",
         "documentation": {}
     },
@@ -1082,7 +1298,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "SEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------\nyear = 2025\nmonth = 6   # June\nday = 15    # 15th\n# Generate hourly datetime index for the day\ndate_index = pd.date_range(\n    start=f\"{year}-{month:02d}-{day:02d} 00:00\",\n    end=f\"{year}-{month:02d}-{day:02d} 23:00\",\n    freq='H'",
+        "peekOfCode": "SEQ_LEN = 24\n# ---------- 4. User input: day to forecast ----------\nyear = 2025\nmonth = 6  # June\nday = 15  # 15th\n# Generate hourly datetime index for the day\ndate_index = pd.date_range(\n    start=f\"{year}-{month:02d}-{day:02d} 00:00\",\n    end=f\"{year}-{month:02d}-{day:02d} 23:00\",\n    freq=\"H\",",
         "detail": "trend",
         "documentation": {}
     },
@@ -1091,7 +1307,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "year = 2025\nmonth = 6   # June\nday = 15    # 15th\n# Generate hourly datetime index for the day\ndate_index = pd.date_range(\n    start=f\"{year}-{month:02d}-{day:02d} 00:00\",\n    end=f\"{year}-{month:02d}-{day:02d} 23:00\",\n    freq='H'\n)\nhours = date_index.hour",
+        "peekOfCode": "year = 2025\nmonth = 6  # June\nday = 15  # 15th\n# Generate hourly datetime index for the day\ndate_index = pd.date_range(\n    start=f\"{year}-{month:02d}-{day:02d} 00:00\",\n    end=f\"{year}-{month:02d}-{day:02d} 23:00\",\n    freq=\"H\",\n)\nhours = date_index.hour",
         "detail": "trend",
         "documentation": {}
     },
@@ -1100,7 +1316,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "month = 6   # June\nday = 15    # 15th\n# Generate hourly datetime index for the day\ndate_index = pd.date_range(\n    start=f\"{year}-{month:02d}-{day:02d} 00:00\",\n    end=f\"{year}-{month:02d}-{day:02d} 23:00\",\n    freq='H'\n)\nhours = date_index.hour\n# ---------- 5. Prepare tree-based model inputs ----------",
+        "peekOfCode": "month = 6  # June\nday = 15  # 15th\n# Generate hourly datetime index for the day\ndate_index = pd.date_range(\n    start=f\"{year}-{month:02d}-{day:02d} 00:00\",\n    end=f\"{year}-{month:02d}-{day:02d} 23:00\",\n    freq=\"H\",\n)\nhours = date_index.hour\n# ---------- 5. Prepare tree-based model inputs ----------",
         "detail": "trend",
         "documentation": {}
     },
@@ -1109,7 +1325,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "day = 15    # 15th\n# Generate hourly datetime index for the day\ndate_index = pd.date_range(\n    start=f\"{year}-{month:02d}-{day:02d} 00:00\",\n    end=f\"{year}-{month:02d}-{day:02d} 23:00\",\n    freq='H'\n)\nhours = date_index.hour\n# ---------- 5. Prepare tree-based model inputs ----------\nlast_hist_values = df_day[target_col].values",
+        "peekOfCode": "day = 15  # 15th\n# Generate hourly datetime index for the day\ndate_index = pd.date_range(\n    start=f\"{year}-{month:02d}-{day:02d} 00:00\",\n    end=f\"{year}-{month:02d}-{day:02d} 23:00\",\n    freq=\"H\",\n)\nhours = date_index.hour\n# ---------- 5. Prepare tree-based model inputs ----------\nlast_hist_values = df_day[target_col].values",
         "detail": "trend",
         "documentation": {}
     },
@@ -1118,7 +1334,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "date_index = pd.date_range(\n    start=f\"{year}-{month:02d}-{day:02d} 00:00\",\n    end=f\"{year}-{month:02d}-{day:02d} 23:00\",\n    freq='H'\n)\nhours = date_index.hour\n# ---------- 5. Prepare tree-based model inputs ----------\nlast_hist_values = df_day[target_col].values\ntree_series = last_hist_values[-MAX_LAG:].tolist()  # last 24 hours\n# Use last known weather values",
+        "peekOfCode": "date_index = pd.date_range(\n    start=f\"{year}-{month:02d}-{day:02d} 00:00\",\n    end=f\"{year}-{month:02d}-{day:02d} 23:00\",\n    freq=\"H\",\n)\nhours = date_index.hour\n# ---------- 5. Prepare tree-based model inputs ----------\nlast_hist_values = df_day[target_col].values\ntree_series = last_hist_values[-MAX_LAG:].tolist()  # last 24 hours\n# Use last known weather values",
         "detail": "trend",
         "documentation": {}
     },
@@ -1127,7 +1343,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "hours = date_index.hour\n# ---------- 5. Prepare tree-based model inputs ----------\nlast_hist_values = df_day[target_col].values\ntree_series = last_hist_values[-MAX_LAG:].tolist()  # last 24 hours\n# Use last known weather values\nTemperature = df_day[\"Temperature\"].iloc[-1]\nHumiditySpecific = df_day[\"HumiditySpecific\"].iloc[-1]\nHumidityRelative = df_day[\"HumidityRelative\"].iloc[-1]\nPressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]",
+        "peekOfCode": "hours = date_index.hour\n# ---------- 5. Prepare tree-based model inputs ----------\nlast_hist_values = df_day[target_col].values\ntree_series = last_hist_values[-MAX_LAG:].tolist()  # last 24 hours\n# Use last known weather values\nTemperature = df_day[\"Temperature\"].iloc[-1]\nSolarZenith = df_day[\"SolarZenith\"].iloc[-1]\nHumiditySpecific = df_day[\"HumiditySpecific\"].iloc[-1]\nHumidityRelative = df_day[\"HumidityRelative\"].iloc[-1]\nPressure = df_day[\"Pressure\"].iloc[-1]",
         "detail": "trend",
         "documentation": {}
     },
@@ -1136,7 +1352,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "last_hist_values = df_day[target_col].values\ntree_series = last_hist_values[-MAX_LAG:].tolist()  # last 24 hours\n# Use last known weather values\nTemperature = df_day[\"Temperature\"].iloc[-1]\nHumiditySpecific = df_day[\"HumiditySpecific\"].iloc[-1]\nHumidityRelative = df_day[\"HumidityRelative\"].iloc[-1]\nPressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\ntree_predictions = []",
+        "peekOfCode": "last_hist_values = df_day[target_col].values\ntree_series = last_hist_values[-MAX_LAG:].tolist()  # last 24 hours\n# Use last known weather values\nTemperature = df_day[\"Temperature\"].iloc[-1]\nSolarZenith = df_day[\"SolarZenith\"].iloc[-1]\nHumiditySpecific = df_day[\"HumiditySpecific\"].iloc[-1]\nHumidityRelative = df_day[\"HumidityRelative\"].iloc[-1]\nPressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]",
         "detail": "trend",
         "documentation": {}
     },
@@ -1145,7 +1361,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "tree_series = last_hist_values[-MAX_LAG:].tolist()  # last 24 hours\n# Use last known weather values\nTemperature = df_day[\"Temperature\"].iloc[-1]\nHumiditySpecific = df_day[\"HumiditySpecific\"].iloc[-1]\nHumidityRelative = df_day[\"HumidityRelative\"].iloc[-1]\nPressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\ntree_predictions = []\nfor h in range(24):",
+        "peekOfCode": "tree_series = last_hist_values[-MAX_LAG:].tolist()  # last 24 hours\n# Use last known weather values\nTemperature = df_day[\"Temperature\"].iloc[-1]\nSolarZenith = df_day[\"SolarZenith\"].iloc[-1]\nHumiditySpecific = df_day[\"HumiditySpecific\"].iloc[-1]\nHumidityRelative = df_day[\"HumidityRelative\"].iloc[-1]\nPressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\ntree_predictions = []",
         "detail": "trend",
         "documentation": {}
     },
@@ -1154,7 +1370,16 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "Temperature = df_day[\"Temperature\"].iloc[-1]\nHumiditySpecific = df_day[\"HumiditySpecific\"].iloc[-1]\nHumidityRelative = df_day[\"HumidityRelative\"].iloc[-1]\nPressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\ntree_predictions = []\nfor h in range(24):\n    hour = hours[h]\n    lag_feats = tree_series[-MAX_LAG:]",
+        "peekOfCode": "Temperature = df_day[\"Temperature\"].iloc[-1]\nSolarZenith = df_day[\"SolarZenith\"].iloc[-1]\nHumiditySpecific = df_day[\"HumiditySpecific\"].iloc[-1]\nHumidityRelative = df_day[\"HumidityRelative\"].iloc[-1]\nPressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\ntree_predictions = []\nfor h in range(24):\n    hour = hours[h]",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "SolarZenith",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "SolarZenith = df_day[\"SolarZenith\"].iloc[-1]\nHumiditySpecific = df_day[\"HumiditySpecific\"].iloc[-1]\nHumidityRelative = df_day[\"HumidityRelative\"].iloc[-1]\nPressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\ntree_predictions = []\nfor h in range(24):\n    hour = hours[h]\n    # Compute cyclical features for current hour",
         "detail": "trend",
         "documentation": {}
     },
@@ -1163,7 +1388,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "HumiditySpecific = df_day[\"HumiditySpecific\"].iloc[-1]\nHumidityRelative = df_day[\"HumidityRelative\"].iloc[-1]\nPressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\ntree_predictions = []\nfor h in range(24):\n    hour = hours[h]\n    lag_feats = tree_series[-MAX_LAG:]\n    X_row = [hour, month, Temperature, HumiditySpecific, HumidityRelative,",
+        "peekOfCode": "HumiditySpecific = df_day[\"HumiditySpecific\"].iloc[-1]\nHumidityRelative = df_day[\"HumidityRelative\"].iloc[-1]\nPressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\ntree_predictions = []\nfor h in range(24):\n    hour = hours[h]\n    # Compute cyclical features for current hour\n    hour_sin = np.sin(2 * np.pi * hour / 24)",
         "detail": "trend",
         "documentation": {}
     },
@@ -1172,7 +1397,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "HumidityRelative = df_day[\"HumidityRelative\"].iloc[-1]\nPressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\ntree_predictions = []\nfor h in range(24):\n    hour = hours[h]\n    lag_feats = tree_series[-MAX_LAG:]\n    X_row = [hour, month, Temperature, HumiditySpecific, HumidityRelative,\n             Pressure, WindSpeed, WindDirection] + lag_feats",
+        "peekOfCode": "HumidityRelative = df_day[\"HumidityRelative\"].iloc[-1]\nPressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\ntree_predictions = []\nfor h in range(24):\n    hour = hours[h]\n    # Compute cyclical features for current hour\n    hour_sin = np.sin(2 * np.pi * hour / 24)\n    hour_cos = np.cos(2 * np.pi * hour / 24)",
         "detail": "trend",
         "documentation": {}
     },
@@ -1181,7 +1406,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "Pressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\ntree_predictions = []\nfor h in range(24):\n    hour = hours[h]\n    lag_feats = tree_series[-MAX_LAG:]\n    X_row = [hour, month, Temperature, HumiditySpecific, HumidityRelative,\n             Pressure, WindSpeed, WindDirection] + lag_feats\n    X_row = np.array(X_row).reshape(1, -1)",
+        "peekOfCode": "Pressure = df_day[\"Pressure\"].iloc[-1]\nWindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\ntree_predictions = []\nfor h in range(24):\n    hour = hours[h]\n    # Compute cyclical features for current hour\n    hour_sin = np.sin(2 * np.pi * hour / 24)\n    hour_cos = np.cos(2 * np.pi * hour / 24)\n    month_sin = np.sin(2 * np.pi * month / 12)",
         "detail": "trend",
         "documentation": {}
     },
@@ -1190,7 +1415,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "WindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\ntree_predictions = []\nfor h in range(24):\n    hour = hours[h]\n    lag_feats = tree_series[-MAX_LAG:]\n    X_row = [hour, month, Temperature, HumiditySpecific, HumidityRelative,\n             Pressure, WindSpeed, WindDirection] + lag_feats\n    X_row = np.array(X_row).reshape(1, -1)\n    xgb_pred = xgb_model.predict(X_row)[0]",
+        "peekOfCode": "WindSpeed = df_day[\"WindSpeed\"].iloc[-1]\nWindDirection = df_day[\"WindDirection\"].iloc[-1]\ntree_predictions = []\nfor h in range(24):\n    hour = hours[h]\n    # Compute cyclical features for current hour\n    hour_sin = np.sin(2 * np.pi * hour / 24)\n    hour_cos = np.cos(2 * np.pi * hour / 24)\n    month_sin = np.sin(2 * np.pi * month / 12)\n    month_cos = np.cos(2 * np.pi * month / 12)",
         "detail": "trend",
         "documentation": {}
     },
@@ -1199,7 +1424,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "WindDirection = df_day[\"WindDirection\"].iloc[-1]\ntree_predictions = []\nfor h in range(24):\n    hour = hours[h]\n    lag_feats = tree_series[-MAX_LAG:]\n    X_row = [hour, month, Temperature, HumiditySpecific, HumidityRelative,\n             Pressure, WindSpeed, WindDirection] + lag_feats\n    X_row = np.array(X_row).reshape(1, -1)\n    xgb_pred = xgb_model.predict(X_row)[0]\n    rf_pred  = rf_model.predict(X_row)[0]",
+        "peekOfCode": "WindDirection = df_day[\"WindDirection\"].iloc[-1]\ntree_predictions = []\nfor h in range(24):\n    hour = hours[h]\n    # Compute cyclical features for current hour\n    hour_sin = np.sin(2 * np.pi * hour / 24)\n    hour_cos = np.cos(2 * np.pi * hour / 24)\n    month_sin = np.sin(2 * np.pi * month / 12)\n    month_cos = np.cos(2 * np.pi * month / 12)\n    lag_feats = tree_series[-MAX_LAG:]",
         "detail": "trend",
         "documentation": {}
     },
@@ -1208,7 +1433,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "tree_predictions = []\nfor h in range(24):\n    hour = hours[h]\n    lag_feats = tree_series[-MAX_LAG:]\n    X_row = [hour, month, Temperature, HumiditySpecific, HumidityRelative,\n             Pressure, WindSpeed, WindDirection] + lag_feats\n    X_row = np.array(X_row).reshape(1, -1)\n    xgb_pred = xgb_model.predict(X_row)[0]\n    rf_pred  = rf_model.predict(X_row)[0]\n    tree_predictions.append((xgb_pred, rf_pred))",
+        "peekOfCode": "tree_predictions = []\nfor h in range(24):\n    hour = hours[h]\n    # Compute cyclical features for current hour\n    hour_sin = np.sin(2 * np.pi * hour / 24)\n    hour_cos = np.cos(2 * np.pi * hour / 24)\n    month_sin = np.sin(2 * np.pi * month / 12)\n    month_cos = np.cos(2 * np.pi * month / 12)\n    lag_feats = tree_series[-MAX_LAG:]\n    # Features order must match training: hour, month, hour_sin, hour_cos, month_sin, month_cos, weather, lags",
         "detail": "trend",
         "documentation": {}
     },
@@ -1217,7 +1442,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "seq_features = ['hour','month','Temperature','HumiditySpecific','HumidityRelative',\n                'Pressure','WindSpeed','WindDirection', target_col]\nseq_data = df_day[seq_features].copy()\n# Scale features\nX_seq_scaled = scaler_X.transform(seq_data.drop(columns=[target_col])).astype(np.float32)\n# Start with last SEQ_LEN rows\nseq_array = X_seq_scaled[-SEQ_LEN:].copy()\nseq_predictions = []\nfor h in range(24):\n    X_seq_input = seq_array[-SEQ_LEN:].reshape(1, SEQ_LEN, seq_array.shape[1])",
+        "peekOfCode": "seq_features = [\n    \"hour\",\n    \"month\",\n    \"hour_sin\",\n    \"hour_cos\",\n    \"month_sin\",\n    \"month_cos\",\n    \"Temperature\",\n    \"SolarZenith\",\n    \"HumiditySpecific\",",
         "detail": "trend",
         "documentation": {}
     },
@@ -1226,7 +1451,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "seq_data = df_day[seq_features].copy()\n# Scale features\nX_seq_scaled = scaler_X.transform(seq_data.drop(columns=[target_col])).astype(np.float32)\n# Start with last SEQ_LEN rows\nseq_array = X_seq_scaled[-SEQ_LEN:].copy()\nseq_predictions = []\nfor h in range(24):\n    X_seq_input = seq_array[-SEQ_LEN:].reshape(1, SEQ_LEN, seq_array.shape[1])\n    lstm_pred_scaled = lstm_model.predict(X_seq_input, verbose=0)\n    cnn_pred_scaled  = cnn_lstm_model.predict(X_seq_input, verbose=0)",
+        "peekOfCode": "seq_data = df_day[seq_features].copy()\n# Scale features (excluding target which is last column)\nX_seq_scaled = scaler_X.transform(seq_data.drop(columns=[target_col])).astype(\n    np.float32\n)\n# Start with last SEQ_LEN rows\nseq_array = X_seq_scaled[-SEQ_LEN:].copy()\nseq_predictions = []\n# Get the feature indices for hour-related features (for updating during prediction)\n# Feature order: hour, month, hour_sin, hour_cos, month_sin, month_cos, weather...",
         "detail": "trend",
         "documentation": {}
     },
@@ -1235,7 +1460,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "X_seq_scaled = scaler_X.transform(seq_data.drop(columns=[target_col])).astype(np.float32)\n# Start with last SEQ_LEN rows\nseq_array = X_seq_scaled[-SEQ_LEN:].copy()\nseq_predictions = []\nfor h in range(24):\n    X_seq_input = seq_array[-SEQ_LEN:].reshape(1, SEQ_LEN, seq_array.shape[1])\n    lstm_pred_scaled = lstm_model.predict(X_seq_input, verbose=0)\n    cnn_pred_scaled  = cnn_lstm_model.predict(X_seq_input, verbose=0)\n    lstm_pred = scaler_y.inverse_transform(lstm_pred_scaled.reshape(-1,1))[0,0]\n    cnn_pred  = scaler_y.inverse_transform(cnn_pred_scaled.reshape(-1,1))[0,0]",
+        "peekOfCode": "X_seq_scaled = scaler_X.transform(seq_data.drop(columns=[target_col])).astype(\n    np.float32\n)\n# Start with last SEQ_LEN rows\nseq_array = X_seq_scaled[-SEQ_LEN:].copy()\nseq_predictions = []\n# Get the feature indices for hour-related features (for updating during prediction)\n# Feature order: hour, month, hour_sin, hour_cos, month_sin, month_cos, weather...\n# We need to update these for each predicted hour\nfor h in range(24):",
         "detail": "trend",
         "documentation": {}
     },
@@ -1244,7 +1469,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "seq_array = X_seq_scaled[-SEQ_LEN:].copy()\nseq_predictions = []\nfor h in range(24):\n    X_seq_input = seq_array[-SEQ_LEN:].reshape(1, SEQ_LEN, seq_array.shape[1])\n    lstm_pred_scaled = lstm_model.predict(X_seq_input, verbose=0)\n    cnn_pred_scaled  = cnn_lstm_model.predict(X_seq_input, verbose=0)\n    lstm_pred = scaler_y.inverse_transform(lstm_pred_scaled.reshape(-1,1))[0,0]\n    cnn_pred  = scaler_y.inverse_transform(cnn_pred_scaled.reshape(-1,1))[0,0]\n    seq_predictions.append((lstm_pred, cnn_pred))\n    # Prepare next input row (scaled)",
+        "peekOfCode": "seq_array = X_seq_scaled[-SEQ_LEN:].copy()\nseq_predictions = []\n# Get the feature indices for hour-related features (for updating during prediction)\n# Feature order: hour, month, hour_sin, hour_cos, month_sin, month_cos, weather...\n# We need to update these for each predicted hour\nfor h in range(24):\n    X_seq_input = seq_array[-SEQ_LEN:].reshape(1, SEQ_LEN, seq_array.shape[1])\n    lstm_pred_scaled = lstm_model.predict(X_seq_input, verbose=0)\n    cnn_pred_scaled = cnn_lstm_model.predict(X_seq_input, verbose=0)\n    lstm_pred = scaler_y.inverse_transform(lstm_pred_scaled.reshape(-1, 1))[0, 0]",
         "detail": "trend",
         "documentation": {}
     },
@@ -1253,7 +1478,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "seq_predictions = []\nfor h in range(24):\n    X_seq_input = seq_array[-SEQ_LEN:].reshape(1, SEQ_LEN, seq_array.shape[1])\n    lstm_pred_scaled = lstm_model.predict(X_seq_input, verbose=0)\n    cnn_pred_scaled  = cnn_lstm_model.predict(X_seq_input, verbose=0)\n    lstm_pred = scaler_y.inverse_transform(lstm_pred_scaled.reshape(-1,1))[0,0]\n    cnn_pred  = scaler_y.inverse_transform(cnn_pred_scaled.reshape(-1,1))[0,0]\n    seq_predictions.append((lstm_pred, cnn_pred))\n    # Prepare next input row (scaled)\n    next_row = seq_array[-1].copy()",
+        "peekOfCode": "seq_predictions = []\n# Get the feature indices for hour-related features (for updating during prediction)\n# Feature order: hour, month, hour_sin, hour_cos, month_sin, month_cos, weather...\n# We need to update these for each predicted hour\nfor h in range(24):\n    X_seq_input = seq_array[-SEQ_LEN:].reshape(1, SEQ_LEN, seq_array.shape[1])\n    lstm_pred_scaled = lstm_model.predict(X_seq_input, verbose=0)\n    cnn_pred_scaled = cnn_lstm_model.predict(X_seq_input, verbose=0)\n    lstm_pred = scaler_y.inverse_transform(lstm_pred_scaled.reshape(-1, 1))[0, 0]\n    cnn_pred = scaler_y.inverse_transform(cnn_pred_scaled.reshape(-1, 1))[0, 0]",
         "detail": "trend",
         "documentation": {}
     },
@@ -1262,7 +1487,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "results_day = pd.DataFrame({\n    'datetime': date_index,\n    'XGBoost': [x for x,_ in tree_predictions],\n    'RandomForest': [x for _,x in tree_predictions],\n    'LSTM': [x for x,_ in seq_predictions],\n    'CNN_LSTM': [x for _,x in seq_predictions],\n})\n# ---------- 8. Save to CSV ----------\nresults_day.to_csv(f\"solar_forecast_{year}_{month:02d}_{day:02d}.csv\", index=False)\nprint(f\"✅ Forecast saved to solar_forecast_{year}_{month:02d}_{day:02d}.csv\")",
+        "peekOfCode": "results_day = pd.DataFrame(\n    {\n        \"datetime\": date_index,\n        \"XGBoost\": [x for x, _ in tree_predictions],\n        \"RandomForest\": [x for _, x in tree_predictions],\n        \"LSTM\": [x for x, _ in seq_predictions],\n        \"CNN_LSTM\": [x for _, x in seq_predictions],\n    }\n)\n# ---------- 8. Save to CSV ----------",
         "detail": "trend",
         "documentation": {}
     }

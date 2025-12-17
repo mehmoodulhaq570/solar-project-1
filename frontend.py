@@ -108,15 +108,20 @@ with tab1:
             df = df.sort_index().apply(pd.to_numeric, errors="coerce")
             df.index = pd.to_datetime(df.index, dayfirst=True)
 
-            # Filter daylight-only
-            df_day = df[df["SolarZenith"] < 90].copy()
+            # Use ALL hours (not just daylight) - model should know night = 0
+            df_day = df.copy()
             df_day.dropna(subset=["SolarRadiation"], inplace=True)
             df_day["hour"] = df_day.index.hour
             df_day["month"] = df_day.index.month
+            # Add cyclical encoding for hour and month
+            df_day["hour_sin"] = np.sin(2 * np.pi * df_day["hour"] / 24)
+            df_day["hour_cos"] = np.cos(2 * np.pi * df_day["hour"] / 24)
+            df_day["month_sin"] = np.sin(2 * np.pi * df_day["month"] / 12)
+            df_day["month_cos"] = np.cos(2 * np.pi * df_day["month"] / 12)
 
             target_col = "SolarRadiation"
 
-            st.success(f"✅ Loaded {len(df)} records, {len(df_day)} daylight records")
+            st.success(f"✅ Loaded {len(df)} records")
 
         except Exception as e:
             st.error(f"Error loading data: {e}")
@@ -211,10 +216,21 @@ with tab1:
 
             for h in range(24):
                 hour = hours[h]
+                # Compute cyclical features for current hour
+                hour_sin = np.sin(2 * np.pi * hour / 24)
+                hour_cos = np.cos(2 * np.pi * hour / 24)
+                month_sin = np.sin(2 * np.pi * month / 12)
+                month_cos = np.cos(2 * np.pi * month / 12)
+
                 lag_feats = tree_series[-MAX_LAG:]
+                # Features order must match training: hour, month, hour_sin, hour_cos, month_sin, month_cos, weather, lags
                 X_row = [
                     hour,
                     month,
+                    hour_sin,
+                    hour_cos,
+                    month_sin,
+                    month_cos,
                     Temperature,
                     HumiditySpecific,
                     HumidityRelative,
@@ -243,9 +259,14 @@ with tab1:
             and scaler_X
             and scaler_y
         ):
+            # Features must match training order: hour, month, hour_sin, hour_cos, month_sin, month_cos, weather, target
             seq_features = [
                 "hour",
                 "month",
+                "hour_sin",
+                "hour_cos",
+                "month_sin",
+                "month_cos",
                 "Temperature",
                 "HumiditySpecific",
                 "HumidityRelative",
@@ -256,7 +277,15 @@ with tab1:
             ]
             seq_data = df_day[seq_features].copy()
 
-            # Scale features
+            # Use last known weather values
+            Temperature = df_day["Temperature"].iloc[-1]
+            HumiditySpecific = df_day["HumiditySpecific"].iloc[-1]
+            HumidityRelative = df_day["HumidityRelative"].iloc[-1]
+            Pressure = df_day["Pressure"].iloc[-1]
+            WindSpeed = df_day["WindSpeed"].iloc[-1]
+            WindDirection = df_day["WindDirection"].iloc[-1]
+
+            # Scale features (excluding target which is last column)
             X_seq_scaled = scaler_X.transform(
                 seq_data.drop(columns=[target_col])
             ).astype(np.float32)
@@ -287,12 +316,32 @@ with tab1:
                     )[0, 0]
                     seq_predictions["CNN-LSTM"].append(max(0, cnn_pred))
 
-                # Prepare next input row
-                next_row = seq_array[-1].copy()
-                if "LSTM" in loaded_models:
-                    next_row[-1] = lstm_pred_scaled
-                elif "CNN-LSTM" in loaded_models:
-                    next_row[-1] = cnn_pred_scaled
+                # Prepare next input row with UPDATED hour features for next hour
+                next_hour = hours[(h + 1) % 24]  # Wrap around for next day
+                next_hour_sin = np.sin(2 * np.pi * next_hour / 24)
+                next_hour_cos = np.cos(2 * np.pi * next_hour / 24)
+                month_sin = np.sin(2 * np.pi * month / 12)
+                month_cos = np.cos(2 * np.pi * month / 12)
+
+                # Create next row with proper hour features (scaled)
+                next_row_raw = np.array(
+                    [
+                        next_hour,
+                        month,
+                        next_hour_sin,
+                        next_hour_cos,
+                        month_sin,
+                        month_cos,
+                        Temperature,
+                        HumiditySpecific,
+                        HumidityRelative,
+                        Pressure,
+                        WindSpeed,
+                        WindDirection,
+                    ]
+                ).reshape(1, -1)
+                next_row = scaler_X.transform(next_row_raw).flatten()
+
                 seq_array = np.vstack([seq_array, next_row])
 
         # ---------- 6. Combine results ----------
