@@ -318,9 +318,9 @@ day = today.day
 # Override with specific date if needed (must be within forecast range for API)
 # For NASA POWER: Use historical dates (~1 week old or older)
 # For Open-Meteo: Use today or future dates (up to 16 days)
-# year = 2025
-# month = 12
-# day = 19
+year = 2025
+month = 12
+day = 19
 
 print(f"📅 Forecasting for: {year}-{month:02d}-{day:02d}")
 
@@ -725,10 +725,20 @@ pred_min = pred_center * 0.85  # Lower bound (-15%)
 pred_max = pred_center * 1.15  # Upper bound (+15%)
 
 ax3.fill_between(
-    range(24), pred_min, pred_max, alpha=0.3, color="blue", label="Calibrated Range (±15%)"
+    range(24),
+    pred_min,
+    pred_max,
+    alpha=0.3,
+    color="blue",
+    label="Calibrated Range (±15%)",
 )
 ax3.plot(
-    range(24), ensemble_preds, label="Calibrated Ensemble", linewidth=2, color="blue", marker="o"
+    range(24),
+    ensemble_preds,
+    label="Calibrated Ensemble",
+    linewidth=2,
+    color="blue",
+    marker="o",
 )
 if not all(np.isnan(api_preds)):
     ax3.plot(
