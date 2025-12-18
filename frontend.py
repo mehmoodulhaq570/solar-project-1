@@ -35,6 +35,7 @@ LATITUDE = 31.56
 LONGITUDE = 74.35
 TIMEZONE = "Asia/Karachi"
 
+
 def fetch_openmeteo_solar_forecast(year, month, day):
     """Fetch solar radiation forecast from Open-Meteo API."""
     date_str = f"{year}-{month:02d}-{day:02d}"
@@ -47,7 +48,7 @@ def fetch_openmeteo_solar_forecast(year, month, day):
         "end_date": date_str,
         "timezone": TIMEZONE,
     }
-    
+
     try:
         response = requests.get(url, params=params, timeout=10)
         response.raise_for_status()
@@ -58,6 +59,7 @@ def fetch_openmeteo_solar_forecast(year, month, day):
     except:
         pass
     return None
+
 
 # ============== Page Configuration ==============
 st.set_page_config(page_title="Solar Radiation Forecast", page_icon="☀️", layout="wide")
@@ -91,12 +93,22 @@ selected_models = st.sidebar.multiselect(
 )
 
 st.sidebar.markdown("---")
+
+# API Comparison toggle
+enable_api = st.sidebar.checkbox(
+    "🌐 Compare with API",
+    value=True,
+    help="Fetch Open-Meteo API forecast for comparison (works for today + next 16 days)",
+)
+
+st.sidebar.markdown("---")
 st.sidebar.markdown("### 📊 Model Info")
 st.sidebar.info(
     """
 - **XGBoost/RF**: Tree-based models with lag features
 - **LSTM/CNN-LSTM**: Deep learning sequence models
 - **Ensemble**: Weighted average of all models
+- **Open-Meteo API**: Real-time forecast comparison
 """
 )
 
@@ -467,7 +479,17 @@ with tab1:
             )
             ensemble_preds.append(max(0, ensemble_pred))
 
-        # ---------- 7. Combine Results ----------
+        # ---------- 7. Fetch API Predictions ----------
+        api_preds = None
+        if enable_api:
+            progress.progress(85, text="Fetching API forecast...")
+            api_preds = fetch_openmeteo_solar_forecast(year, month, day)
+            if api_preds:
+                st.sidebar.success("✅ API data fetched!")
+            else:
+                st.sidebar.warning("⚠️ API data not available for this date")
+
+        # ---------- 8. Combine Results ----------
         results_df = pd.DataFrame(
             {
                 "datetime": date_index,
@@ -485,23 +507,32 @@ with tab1:
             results_df["CNN-LSTM"] = cnn_preds
         if "Ensemble" in selected_models:
             results_df["Ensemble"] = ensemble_preds
+        if api_preds:
+            results_df["OpenMeteo API"] = api_preds
 
         progress.progress(100, text="Complete!")
 
-        # ---------- 8. Display Results ----------
+        # ---------- 9. Display Results ----------
         st.success(f"✅ Forecast generated for {selected_date.strftime('%B %d, %Y')}")
 
-        # Plot
-        fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+        # Create 2x2 plot grid if API data is available, else 1x2
+        if api_preds:
+            fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+            ax1, ax2 = axes[0, 0], axes[0, 1]
+            ax3, ax4 = axes[1, 0], axes[1, 1]
+        else:
+            fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+            ax1, ax2 = axes[0], axes[1]
+            ax3, ax4 = None, None
 
         # Plot 1: All models
-        ax1 = axes[0]
         colors = {
             "XGBoost": "#e74c3c",
             "Random Forest": "#2ecc71",
             "LSTM": "#3498db",
             "CNN-LSTM": "#9b59b6",
             "Ensemble": "#2c3e50",
+            "OpenMeteo API": "#f39c12",
         }
 
         for model in selected_models:
@@ -517,6 +548,19 @@ with tab1:
                     markersize=4,
                 )
 
+        # Add API to first plot
+        if api_preds:
+            ax1.plot(
+                range(24),
+                api_preds,
+                label="OpenMeteo API",
+                color="#f39c12",
+                linewidth=2.5,
+                linestyle=":",
+                marker="s",
+                markersize=4,
+            )
+
         ax1.set_xlabel("Hour of Day", fontsize=12)
         ax1.set_ylabel("Solar Radiation (W/m²)", fontsize=12)
         ax1.set_title(
@@ -527,11 +571,10 @@ with tab1:
         ax1.set_xticks(range(0, 24, 2))
         ax1.set_xlim(-0.5, 23.5)
 
-        # Plot 2: Ensemble with range
-        ax2 = axes[1]
-        model_preds = np.array([xgb_preds, rf_preds, lstm_preds, cnn_preds])
-        pred_min = model_preds.min(axis=0)
-        pred_max = model_preds.max(axis=0)
+        # Plot 2: Ensemble vs API Comparison
+        model_preds_arr = np.array([xgb_preds, rf_preds, lstm_preds, cnn_preds])
+        pred_min = model_preds_arr.min(axis=0)
+        pred_max = model_preds_arr.max(axis=0)
 
         ax2.fill_between(
             range(24),
@@ -550,13 +593,84 @@ with tab1:
             marker="o",
             markersize=5,
         )
+        if api_preds:
+            ax2.plot(
+                range(24),
+                api_preds,
+                label="OpenMeteo API",
+                linewidth=2.5,
+                color="#f39c12",
+                linestyle="--",
+                marker="s",
+                markersize=4,
+            )
         ax2.set_xlabel("Hour of Day", fontsize=12)
         ax2.set_ylabel("Solar Radiation (W/m²)", fontsize=12)
-        ax2.set_title("Ensemble Forecast with Prediction Range", fontsize=14)
+        ax2.set_title("Ensemble vs API Comparison", fontsize=14)
         ax2.legend()
         ax2.grid(True, alpha=0.3)
         ax2.set_xticks(range(0, 24, 2))
         ax2.set_xlim(-0.5, 23.5)
+
+        # Plot 3 & 4: Additional analysis if API available
+        if api_preds and ax3 is not None:
+            # Plot 3: XGBoost vs API
+            ax3.plot(
+                range(24),
+                xgb_preds,
+                label="XGBoost",
+                color="#e74c3c",
+                linewidth=2,
+                marker="o",
+                markersize=4,
+            )
+            ax3.plot(
+                range(24),
+                rf_preds,
+                label="Random Forest",
+                color="#2ecc71",
+                linewidth=2,
+                marker="s",
+                markersize=4,
+            )
+            ax3.plot(
+                range(24),
+                api_preds,
+                label="OpenMeteo API",
+                color="#f39c12",
+                linewidth=2.5,
+                linestyle="--",
+                marker="^",
+                markersize=4,
+            )
+            ax3.set_xlabel("Hour of Day", fontsize=12)
+            ax3.set_ylabel("Solar Radiation (W/m²)", fontsize=12)
+            ax3.set_title("Tree Models vs API", fontsize=14)
+            ax3.legend()
+            ax3.grid(True, alpha=0.3)
+            ax3.set_xticks(range(0, 24, 2))
+
+            # Plot 4: Difference analysis
+            diff = np.array(ensemble_preds) - np.array(api_preds)
+            colors_bar = ["#2ecc71" if d >= 0 else "#e74c3c" for d in diff]
+            ax4.bar(range(24), diff, color=colors_bar, alpha=0.7, edgecolor="black")
+            ax4.axhline(y=0, color="black", linestyle="-", linewidth=1)
+            ax4.set_xlabel("Hour of Day", fontsize=12)
+            ax4.set_ylabel("Difference (W/m²)", fontsize=12)
+            ax4.set_title("📊 Prediction Difference (Ensemble - API)", fontsize=14)
+            ax4.set_xticks(range(0, 24, 2))
+            ax4.grid(True, alpha=0.3, axis="y")
+
+            # Add MAE annotation
+            mae = np.mean(np.abs(diff))
+            ax4.text(
+                0.02,
+                0.98,
+                f"MAE: {mae:.1f} W/m²",
+                transform=ax4.transAxes,
+                verticalalignment="top",
+                bbox=dict(boxstyle="round", facecolor="wheat", alpha=0.5),
+            )
 
         plt.tight_layout()
         st.pyplot(fig)
@@ -579,9 +693,70 @@ with tab1:
             daily_total = sum(ensemble_preds)
             st.metric("📊 Daily Total", f"{daily_total:.0f} Wh/m²", "Energy")
 
+        # API Comparison Metrics
+        if api_preds:
+            st.markdown("---")
+            st.subheader("📊 Model vs API Comparison Metrics")
+
+            from sklearn.metrics import (
+                mean_absolute_error,
+                mean_squared_error,
+                r2_score,
+            )
+
+            api_array = np.array(api_preds)
+            # Focus on daylight hours for meaningful comparison
+            valid_mask = (api_array > 10) | (np.array(ensemble_preds) > 10)
+
+            if valid_mask.sum() > 0:
+                metrics_data = []
+                for name, preds in [
+                    ("Ensemble", ensemble_preds),
+                    ("XGBoost", xgb_preds),
+                    ("Random Forest", rf_preds),
+                    ("LSTM", lstm_preds),
+                    ("CNN-LSTM", cnn_preds),
+                ]:
+                    preds_arr = np.array(preds)
+                    mae = mean_absolute_error(
+                        api_array[valid_mask], preds_arr[valid_mask]
+                    )
+                    rmse = np.sqrt(
+                        mean_squared_error(api_array[valid_mask], preds_arr[valid_mask])
+                    )
+                    try:
+                        r2 = r2_score(api_array[valid_mask], preds_arr[valid_mask])
+                    except:
+                        r2 = np.nan
+                    metrics_data.append(
+                        {
+                            "Model": name,
+                            "MAE (W/m²)": mae,
+                            "RMSE (W/m²)": rmse,
+                            "R²": r2,
+                        }
+                    )
+
+                metrics_df = pd.DataFrame(metrics_data)
+                st.dataframe(
+                    metrics_df.style.format(
+                        {
+                            "MAE (W/m²)": "{:.2f}",
+                            "RMSE (W/m²)": "{:.2f}",
+                            "R²": "{:.4f}",
+                        }
+                    )
+                    .highlight_min(
+                        subset=["MAE (W/m²)", "RMSE (W/m²)"], color="lightgreen"
+                    )
+                    .highlight_max(subset=["R²"], color="lightgreen"),
+                    use_container_width=True,
+                )
+
         # Store results for Data Table tab
         st.session_state["results_df"] = results_df
         st.session_state["forecast_date"] = selected_date
+        st.session_state["api_preds"] = api_preds
 
 # ============== Data Table Tab ==============
 with tab2:

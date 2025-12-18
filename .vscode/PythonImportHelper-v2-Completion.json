@@ -467,7 +467,7 @@
         "kind": 5,
         "importPath": "frontend",
         "description": "frontend",
-        "peekOfCode": "available_models = [\"XGBoost\", \"Random Forest\", \"LSTM\", \"CNN-LSTM\", \"Ensemble\"]\nselected_models = st.sidebar.multiselect(\n    \"🤖 Select Models\",\n    available_models,\n    default=[\"XGBoost\", \"Random Forest\", \"Ensemble\"],\n    help=\"Choose which models to use for prediction\",\n)\nst.sidebar.markdown(\"---\")\nst.sidebar.markdown(\"### 📊 Model Info\")\nst.sidebar.info(",
+        "peekOfCode": "available_models = [\"XGBoost\", \"Random Forest\", \"LSTM\", \"CNN-LSTM\", \"Ensemble\"]\nselected_models = st.sidebar.multiselect(\n    \"🤖 Select Models\",\n    available_models,\n    default=[\"XGBoost\", \"Random Forest\", \"Ensemble\"],\n    help=\"Choose which models to use for prediction\",\n)\nst.sidebar.markdown(\"---\")\n# API Comparison toggle\nenable_api = st.sidebar.checkbox(",
         "detail": "frontend",
         "documentation": {}
     },
@@ -476,7 +476,16 @@
         "kind": 5,
         "importPath": "frontend",
         "description": "frontend",
-        "peekOfCode": "selected_models = st.sidebar.multiselect(\n    \"🤖 Select Models\",\n    available_models,\n    default=[\"XGBoost\", \"Random Forest\", \"Ensemble\"],\n    help=\"Choose which models to use for prediction\",\n)\nst.sidebar.markdown(\"---\")\nst.sidebar.markdown(\"### 📊 Model Info\")\nst.sidebar.info(\n    \"\"\"",
+        "peekOfCode": "selected_models = st.sidebar.multiselect(\n    \"🤖 Select Models\",\n    available_models,\n    default=[\"XGBoost\", \"Random Forest\", \"Ensemble\"],\n    help=\"Choose which models to use for prediction\",\n)\nst.sidebar.markdown(\"---\")\n# API Comparison toggle\nenable_api = st.sidebar.checkbox(\n    \"🌐 Compare with API\",",
+        "detail": "frontend",
+        "documentation": {}
+    },
+    {
+        "label": "enable_api",
+        "kind": 5,
+        "importPath": "frontend",
+        "description": "frontend",
+        "peekOfCode": "enable_api = st.sidebar.checkbox(\n    \"🌐 Compare with API\",\n    value=True,\n    help=\"Fetch Open-Meteo API forecast for comparison (works for today + next 16 days)\",\n)\nst.sidebar.markdown(\"---\")\nst.sidebar.markdown(\"### 📊 Model Info\")\nst.sidebar.info(\n    \"\"\"\n- **XGBoost/RF**: Tree-based models with lag features",
         "detail": "frontend",
         "documentation": {}
     },
