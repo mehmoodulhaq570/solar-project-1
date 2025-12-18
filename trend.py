@@ -25,12 +25,8 @@ LONGITUDE = 74.35
 TIMEZONE = "Asia/Karachi"
 
 # ============== API Selection ==============
-# Available APIs: "open-meteo", "nasa-power", "visual-crossing", "solcast"
+# Available APIs: "open-meteo", "nasa-power"
 SELECTED_API = "open-meteo"  # <-- Change this to switch APIs
-
-# API Keys (only needed for some APIs)
-SOLCAST_API_KEY = None  # Free: https://solcast.com/free-rooftop-solar-forecasting
-VISUAL_CROSSING_API_KEY = None  # Free: https://www.visualcrossing.com/sign-up
 
 # ============== API Functions ==============
 
@@ -126,102 +122,6 @@ def fetch_nasa_power_solar(year, month, day):
         return None
 
 
-def fetch_visual_crossing_solar(year, month, day, api_key=None):
-    """
-    Fetch solar radiation from Visual Crossing Weather API.
-    🔑 Requires FREE API key (1000 calls/day free)
-    📊 Returns hourly solar radiation in W/m².
-    ⏰ Historical + Forecast data
-    Sign up: https://www.visualcrossing.com/sign-up
-    """
-    if not api_key:
-        print(
-            "⚠️ Visual Crossing API: No API key provided. Get free key at https://www.visualcrossing.com/sign-up"
-        )
-        return None
-
-    date_str = f"{year}-{month:02d}-{day:02d}"
-    location = f"{LATITUDE},{LONGITUDE}"
-
-    url = f"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{location}/{date_str}"
-    params = {
-        "unitGroup": "metric",
-        "include": "hours",
-        "key": api_key,
-        "contentType": "json",
-    }
-
-    try:
-        response = requests.get(url, params=params, timeout=15)
-        response.raise_for_status()
-        data = response.json()
-
-        days = data.get("days", [])
-        if days:
-            hours = days[0].get("hours", [])
-            # Visual Crossing returns 'solarradiation' in W/m²
-            hourly_radiation = [h.get("solarradiation", 0) or 0 for h in hours]
-
-            if len(hourly_radiation) == 24:
-                print(
-                    f"✅ Visual Crossing API: Successfully fetched data for {date_str}"
-                )
-                return hourly_radiation
-
-        print(f"⚠️ Visual Crossing API: Unexpected data format")
-        return None
-
-    except requests.exceptions.RequestException as e:
-        print(f"❌ Visual Crossing API Error: {e}")
-        return None
-
-
-def fetch_solcast_forecast(year, month, day, api_key=None):
-    """
-    Fetch solar radiation forecast from Solcast API.
-    🔑 Requires API key (10 calls/day free for residential)
-    📊 Returns hourly GHI in W/m² - Most accurate for solar
-    ⏰ Forecast data
-    Sign up: https://solcast.com/free-rooftop-solar-forecasting
-    """
-    if not api_key:
-        print(
-            "⚠️ Solcast API: No API key provided. Get free key at https://solcast.com/"
-        )
-        return None
-
-    url = "https://api.solcast.com.au/world_radiation/forecasts"
-    params = {
-        "latitude": LATITUDE,
-        "longitude": LONGITUDE,
-        "hours": 24,
-        "output_parameters": "ghi",
-        "format": "json",
-    }
-    headers = {"Authorization": f"Bearer {api_key}"}
-
-    try:
-        response = requests.get(url, params=params, headers=headers, timeout=10)
-        response.raise_for_status()
-        data = response.json()
-
-        forecasts = data.get("forecasts", [])
-        hourly_ghi = [f.get("ghi", 0) for f in forecasts[:24]]
-
-        if len(hourly_ghi) == 24:
-            print(
-                f"✅ Solcast API: Successfully fetched forecast for {year}-{month:02d}-{day:02d}"
-            )
-            return hourly_ghi
-        else:
-            print(f"⚠️ Solcast API: Unexpected data length")
-            return None
-
-    except requests.exceptions.RequestException as e:
-        print(f"❌ Solcast API Error: {e}")
-        return None
-
-
 def fetch_api_prediction(year, month, day, api_name):
     """
     Unified function to fetch solar radiation from selected API.
@@ -232,13 +132,6 @@ def fetch_api_prediction(year, month, day, api_name):
         return fetch_openmeteo_solar_forecast(year, month, day), "Open-Meteo"
     elif api_name == "nasa-power":
         return fetch_nasa_power_solar(year, month, day), "NASA POWER"
-    elif api_name == "visual-crossing":
-        return (
-            fetch_visual_crossing_solar(year, month, day, VISUAL_CROSSING_API_KEY),
-            "Visual Crossing",
-        )
-    elif api_name == "solcast":
-        return fetch_solcast_forecast(year, month, day, SOLCAST_API_KEY), "Solcast"
     else:
         print(f"❌ Unknown API: {api_name}")
         return None, api_name
@@ -247,10 +140,8 @@ def fetch_api_prediction(year, month, day, api_name):
 def list_available_apis():
     """Print available APIs and their status."""
     print("\n📡 Available APIs:")
-    print("  1. open-meteo      - ✅ FREE, No key (Forecast: today + 16 days)")
-    print("  2. nasa-power      - ✅ FREE, No key (Historical, ~1 week delay)")
-    print("  3. visual-crossing - 🔑 FREE key (1000 calls/day, Both)")
-    print("  4. solcast         - 🔑 FREE key (10 calls/day, Most accurate)")
+    print("  1. open-meteo - ✅ FREE, No key (Forecast: today + 16 days)")
+    print("  2. nasa-power - ✅ FREE, No key (Historical, ~1 week delay)")
     print(f"\n  Currently selected: {SELECTED_API}\n")
 
 
