@@ -1,6 +1,7 @@
 # ===============================================
 # Streamlit Frontend for Solar Radiation Prediction
 # Updated to match trend.py with all improvements
+# With Real-Time API Comparison (Open-Meteo)
 # ===============================================
 
 import streamlit as st
@@ -10,6 +11,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import joblib
+import requests
 
 warnings.filterwarnings("ignore")
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
@@ -27,6 +29,35 @@ try:
     XGBOOST_AVAILABLE = True
 except:
     XGBOOST_AVAILABLE = False
+
+# ============== API Configuration ==============
+LATITUDE = 31.56
+LONGITUDE = 74.35
+TIMEZONE = "Asia/Karachi"
+
+def fetch_openmeteo_solar_forecast(year, month, day):
+    """Fetch solar radiation forecast from Open-Meteo API."""
+    date_str = f"{year}-{month:02d}-{day:02d}"
+    url = "https://api.open-meteo.com/v1/forecast"
+    params = {
+        "latitude": LATITUDE,
+        "longitude": LONGITUDE,
+        "hourly": "shortwave_radiation",
+        "start_date": date_str,
+        "end_date": date_str,
+        "timezone": TIMEZONE,
+    }
+    
+    try:
+        response = requests.get(url, params=params, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        hourly_radiation = data.get("hourly", {}).get("shortwave_radiation", [])
+        if len(hourly_radiation) == 24:
+            return hourly_radiation
+    except:
+        pass
+    return None
 
 # ============== Page Configuration ==============
 st.set_page_config(page_title="Solar Radiation Forecast", page_icon="☀️", layout="wide")

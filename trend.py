@@ -1,6 +1,7 @@
 # ==========================================
 # 🌤 Daily Hourly Solar Radiation Forecast
 # Using trained models from 2018–2025
+# With Real-Time API Comparison (Open-Meteo)
 # Input: year, month, day → Output: 24-hour forecast
 # ==========================================
 
@@ -12,9 +13,98 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 import numpy as np
 import pandas as pd
 import joblib
+import requests
 from tensorflow.keras.models import load_model
 import matplotlib.pyplot as plt
-from datetime import datetime
+from datetime import datetime, timedelta
+
+# ============== API Configuration ==============
+# Lahore, Pakistan coordinates
+LATITUDE = 31.56
+LONGITUDE = 74.35
+TIMEZONE = "Asia/Karachi"
+
+
+def fetch_openmeteo_solar_forecast(year, month, day):
+    """
+    Fetch solar radiation forecast from Open-Meteo API.
+    Returns hourly GHI (Global Horizontal Irradiance) in W/m².
+    """
+    date_str = f"{year}-{month:02d}-{day:02d}"
+
+    # Open-Meteo API endpoint for solar radiation
+    url = "https://api.open-meteo.com/v1/forecast"
+    params = {
+        "latitude": LATITUDE,
+        "longitude": LONGITUDE,
+        "hourly": "shortwave_radiation",  # GHI in W/m²
+        "start_date": date_str,
+        "end_date": date_str,
+        "timezone": TIMEZONE,
+    }
+
+    try:
+        response = requests.get(url, params=params, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+
+        hourly_radiation = data.get("hourly", {}).get("shortwave_radiation", [])
+
+        if len(hourly_radiation) == 24:
+            print(f"✅ Open-Meteo API: Successfully fetched forecast for {date_str}")
+            return hourly_radiation
+        else:
+            print(
+                f"⚠️ Open-Meteo API: Unexpected data length ({len(hourly_radiation)} hours)"
+            )
+            return None
+
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Open-Meteo API Error: {e}")
+        return None
+
+
+def fetch_solcast_forecast(year, month, day, api_key=None):
+    """
+    Fetch solar radiation forecast from Solcast API (requires API key).
+    Free tier: 10 API calls/day.
+    Sign up at: https://solcast.com/free-rooftop-solar-forecasting
+    """
+    if not api_key:
+        print("⚠️ Solcast API: No API key provided. Skipping.")
+        return None
+
+    date_str = f"{year}-{month:02d}-{day:02d}"
+
+    url = f"https://api.solcast.com.au/world_radiation/forecasts"
+    params = {
+        "latitude": LATITUDE,
+        "longitude": LONGITUDE,
+        "hours": 24,
+        "output_parameters": "ghi",
+        "format": "json",
+    }
+    headers = {"Authorization": f"Bearer {api_key}"}
+
+    try:
+        response = requests.get(url, params=params, headers=headers, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+
+        forecasts = data.get("forecasts", [])
+        hourly_ghi = [f.get("ghi", 0) for f in forecasts[:24]]
+
+        if len(hourly_ghi) == 24:
+            print(f"✅ Solcast API: Successfully fetched forecast for {date_str}")
+            return hourly_ghi
+        else:
+            print(f"⚠️ Solcast API: Unexpected data length")
+            return None
+
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Solcast API Error: {e}")
+        return None
+
 
 # ---------- 1. Load historical data ----------
 df = pd.read_csv(
@@ -70,9 +160,22 @@ MAX_LAG = 24
 SEQ_LEN = 24
 
 # ---------- 4. User input: day to forecast ----------
-year = 2025
-month = 6  # June
-day = 15  # 15th
+# For API comparison, use today or a future date (within 16 days)
+# Open-Meteo only provides forecasts, not historical data
+today = datetime.now()
+year = today.year
+month = today.month
+day = today.day
+
+# Override with specific date if needed (must be within forecast range for API)
+# year = 2025
+# month = 12
+# day = 19  # Use tomorrow or a future date for API data
+
+# Optional: Solcast API key (get free key at https://solcast.com/free-rooftop-solar-forecasting)
+SOLCAST_API_KEY = None  # Set your key here if you have one
+
+print(f"📅 Forecasting for: {year}-{month:02d}-{day:02d}")
 
 # Calculate day of year for the forecast date
 forecast_date = datetime(year, month, day)
@@ -261,6 +364,19 @@ for i in range(24):
     )
     ensemble_preds.append(max(0, ensemble_pred))
 
+# ---------- 8. Fetch API Predictions for Comparison ----------
+print("\n📡 Fetching API predictions for comparison...")
+openmeteo_preds = fetch_openmeteo_solar_forecast(year, month, day)
+solcast_preds = fetch_solcast_forecast(year, month, day, SOLCAST_API_KEY)
+
+# If API data not available, use None for comparison
+if openmeteo_preds is None:
+    openmeteo_preds = [np.nan] * 24
+    print("⚠️ Open-Meteo data not available - will show as missing in plots")
+
+if solcast_preds is None:
+    solcast_preds = [np.nan] * 24
+
 results_day = pd.DataFrame(
     {
         "datetime": date_index,
@@ -269,30 +385,70 @@ results_day = pd.DataFrame(
         "LSTM": lstm_preds,
         "CNN_LSTM": cnn_preds,
         "Ensemble": ensemble_preds,
+        "OpenMeteo_API": openmeteo_preds,
     }
 )
 
-# ---------- 8. Save to CSV ----------
-results_day.to_csv(f"solar_forecast_{year}_{month:02d}_{day:02d}.csv", index=False)
-print(f"✅ Forecast saved to solar_forecast_{year}_{month:02d}_{day:02d}.csv")
+# Add Solcast if available
+if not all(np.isnan(solcast_preds)):
+    results_day["Solcast_API"] = solcast_preds
 
-# ---------- 9. Print hourly predictions ----------
+# ---------- 9. Save to CSV ----------
+results_day.to_csv(f"solar_forecast_{year}_{month:02d}_{day:02d}.csv", index=False)
+print(f"\n✅ Forecast saved to solar_forecast_{year}_{month:02d}_{day:02d}.csv")
+
+# ---------- 10. Print hourly predictions ----------
 print(f"\nHourly Solar Radiation Forecast for {year}-{month:02d}-{day:02d}:")
+api_col = "OpenMeteo" if not all(np.isnan(openmeteo_preds)) else ""
 print(
-    f"{'Hour':>4} | {'XGBoost':>10} | {'RandomForest':>13} | {'LSTM':>8} | {'CNN-LSTM':>10} | {'Ensemble':>10}"
+    f"{'Hour':>4} | {'XGBoost':>10} | {'RandomForest':>13} | {'LSTM':>8} | {'CNN-LSTM':>10} | {'Ensemble':>10} | {'OpenMeteo':>10}"
 )
-print("-" * 70)
+print("-" * 85)
 for i, row in results_day.iterrows():
     hour = row["datetime"].hour
+    api_val = row.get("OpenMeteo_API", np.nan)
+    api_str = f"{api_val:10.2f}" if not np.isnan(api_val) else "       N/A"
     print(
-        f"{hour:02d}:00 | {row['XGBoost']:10.2f} | {row['RandomForest']:13.2f} | {row['LSTM']:8.2f} | {row['CNN_LSTM']:10.2f} | {row['Ensemble']:10.2f}"
+        f"{hour:02d}:00 | {row['XGBoost']:10.2f} | {row['RandomForest']:13.2f} | {row['LSTM']:8.2f} | {row['CNN_LSTM']:10.2f} | {row['Ensemble']:10.2f} | {api_str}"
     )
 
-# ---------- 10. Plot results ----------
-fig, axes = plt.subplots(1, 2, figsize=(16, 5))
+# ---------- 11. Calculate comparison metrics ----------
+if not all(np.isnan(openmeteo_preds)):
+    print("\n📊 Model vs API Comparison Metrics:")
+    api_array = np.array(openmeteo_preds)
 
-# Plot 1: All models
-ax1 = axes[0]
+    # Filter out night hours (where both are near 0) for meaningful comparison
+    valid_mask = (api_array > 10) | (np.array(ensemble_preds) > 10)
+
+    if valid_mask.sum() > 0:
+        from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+
+        api_valid = api_array[valid_mask]
+        ensemble_valid = np.array(ensemble_preds)[valid_mask]
+        xgb_valid = np.array(xgb_preds)[valid_mask]
+        rf_valid = np.array(rf_preds)[valid_mask]
+
+        print(f"\n  {'Model':<15} | {'MAE':>10} | {'RMSE':>10} | {'R²':>8}")
+        print("  " + "-" * 50)
+
+        for name, preds in [
+            ("Ensemble", ensemble_valid),
+            ("XGBoost", xgb_valid),
+            ("RandomForest", rf_valid),
+        ]:
+            mae = mean_absolute_error(api_valid, preds)
+            rmse = np.sqrt(mean_squared_error(api_valid, preds))
+            try:
+                r2 = r2_score(api_valid, preds)
+            except:
+                r2 = np.nan
+            print(f"  {name:<15} | {mae:10.2f} | {rmse:10.2f} | {r2:8.4f}")
+
+# ---------- 12. Plot results with API comparison ----------
+fig, axes = plt.subplots(2, 2, figsize=(16, 10))
+
+# Plot 1: All ML models
+ax1 = axes[0, 0]
 ax1.plot(
     results_day["datetime"].dt.hour,
     results_day["XGBoost"],
@@ -331,30 +487,118 @@ ax1.plot(
 )
 ax1.set_xlabel("Hour of Day")
 ax1.set_ylabel("Solar Radiation (W/m²)")
-ax1.set_title(f"Hourly Solar Radiation Forecast: {year}-{month:02d}-{day:02d}")
+ax1.set_title(f"ML Models Forecast: {year}-{month:02d}-{day:02d}")
 ax1.legend()
 ax1.grid(True, alpha=0.3)
 ax1.set_xticks(range(0, 24, 2))
 
-# Plot 2: Ensemble only with confidence range
-ax2 = axes[1]
-model_preds = np.array([xgb_preds, rf_preds, lstm_preds, cnn_preds])
-pred_min = model_preds.min(axis=0)
-pred_max = model_preds.max(axis=0)
-
-ax2.fill_between(
-    range(24), pred_min, pred_max, alpha=0.3, color="blue", label="Model Range"
-)
+# Plot 2: Ensemble vs API Comparison
+ax2 = axes[0, 1]
 ax2.plot(
-    range(24), ensemble_preds, label="Ensemble", linewidth=2, color="blue", marker="o"
+    range(24),
+    ensemble_preds,
+    label="Ensemble (Our Model)",
+    linewidth=2.5,
+    color="blue",
+    marker="o",
+    markersize=5,
 )
+if not all(np.isnan(openmeteo_preds)):
+    ax2.plot(
+        range(24),
+        openmeteo_preds,
+        label="Open-Meteo API",
+        linewidth=2.5,
+        color="red",
+        marker="s",
+        markersize=5,
+    )
+if not all(np.isnan(solcast_preds)):
+    ax2.plot(
+        range(24),
+        solcast_preds,
+        label="Solcast API",
+        linewidth=2.5,
+        color="green",
+        marker="^",
+        markersize=5,
+    )
 ax2.set_xlabel("Hour of Day")
 ax2.set_ylabel("Solar Radiation (W/m²)")
-ax2.set_title(f"Ensemble Forecast with Prediction Range")
+ax2.set_title("🔍 Model vs API Comparison")
 ax2.legend()
 ax2.grid(True, alpha=0.3)
 ax2.set_xticks(range(0, 24, 2))
 
+# Plot 3: Ensemble with confidence range
+ax3 = axes[1, 0]
+model_preds = np.array([xgb_preds, rf_preds, lstm_preds, cnn_preds])
+pred_min = model_preds.min(axis=0)
+pred_max = model_preds.max(axis=0)
+
+ax3.fill_between(
+    range(24), pred_min, pred_max, alpha=0.3, color="blue", label="Model Range"
+)
+ax3.plot(
+    range(24), ensemble_preds, label="Ensemble", linewidth=2, color="blue", marker="o"
+)
+if not all(np.isnan(openmeteo_preds)):
+    ax3.plot(
+        range(24),
+        openmeteo_preds,
+        label="Open-Meteo API",
+        linewidth=2,
+        color="red",
+        linestyle="--",
+        marker="s",
+        markersize=4,
+    )
+ax3.set_xlabel("Hour of Day")
+ax3.set_ylabel("Solar Radiation (W/m²)")
+ax3.set_title("Ensemble with Prediction Range vs API")
+ax3.legend()
+ax3.grid(True, alpha=0.3)
+ax3.set_xticks(range(0, 24, 2))
+
+# Plot 4: Difference/Error Analysis
+ax4 = axes[1, 1]
+if not all(np.isnan(openmeteo_preds)):
+    diff = np.array(ensemble_preds) - np.array(openmeteo_preds)
+    colors = ["green" if d >= 0 else "red" for d in diff]
+    ax4.bar(range(24), diff, color=colors, alpha=0.7, edgecolor="black")
+    ax4.axhline(y=0, color="black", linestyle="-", linewidth=1)
+    ax4.set_xlabel("Hour of Day")
+    ax4.set_ylabel("Difference (W/m²)")
+    ax4.set_title("📊 Prediction Difference (Ensemble - API)")
+    ax4.set_xticks(range(0, 24, 2))
+    ax4.grid(True, alpha=0.3, axis="y")
+
+    # Add statistics
+    mean_diff = np.nanmean(diff)
+    abs_mean_diff = np.nanmean(np.abs(diff))
+    ax4.text(
+        0.02,
+        0.98,
+        f"Mean Diff: {mean_diff:.1f} W/m²\nMAE: {abs_mean_diff:.1f} W/m²",
+        transform=ax4.transAxes,
+        verticalalignment="top",
+        bbox=dict(boxstyle="round", facecolor="wheat", alpha=0.5),
+    )
+else:
+    ax4.text(
+        0.5,
+        0.5,
+        "API Data Not Available",
+        transform=ax4.transAxes,
+        ha="center",
+        va="center",
+        fontsize=14,
+        color="gray",
+    )
+    ax4.set_title("📊 Prediction Difference (Ensemble - API)")
+
 plt.tight_layout()
 plt.savefig(f"solar_forecast_{year}_{month:02d}_{day:02d}.png", dpi=150)
 plt.show()
+
+print(f"\n🖼️ Plot saved to solar_forecast_{year}_{month:02d}_{day:02d}.png")
