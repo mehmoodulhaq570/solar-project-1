@@ -144,10 +144,10 @@ NASA_HOUR_CALIBRATION = {
 
 # Open-Meteo API weights (equal weights with hour calibration)
 OPENMETEO_ENSEMBLE_WEIGHTS = {
-    "XGBoost": 0.25,
-    "RandomForest": 0.25,
-    "LSTM": 0.25,
-    "CNN-LSTM": 0.25,
+    "XGBoost": 0.257051842842307,
+    "RandomForest": 0.2569732086168074,
+    "LSTM": 0.24311723628987492,
+    "CNN-LSTM": 0.24285771225101077,
 }
 
 OPENMETEO_HOUR_CALIBRATION = {
@@ -607,18 +607,52 @@ with tab1:
         if not cnn_preds:
             cnn_preds = [0] * 24
 
-        # Select ensemble configuration based on API
-        if enable_api and selected_api == "NASA POWER":
+        # ---------- 7. Fetch API Predictions FIRST (before ensemble calculation) ----------
+        api_preds = None
+        api_name = "API"
+        use_openmeteo_weights = False  # Track if we should use Open-Meteo weights
+
+        if enable_api:
+            progress.progress(85, text=f"Fetching {selected_api} forecast...")
+            if selected_api == "NASA POWER":
+                api_preds = fetch_nasa_power_solar(year, month, day)
+                api_name = "NASA POWER"
+                if not api_preds:
+                    st.sidebar.warning(
+                        "⚠️ NASA data not available. Trying Open-Meteo..."
+                    )
+                    api_preds = fetch_openmeteo_solar_forecast(year, month, day)
+                    api_name = "Open-Meteo (fallback)"
+                    use_openmeteo_weights = (
+                        True  # Switch to Open-Meteo weights on fallback
+                    )
+            else:
+                api_preds = fetch_openmeteo_solar_forecast(year, month, day)
+                api_name = "Open-Meteo"
+                use_openmeteo_weights = True
+
+            if api_preds:
+                st.sidebar.success(f"✅ {api_name} data fetched!")
+            else:
+                st.sidebar.warning("⚠️ API data not available for this date")
+        else:
+            # If API is disabled, default to Open-Meteo weights
+            use_openmeteo_weights = True
+
+        # Select ensemble configuration based on actual API used (including fallback)
+        if enable_api and selected_api == "NASA POWER" and not use_openmeteo_weights:
             ACTIVE_WEIGHTS = NASA_ENSEMBLE_WEIGHTS
             HOUR_CALIBRATION = NASA_HOUR_CALIBRATION
         else:
             ACTIVE_WEIGHTS = OPENMETEO_ENSEMBLE_WEIGHTS
             HOUR_CALIBRATION = OPENMETEO_HOUR_CALIBRATION
+            if use_openmeteo_weights and "fallback" in api_name:
+                st.sidebar.info("📊 Using Open-Meteo optimized weights for ensemble")
 
         ensemble_preds = []
         for i in range(24):
             hour = hours[i]
-            # Calculate weighted ensemble based on selected API configuration
+            # Calculate weighted ensemble based on actual API configuration
             base_ensemble = (
                 ACTIVE_WEIGHTS["XGBoost"] * xgb_preds[i]
                 + ACTIVE_WEIGHTS["RandomForest"] * rf_preds[i]
@@ -631,29 +665,6 @@ with tab1:
             # Cap at reasonable maximum
             ensemble_pred = min(max(0, ensemble_pred), 1000)
             ensemble_preds.append(ensemble_pred)
-
-        # ---------- 7. Fetch API Predictions ----------
-        api_preds = None
-        api_name = "API"
-        if enable_api:
-            progress.progress(85, text=f"Fetching {selected_api} forecast...")
-            if selected_api == "NASA POWER":
-                api_preds = fetch_nasa_power_solar(year, month, day)
-                api_name = "NASA POWER"
-                if not api_preds:
-                    st.sidebar.warning(
-                        "⚠️ NASA data not available. Trying Open-Meteo..."
-                    )
-                    api_preds = fetch_openmeteo_solar_forecast(year, month, day)
-                    api_name = "Open-Meteo (fallback)"
-            else:
-                api_preds = fetch_openmeteo_solar_forecast(year, month, day)
-                api_name = "Open-Meteo"
-
-            if api_preds:
-                st.sidebar.success(f"✅ {api_name} data fetched!")
-            else:
-                st.sidebar.warning("⚠️ API data not available for this date")
 
         # ---------- 8. Combine Results ----------
         results_df = pd.DataFrame(
