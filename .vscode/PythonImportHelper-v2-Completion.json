@@ -409,6 +409,15 @@
         "documentation": {}
     },
     {
+        "label": "fetch_nasa_power_solar",
+        "kind": 2,
+        "importPath": "frontend",
+        "description": "frontend",
+        "peekOfCode": "def fetch_nasa_power_solar(year, month, day):\n    \"\"\"\n    Fetch solar radiation data from NASA POWER API.\n    Returns hourly ALLSKY_SFC_SW_DWN (Surface Shortwave Downward Irradiance) in W/m².\n    Note: Historical data only (~1 week delay)\n    \"\"\"\n    date_str = f\"{year}{month:02d}{day:02d}\"\n    url = \"https://power.larc.nasa.gov/api/temporal/hourly/point\"\n    params = {\n        \"parameters\": \"ALLSKY_SFC_SW_DWN\",",
+        "detail": "frontend",
+        "documentation": {}
+    },
+    {
         "label": "os.environ[\"TF_CPP_MIN_LOG_LEVEL\"]",
         "kind": 5,
         "importPath": "frontend",
@@ -441,6 +450,42 @@
         "importPath": "frontend",
         "description": "frontend",
         "peekOfCode": "TIMEZONE = \"Asia/Karachi\"\ndef fetch_openmeteo_solar_forecast(year, month, day):\n    \"\"\"Fetch solar radiation forecast from Open-Meteo API.\"\"\"\n    date_str = f\"{year}-{month:02d}-{day:02d}\"\n    url = \"https://api.open-meteo.com/v1/forecast\"\n    params = {\n        \"latitude\": LATITUDE,\n        \"longitude\": LONGITUDE,\n        \"hourly\": \"shortwave_radiation\",\n        \"start_date\": date_str,",
+        "detail": "frontend",
+        "documentation": {}
+    },
+    {
+        "label": "NASA_ENSEMBLE_WEIGHTS",
+        "kind": 5,
+        "importPath": "frontend",
+        "description": "frontend",
+        "peekOfCode": "NASA_ENSEMBLE_WEIGHTS = {\n    \"XGBoost\": 0.45,\n    \"RandomForest\": 0.40,\n    \"LSTM\": 0.08,\n    \"CNN-LSTM\": 0.07,\n}\nNASA_HOUR_CALIBRATION = {\n    0: 0.0,\n    1: 0.0,\n    2: 0.0,",
+        "detail": "frontend",
+        "documentation": {}
+    },
+    {
+        "label": "NASA_HOUR_CALIBRATION",
+        "kind": 5,
+        "importPath": "frontend",
+        "description": "frontend",
+        "peekOfCode": "NASA_HOUR_CALIBRATION = {\n    0: 0.0,\n    1: 0.0,\n    2: 0.0,\n    3: 0.0,\n    4: 0.0,\n    5: 0.0,\n    6: 0.0,\n    7: 1.0,\n    8: 1.0,",
+        "detail": "frontend",
+        "documentation": {}
+    },
+    {
+        "label": "OPENMETEO_ENSEMBLE_WEIGHTS",
+        "kind": 5,
+        "importPath": "frontend",
+        "description": "frontend",
+        "peekOfCode": "OPENMETEO_ENSEMBLE_WEIGHTS = {\n    \"XGBoost\": 0.25,\n    \"RandomForest\": 0.25,\n    \"LSTM\": 0.25,\n    \"CNN-LSTM\": 0.25,\n}\nOPENMETEO_HOUR_CALIBRATION = {\n    0: 0.0,\n    1: 0.0,\n    2: 0.0,",
+        "detail": "frontend",
+        "documentation": {}
+    },
+    {
+        "label": "OPENMETEO_HOUR_CALIBRATION",
+        "kind": 5,
+        "importPath": "frontend",
+        "description": "frontend",
+        "peekOfCode": "OPENMETEO_HOUR_CALIBRATION = {\n    0: 0.0,\n    1: 0.0,\n    2: 0.0,\n    3: 0.0,\n    4: 0.0,\n    5: 0.0,\n    6: 0.0,\n    7: 0.0,\n    8: 0.22,",
         "detail": "frontend",
         "documentation": {}
     },
@@ -485,7 +530,16 @@
         "kind": 5,
         "importPath": "frontend",
         "description": "frontend",
-        "peekOfCode": "enable_api = st.sidebar.checkbox(\n    \"🌐 Compare with API\",\n    value=True,\n    help=\"Fetch Open-Meteo API forecast for comparison (works for today + next 16 days)\",\n)\nst.sidebar.markdown(\"---\")\nst.sidebar.markdown(\"### 📊 Model Info\")\nst.sidebar.info(\n    \"\"\"\n- **XGBoost/RF**: Tree-based models with lag features",
+        "peekOfCode": "enable_api = st.sidebar.checkbox(\n    \"🌐 Compare with API\",\n    value=True,\n    help=\"Fetch API forecast for comparison\",\n)\n# API Selection\nselected_api = st.sidebar.selectbox(\n    \"📡 Select API\",\n    [\"NASA POWER\", \"Open-Meteo\"],\n    index=0,",
+        "detail": "frontend",
+        "documentation": {}
+    },
+    {
+        "label": "selected_api",
+        "kind": 5,
+        "importPath": "frontend",
+        "description": "frontend",
+        "peekOfCode": "selected_api = st.sidebar.selectbox(\n    \"📡 Select API\",\n    [\"NASA POWER\", \"Open-Meteo\"],\n    index=0,\n    help=\"NASA POWER: Historical data (same source as training, ~1 week delay)\\nOpen-Meteo: Real-time forecast (today + 16 days)\",\n    disabled=not enable_api,\n)\n# Show API info\nif enable_api:\n    if selected_api == \"NASA POWER\":",
         "detail": "frontend",
         "documentation": {}
     },
@@ -1367,7 +1421,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "LATITUDE = 31.56\nLONGITUDE = 74.35\nTIMEZONE = \"Asia/Karachi\"\n# ============== API Selection ==============\n# Available APIs: \"open-meteo\", \"nasa-power\"\nSELECTED_API = \"open-meteo\"  # <-- Change this to switch APIs\n# ============== API Functions ==============\ndef fetch_openmeteo_solar_forecast(year, month, day):\n    \"\"\"\n    Fetch solar radiation forecast from Open-Meteo API.",
+        "peekOfCode": "LATITUDE = 31.56\nLONGITUDE = 74.35\nTIMEZONE = \"Asia/Karachi\"\n# ============== API Selection ==============\n# Available APIs: \"open-meteo\", \"nasa-power\"\nSELECTED_API = \"open-meteo\"  # <-- Testing Open-Meteo configuration\n# ============== API Functions ==============\ndef fetch_openmeteo_solar_forecast(year, month, day):\n    \"\"\"\n    Fetch solar radiation forecast from Open-Meteo API.",
         "detail": "trend",
         "documentation": {}
     },
@@ -1376,7 +1430,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "LONGITUDE = 74.35\nTIMEZONE = \"Asia/Karachi\"\n# ============== API Selection ==============\n# Available APIs: \"open-meteo\", \"nasa-power\"\nSELECTED_API = \"open-meteo\"  # <-- Change this to switch APIs\n# ============== API Functions ==============\ndef fetch_openmeteo_solar_forecast(year, month, day):\n    \"\"\"\n    Fetch solar radiation forecast from Open-Meteo API.\n    ✅ FREE, No API key required",
+        "peekOfCode": "LONGITUDE = 74.35\nTIMEZONE = \"Asia/Karachi\"\n# ============== API Selection ==============\n# Available APIs: \"open-meteo\", \"nasa-power\"\nSELECTED_API = \"open-meteo\"  # <-- Testing Open-Meteo configuration\n# ============== API Functions ==============\ndef fetch_openmeteo_solar_forecast(year, month, day):\n    \"\"\"\n    Fetch solar radiation forecast from Open-Meteo API.\n    ✅ FREE, No API key required",
         "detail": "trend",
         "documentation": {}
     },
@@ -1385,7 +1439,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "TIMEZONE = \"Asia/Karachi\"\n# ============== API Selection ==============\n# Available APIs: \"open-meteo\", \"nasa-power\"\nSELECTED_API = \"open-meteo\"  # <-- Change this to switch APIs\n# ============== API Functions ==============\ndef fetch_openmeteo_solar_forecast(year, month, day):\n    \"\"\"\n    Fetch solar radiation forecast from Open-Meteo API.\n    ✅ FREE, No API key required\n    📊 Returns hourly GHI (Global Horizontal Irradiance) in W/m².",
+        "peekOfCode": "TIMEZONE = \"Asia/Karachi\"\n# ============== API Selection ==============\n# Available APIs: \"open-meteo\", \"nasa-power\"\nSELECTED_API = \"open-meteo\"  # <-- Testing Open-Meteo configuration\n# ============== API Functions ==============\ndef fetch_openmeteo_solar_forecast(year, month, day):\n    \"\"\"\n    Fetch solar radiation forecast from Open-Meteo API.\n    ✅ FREE, No API key required\n    📊 Returns hourly GHI (Global Horizontal Irradiance) in W/m².",
         "detail": "trend",
         "documentation": {}
     },
@@ -1394,7 +1448,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "SELECTED_API = \"open-meteo\"  # <-- Change this to switch APIs\n# ============== API Functions ==============\ndef fetch_openmeteo_solar_forecast(year, month, day):\n    \"\"\"\n    Fetch solar radiation forecast from Open-Meteo API.\n    ✅ FREE, No API key required\n    📊 Returns hourly GHI (Global Horizontal Irradiance) in W/m².\n    ⏰ Forecast only (today + 16 days)\n    \"\"\"\n    date_str = f\"{year}-{month:02d}-{day:02d}\"",
+        "peekOfCode": "SELECTED_API = \"open-meteo\"  # <-- Testing Open-Meteo configuration\n# ============== API Functions ==============\ndef fetch_openmeteo_solar_forecast(year, month, day):\n    \"\"\"\n    Fetch solar radiation forecast from Open-Meteo API.\n    ✅ FREE, No API key required\n    📊 Returns hourly GHI (Global Horizontal Irradiance) in W/m².\n    ⏰ Forecast only (today + 16 days)\n    \"\"\"\n    date_str = f\"{year}-{month:02d}-{day:02d}\"",
         "detail": "trend",
         "documentation": {}
     },
@@ -1511,7 +1565,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"saved_models/xgboost_model.pkl\")\nrf_model = joblib.load(\"saved_models/random_forest_model.pkl\")\nlstm_model = load_model(\"saved_models/lstm_model.h5\")\ncnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# Load ensemble weights",
+        "peekOfCode": "df_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"saved_models/xgboost_model.pkl\")\nrf_model = joblib.load(\"saved_models/random_forest_model.pkl\")\nlstm_model = load_model(\"saved_models/lstm_model.h5\")\ncnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# Load ensemble weights (original from training)",
         "detail": "trend",
         "documentation": {}
     },
@@ -1520,7 +1574,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "target_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"saved_models/xgboost_model.pkl\")\nrf_model = joblib.load(\"saved_models/random_forest_model.pkl\")\nlstm_model = load_model(\"saved_models/lstm_model.h5\")\ncnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# Load ensemble weights\ntry:",
+        "peekOfCode": "target_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"saved_models/xgboost_model.pkl\")\nrf_model = joblib.load(\"saved_models/random_forest_model.pkl\")\nlstm_model = load_model(\"saved_models/lstm_model.h5\")\ncnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# Load ensemble weights (original from training)\ntry:",
         "detail": "trend",
         "documentation": {}
     },
@@ -1529,7 +1583,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "xgb_model = joblib.load(\"saved_models/xgboost_model.pkl\")\nrf_model = joblib.load(\"saved_models/random_forest_model.pkl\")\nlstm_model = load_model(\"saved_models/lstm_model.h5\")\ncnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# Load ensemble weights\ntry:\n    ensemble_weights = joblib.load(\"saved_models/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")",
+        "peekOfCode": "xgb_model = joblib.load(\"saved_models/xgboost_model.pkl\")\nrf_model = joblib.load(\"saved_models/random_forest_model.pkl\")\nlstm_model = load_model(\"saved_models/lstm_model.h5\")\ncnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# Load ensemble weights (original from training)\ntry:\n    ensemble_weights = joblib.load(\"saved_models/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")",
         "detail": "trend",
         "documentation": {}
     },
@@ -1538,7 +1592,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "rf_model = joblib.load(\"saved_models/random_forest_model.pkl\")\nlstm_model = load_model(\"saved_models/lstm_model.h5\")\ncnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# Load ensemble weights\ntry:\n    ensemble_weights = joblib.load(\"saved_models/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")\nexcept:",
+        "peekOfCode": "rf_model = joblib.load(\"saved_models/random_forest_model.pkl\")\nlstm_model = load_model(\"saved_models/lstm_model.h5\")\ncnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# Load ensemble weights (original from training)\ntry:\n    ensemble_weights = joblib.load(\"saved_models/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")\nexcept:",
         "detail": "trend",
         "documentation": {}
     },
@@ -1547,7 +1601,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "lstm_model = load_model(\"saved_models/lstm_model.h5\")\ncnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# Load ensemble weights\ntry:\n    ensemble_weights = joblib.load(\"saved_models/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")\nexcept:\n    ensemble_weights = {",
+        "peekOfCode": "lstm_model = load_model(\"saved_models/lstm_model.h5\")\ncnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# Load ensemble weights (original from training)\ntry:\n    ensemble_weights = joblib.load(\"saved_models/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")\nexcept:\n    ensemble_weights = {",
         "detail": "trend",
         "documentation": {}
     },
@@ -1556,7 +1610,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "cnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# Load ensemble weights\ntry:\n    ensemble_weights = joblib.load(\"saved_models/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")\nexcept:\n    ensemble_weights = {\n        \"XGBoost\": 0.25,",
+        "peekOfCode": "cnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# Load ensemble weights (original from training)\ntry:\n    ensemble_weights = joblib.load(\"saved_models/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")\nexcept:\n    ensemble_weights = {\n        \"XGBoost\": 0.25,",
         "detail": "trend",
         "documentation": {}
     },
@@ -1565,7 +1619,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "scaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# Load ensemble weights\ntry:\n    ensemble_weights = joblib.load(\"saved_models/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")\nexcept:\n    ensemble_weights = {\n        \"XGBoost\": 0.25,\n        \"RandomForest\": 0.25,",
+        "peekOfCode": "scaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# Load ensemble weights (original from training)\ntry:\n    ensemble_weights = joblib.load(\"saved_models/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")\nexcept:\n    ensemble_weights = {\n        \"XGBoost\": 0.25,\n        \"RandomForest\": 0.25,",
         "detail": "trend",
         "documentation": {}
     },
@@ -1574,7 +1628,43 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "scaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# Load ensemble weights\ntry:\n    ensemble_weights = joblib.load(\"saved_models/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")\nexcept:\n    ensemble_weights = {\n        \"XGBoost\": 0.25,\n        \"RandomForest\": 0.25,\n        \"LSTM\": 0.25,",
+        "peekOfCode": "scaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# Load ensemble weights (original from training)\ntry:\n    ensemble_weights = joblib.load(\"saved_models/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")\nexcept:\n    ensemble_weights = {\n        \"XGBoost\": 0.25,\n        \"RandomForest\": 0.25,\n        \"LSTM\": 0.25,",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "NASA_ENSEMBLE_WEIGHTS",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "NASA_ENSEMBLE_WEIGHTS = {\n    \"XGBoost\": 0.45,  # Best performer with NASA (R² = 0.958)\n    \"RandomForest\": 0.40,  # Second best (R² = 0.940)\n    \"LSTM\": 0.08,  # Lower weight (R² = 0.598)\n    \"CNN-LSTM\": 0.07,  # Lowest weight (R² = 0.621)\n}\n# NASA hour calibration (minimal - models already match well)\nNASA_HOUR_CALIBRATION = {\n    0: 0.0,\n    1: 0.0,",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "NASA_HOUR_CALIBRATION",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "NASA_HOUR_CALIBRATION = {\n    0: 0.0,\n    1: 0.0,\n    2: 0.0,\n    3: 0.0,\n    4: 0.0,\n    5: 0.0,  # Night\n    6: 0.0,  # Before sunrise\n    7: 1.0,  # Early morning - no calibration needed\n    8: 1.0,  # Morning",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "OPENMETEO_ENSEMBLE_WEIGHTS",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "OPENMETEO_ENSEMBLE_WEIGHTS = {\n    \"XGBoost\": 0.25,  # Equal weights\n    \"RandomForest\": 0.25,\n    \"LSTM\": 0.25,\n    \"CNN-LSTM\": 0.25,\n}\n# Open-Meteo hour calibration (corrects timing differences)\nOPENMETEO_HOUR_CALIBRATION = {\n    0: 0.0,\n    1: 0.0,",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "OPENMETEO_HOUR_CALIBRATION",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "OPENMETEO_HOUR_CALIBRATION = {\n    0: 0.0,\n    1: 0.0,\n    2: 0.0,\n    3: 0.0,\n    4: 0.0,\n    5: 0.0,  # Night\n    6: 0.0,  # Before sunrise\n    7: 0.0,  # Very early morning (API often shows 0)\n    8: 0.22,  # Early morning: significant scaling",
         "detail": "trend",
         "documentation": {}
     },
@@ -1601,7 +1691,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "today = datetime.now()\nyear = today.year\nmonth = today.month\nday = today.day\n# Override with specific date if needed (must be within forecast range for API)\n# For NASA POWER: Use historical dates (~1 week old or older)\n# For Open-Meteo: Use today or future dates (up to 16 days)\nyear = 2025\nmonth = 12\nday = 19",
+        "peekOfCode": "today = datetime.now()\nyear = today.year\nmonth = today.month\nday = today.day\n# Override with specific date if needed (must be within forecast range for API)\n# For NASA POWER: Use historical dates (~1 week old or older)\n# For Open-Meteo: Use today or future dates (up to 16 days)\nyear = 2025\nmonth = 12\nday = 21  # Current date for Open-Meteo forecast",
         "detail": "trend",
         "documentation": {}
     },
@@ -1610,7 +1700,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "year = today.year\nmonth = today.month\nday = today.day\n# Override with specific date if needed (must be within forecast range for API)\n# For NASA POWER: Use historical dates (~1 week old or older)\n# For Open-Meteo: Use today or future dates (up to 16 days)\nyear = 2025\nmonth = 12\nday = 19\nprint(f\"📅 Forecasting for: {year}-{month:02d}-{day:02d}\")",
+        "peekOfCode": "year = today.year\nmonth = today.month\nday = today.day\n# Override with specific date if needed (must be within forecast range for API)\n# For NASA POWER: Use historical dates (~1 week old or older)\n# For Open-Meteo: Use today or future dates (up to 16 days)\nyear = 2025\nmonth = 12\nday = 21  # Current date for Open-Meteo forecast\nprint(f\"📅 Forecasting for: {year}-{month:02d}-{day:02d}\")",
         "detail": "trend",
         "documentation": {}
     },
@@ -1619,7 +1709,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "month = today.month\nday = today.day\n# Override with specific date if needed (must be within forecast range for API)\n# For NASA POWER: Use historical dates (~1 week old or older)\n# For Open-Meteo: Use today or future dates (up to 16 days)\nyear = 2025\nmonth = 12\nday = 19\nprint(f\"📅 Forecasting for: {year}-{month:02d}-{day:02d}\")\n# Calculate day of year for the forecast date",
+        "peekOfCode": "month = today.month\nday = today.day\n# Override with specific date if needed (must be within forecast range for API)\n# For NASA POWER: Use historical dates (~1 week old or older)\n# For Open-Meteo: Use today or future dates (up to 16 days)\nyear = 2025\nmonth = 12\nday = 21  # Current date for Open-Meteo forecast\nprint(f\"📅 Forecasting for: {year}-{month:02d}-{day:02d}\")\n# Calculate day of year for the forecast date",
         "detail": "trend",
         "documentation": {}
     },
@@ -1628,7 +1718,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "day = today.day\n# Override with specific date if needed (must be within forecast range for API)\n# For NASA POWER: Use historical dates (~1 week old or older)\n# For Open-Meteo: Use today or future dates (up to 16 days)\nyear = 2025\nmonth = 12\nday = 19\nprint(f\"📅 Forecasting for: {year}-{month:02d}-{day:02d}\")\n# Calculate day of year for the forecast date\nforecast_date = datetime(year, month, day)",
+        "peekOfCode": "day = today.day\n# Override with specific date if needed (must be within forecast range for API)\n# For NASA POWER: Use historical dates (~1 week old or older)\n# For Open-Meteo: Use today or future dates (up to 16 days)\nyear = 2025\nmonth = 12\nday = 21  # Current date for Open-Meteo forecast\nprint(f\"📅 Forecasting for: {year}-{month:02d}-{day:02d}\")\n# Calculate day of year for the forecast date\nforecast_date = datetime(year, month, day)",
         "detail": "trend",
         "documentation": {}
     },
@@ -1637,7 +1727,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "year = 2025\nmonth = 12\nday = 19\nprint(f\"📅 Forecasting for: {year}-{month:02d}-{day:02d}\")\n# Calculate day of year for the forecast date\nforecast_date = datetime(year, month, day)\nday_of_year = forecast_date.timetuple().tm_yday\n# Generate hourly datetime index for the day\ndate_index = pd.date_range(\n    start=f\"{year}-{month:02d}-{day:02d} 00:00\",",
+        "peekOfCode": "year = 2025\nmonth = 12\nday = 21  # Current date for Open-Meteo forecast\nprint(f\"📅 Forecasting for: {year}-{month:02d}-{day:02d}\")\n# Calculate day of year for the forecast date\nforecast_date = datetime(year, month, day)\nday_of_year = forecast_date.timetuple().tm_yday\n# Generate hourly datetime index for the day\ndate_index = pd.date_range(\n    start=f\"{year}-{month:02d}-{day:02d} 00:00\",",
         "detail": "trend",
         "documentation": {}
     },
@@ -1646,7 +1736,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "month = 12\nday = 19\nprint(f\"📅 Forecasting for: {year}-{month:02d}-{day:02d}\")\n# Calculate day of year for the forecast date\nforecast_date = datetime(year, month, day)\nday_of_year = forecast_date.timetuple().tm_yday\n# Generate hourly datetime index for the day\ndate_index = pd.date_range(\n    start=f\"{year}-{month:02d}-{day:02d} 00:00\",\n    end=f\"{year}-{month:02d}-{day:02d} 23:00\",",
+        "peekOfCode": "month = 12\nday = 21  # Current date for Open-Meteo forecast\nprint(f\"📅 Forecasting for: {year}-{month:02d}-{day:02d}\")\n# Calculate day of year for the forecast date\nforecast_date = datetime(year, month, day)\nday_of_year = forecast_date.timetuple().tm_yday\n# Generate hourly datetime index for the day\ndate_index = pd.date_range(\n    start=f\"{year}-{month:02d}-{day:02d} 00:00\",\n    end=f\"{year}-{month:02d}-{day:02d} 23:00\",",
         "detail": "trend",
         "documentation": {}
     },
@@ -1655,7 +1745,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "day = 19\nprint(f\"📅 Forecasting for: {year}-{month:02d}-{day:02d}\")\n# Calculate day of year for the forecast date\nforecast_date = datetime(year, month, day)\nday_of_year = forecast_date.timetuple().tm_yday\n# Generate hourly datetime index for the day\ndate_index = pd.date_range(\n    start=f\"{year}-{month:02d}-{day:02d} 00:00\",\n    end=f\"{year}-{month:02d}-{day:02d} 23:00\",\n    freq=\"H\",",
+        "peekOfCode": "day = 21  # Current date for Open-Meteo forecast\nprint(f\"📅 Forecasting for: {year}-{month:02d}-{day:02d}\")\n# Calculate day of year for the forecast date\nforecast_date = datetime(year, month, day)\nday_of_year = forecast_date.timetuple().tm_yday\n# Generate hourly datetime index for the day\ndate_index = pd.date_range(\n    start=f\"{year}-{month:02d}-{day:02d} 00:00\",\n    end=f\"{year}-{month:02d}-{day:02d} 23:00\",\n    freq=\"H\",",
         "detail": "trend",
         "documentation": {}
     },
@@ -1844,7 +1934,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "xgb_preds = [x for x, _ in tree_predictions]\nrf_preds = [x for _, x in tree_predictions]\nlstm_preds = [x for x, _ in seq_predictions]\ncnn_preds = [x for _, x in seq_predictions]\n# Calculate IMPROVED ensemble prediction with hour-specific calibration\n# Based on comparison with Open-Meteo API, apply scaling factors to match API patterns\n# Hour-specific scaling factors derived from model vs API comparison\nHOUR_CALIBRATION = {\n    0: 0.0,\n    1: 0.0,",
+        "peekOfCode": "xgb_preds = [x for x, _ in tree_predictions]\nrf_preds = [x for _, x in tree_predictions]\nlstm_preds = [x for x, _ in seq_predictions]\ncnn_preds = [x for _, x in seq_predictions]\n# Select ensemble configuration based on API\nprint(f\"\\n🔧 Using ensemble configuration for: {SELECTED_API.upper()}\")\nif SELECTED_API.lower() == \"nasa-power\":\n    ACTIVE_WEIGHTS = NASA_ENSEMBLE_WEIGHTS\n    HOUR_CALIBRATION = NASA_HOUR_CALIBRATION\n    print(",
         "detail": "trend",
         "documentation": {}
     },
@@ -1853,7 +1943,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "rf_preds = [x for _, x in tree_predictions]\nlstm_preds = [x for x, _ in seq_predictions]\ncnn_preds = [x for _, x in seq_predictions]\n# Calculate IMPROVED ensemble prediction with hour-specific calibration\n# Based on comparison with Open-Meteo API, apply scaling factors to match API patterns\n# Hour-specific scaling factors derived from model vs API comparison\nHOUR_CALIBRATION = {\n    0: 0.0,\n    1: 0.0,\n    2: 0.0,",
+        "peekOfCode": "rf_preds = [x for _, x in tree_predictions]\nlstm_preds = [x for x, _ in seq_predictions]\ncnn_preds = [x for _, x in seq_predictions]\n# Select ensemble configuration based on API\nprint(f\"\\n🔧 Using ensemble configuration for: {SELECTED_API.upper()}\")\nif SELECTED_API.lower() == \"nasa-power\":\n    ACTIVE_WEIGHTS = NASA_ENSEMBLE_WEIGHTS\n    HOUR_CALIBRATION = NASA_HOUR_CALIBRATION\n    print(\n        f\"   Weights: XGB={ACTIVE_WEIGHTS['XGBoost']:.0%}, RF={ACTIVE_WEIGHTS['RandomForest']:.0%}, LSTM={ACTIVE_WEIGHTS['LSTM']:.0%}, CNN={ACTIVE_WEIGHTS['CNN-LSTM']:.0%}\"",
         "detail": "trend",
         "documentation": {}
     },
@@ -1862,7 +1952,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "lstm_preds = [x for x, _ in seq_predictions]\ncnn_preds = [x for _, x in seq_predictions]\n# Calculate IMPROVED ensemble prediction with hour-specific calibration\n# Based on comparison with Open-Meteo API, apply scaling factors to match API patterns\n# Hour-specific scaling factors derived from model vs API comparison\nHOUR_CALIBRATION = {\n    0: 0.0,\n    1: 0.0,\n    2: 0.0,\n    3: 0.0,",
+        "peekOfCode": "lstm_preds = [x for x, _ in seq_predictions]\ncnn_preds = [x for _, x in seq_predictions]\n# Select ensemble configuration based on API\nprint(f\"\\n🔧 Using ensemble configuration for: {SELECTED_API.upper()}\")\nif SELECTED_API.lower() == \"nasa-power\":\n    ACTIVE_WEIGHTS = NASA_ENSEMBLE_WEIGHTS\n    HOUR_CALIBRATION = NASA_HOUR_CALIBRATION\n    print(\n        f\"   Weights: XGB={ACTIVE_WEIGHTS['XGBoost']:.0%}, RF={ACTIVE_WEIGHTS['RandomForest']:.0%}, LSTM={ACTIVE_WEIGHTS['LSTM']:.0%}, CNN={ACTIVE_WEIGHTS['CNN-LSTM']:.0%}\"\n    )",
         "detail": "trend",
         "documentation": {}
     },
@@ -1871,16 +1961,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "cnn_preds = [x for _, x in seq_predictions]\n# Calculate IMPROVED ensemble prediction with hour-specific calibration\n# Based on comparison with Open-Meteo API, apply scaling factors to match API patterns\n# Hour-specific scaling factors derived from model vs API comparison\nHOUR_CALIBRATION = {\n    0: 0.0,\n    1: 0.0,\n    2: 0.0,\n    3: 0.0,\n    4: 0.0,",
-        "detail": "trend",
-        "documentation": {}
-    },
-    {
-        "label": "HOUR_CALIBRATION",
-        "kind": 5,
-        "importPath": "trend",
-        "description": "trend",
-        "peekOfCode": "HOUR_CALIBRATION = {\n    0: 0.0,\n    1: 0.0,\n    2: 0.0,\n    3: 0.0,\n    4: 0.0,\n    5: 0.0,  # Night: force to 0\n    6: 0.0,  # Before sunrise: force to 0\n    7: 0.0,  # Very early morning: force to 0 (API shows 0)\n    8: 0.22,  # Early morning: significant underscaling (51 vs 233)",
+        "peekOfCode": "cnn_preds = [x for _, x in seq_predictions]\n# Select ensemble configuration based on API\nprint(f\"\\n🔧 Using ensemble configuration for: {SELECTED_API.upper()}\")\nif SELECTED_API.lower() == \"nasa-power\":\n    ACTIVE_WEIGHTS = NASA_ENSEMBLE_WEIGHTS\n    HOUR_CALIBRATION = NASA_HOUR_CALIBRATION\n    print(\n        f\"   Weights: XGB={ACTIVE_WEIGHTS['XGBoost']:.0%}, RF={ACTIVE_WEIGHTS['RandomForest']:.0%}, LSTM={ACTIVE_WEIGHTS['LSTM']:.0%}, CNN={ACTIVE_WEIGHTS['CNN-LSTM']:.0%}\"\n    )\n    print(\"   Calibration: Minimal (models match NASA data well)\")",
         "detail": "trend",
         "documentation": {}
     },
@@ -1889,7 +1970,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "ensemble_preds = []\nfor i in range(24):\n    hour = hours[i]\n    # Get predictions\n    xgb_val = xgb_preds[i]\n    rf_val = rf_preds[i]\n    lstm_val = lstm_preds[i]\n    cnn_val = cnn_preds[i]\n    # Calculate base ensemble (weighted towards tree models)\n    # XGBoost performs best, followed by RandomForest",
+        "peekOfCode": "ensemble_preds = []\nfor i in range(24):\n    hour = hours[i]\n    # Get predictions\n    xgb_val = xgb_preds[i]\n    rf_val = rf_preds[i]\n    lstm_val = lstm_preds[i]\n    cnn_val = cnn_preds[i]\n    # Calculate weighted ensemble based on selected API configuration\n    base_ensemble = (",
         "detail": "trend",
         "documentation": {}
     },

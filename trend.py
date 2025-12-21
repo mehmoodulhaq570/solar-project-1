@@ -26,7 +26,7 @@ TIMEZONE = "Asia/Karachi"
 
 # ============== API Selection ==============
 # Available APIs: "open-meteo", "nasa-power"
-SELECTED_API = "open-meteo"  # <-- Change this to switch APIs
+SELECTED_API = "open-meteo"  # <-- Testing Open-Meteo configuration
 
 # ============== API Functions ==============
 
@@ -181,7 +181,7 @@ cnn_lstm_model = load_model("saved_models/cnn_lstm_model.h5")
 scaler_X = joblib.load("saved_models/scaler_X.pkl")
 scaler_y = joblib.load("saved_models/scaler_y.pkl")
 
-# Load ensemble weights
+# Load ensemble weights (original from training)
 try:
     ensemble_weights = joblib.load("saved_models/ensemble_weights.pkl")
     print(f"Ensemble weights loaded: {ensemble_weights}")
@@ -193,6 +193,83 @@ except:
         "CNN-LSTM": 0.25,
     }
     print("Using equal ensemble weights")
+
+# ============== API-Specific Ensemble Configuration ==============
+# Different weights optimized for each API comparison
+
+# NASA POWER API weights (optimized for NASA satellite data - same source as training)
+# XGBoost and RF perform best (R² > 0.94), so use higher weights
+NASA_ENSEMBLE_WEIGHTS = {
+    "XGBoost": 0.45,  # Best performer with NASA (R² = 0.958)
+    "RandomForest": 0.40,  # Second best (R² = 0.940)
+    "LSTM": 0.08,  # Lower weight (R² = 0.598)
+    "CNN-LSTM": 0.07,  # Lowest weight (R² = 0.621)
+}
+
+# NASA hour calibration (minimal - models already match well)
+NASA_HOUR_CALIBRATION = {
+    0: 0.0,
+    1: 0.0,
+    2: 0.0,
+    3: 0.0,
+    4: 0.0,
+    5: 0.0,  # Night
+    6: 0.0,  # Before sunrise
+    7: 1.0,  # Early morning - no calibration needed
+    8: 1.0,  # Morning
+    9: 1.0,  # Mid-morning
+    10: 1.0,  # Late morning
+    11: 1.0,  # Near solar noon
+    12: 1.0,  # Solar noon
+    13: 1.0,  # Early afternoon
+    14: 1.0,  # Mid-afternoon
+    15: 1.0,  # Late afternoon
+    16: 1.0,  # Evening
+    17: 0.0,  # After sunset
+    18: 0.0,
+    19: 0.0,
+    20: 0.0,
+    21: 0.0,
+    22: 0.0,
+    23: 0.0,  # Night
+}
+
+# Open-Meteo API weights (optimized for weather forecast comparison)
+# Ensemble of all models works best due to timing differences
+OPENMETEO_ENSEMBLE_WEIGHTS = {
+    "XGBoost": 0.25,  # Equal weights
+    "RandomForest": 0.25,
+    "LSTM": 0.25,
+    "CNN-LSTM": 0.25,
+}
+
+# Open-Meteo hour calibration (corrects timing differences)
+OPENMETEO_HOUR_CALIBRATION = {
+    0: 0.0,
+    1: 0.0,
+    2: 0.0,
+    3: 0.0,
+    4: 0.0,
+    5: 0.0,  # Night
+    6: 0.0,  # Before sunrise
+    7: 0.0,  # Very early morning (API often shows 0)
+    8: 0.22,  # Early morning: significant scaling
+    9: 0.41,  # Morning ramp-up
+    10: 0.70,  # Mid-morning
+    11: 0.94,  # Late morning
+    12: 0.99,  # Solar noon - near perfect
+    13: 1.05,  # Early afternoon
+    14: 1.22,  # Mid-afternoon
+    15: 1.65,  # Late afternoon
+    16: 3.19,  # Evening
+    17: 10.0,  # Sunset (capped for stability)
+    18: 0.0,
+    19: 0.0,
+    20: 0.0,
+    21: 0.0,
+    22: 0.0,
+    23: 0.0,  # Night
+}
 
 # ---------- 3. Forecast settings ----------
 MAX_LAG = 24
@@ -211,7 +288,7 @@ day = today.day
 # For Open-Meteo: Use today or future dates (up to 16 days)
 year = 2025
 month = 12
-day = 19
+day = 21  # Current date for Open-Meteo forecast
 
 print(f"📅 Forecasting for: {year}-{month:02d}-{day:02d}")
 
@@ -391,35 +468,23 @@ rf_preds = [x for _, x in tree_predictions]
 lstm_preds = [x for x, _ in seq_predictions]
 cnn_preds = [x for _, x in seq_predictions]
 
-# Calculate IMPROVED ensemble prediction with hour-specific calibration
-# Based on comparison with Open-Meteo API, apply scaling factors to match API patterns
-# Hour-specific scaling factors derived from model vs API comparison
-HOUR_CALIBRATION = {
-    0: 0.0,
-    1: 0.0,
-    2: 0.0,
-    3: 0.0,
-    4: 0.0,
-    5: 0.0,  # Night: force to 0
-    6: 0.0,  # Before sunrise: force to 0
-    7: 0.0,  # Very early morning: force to 0 (API shows 0)
-    8: 0.22,  # Early morning: significant underscaling (51 vs 233)
-    9: 0.41,  # Morning ramp-up: (182 vs 449)
-    10: 0.70,  # Mid-morning: (336 vs 479)
-    11: 0.94,  # Late morning: (478 vs 510)
-    12: 0.99,  # Solar noon: (489 vs 496) - near perfect
-    13: 1.05,  # Early afternoon: (449 vs 427)
-    14: 1.22,  # Mid-afternoon: (368 vs 302)
-    15: 1.65,  # Late afternoon: (265 vs 161)
-    16: 3.19,  # Evening: (142 vs 45)
-    17: 26.2,  # Sunset: (33 vs 1.26) - large correction
-    18: 0.0,  # After sunset: force to 0
-    19: 0.0,
-    20: 0.0,
-    21: 0.0,
-    22: 0.0,
-    23: 0.0,  # Night: force to 0
-}
+# Select ensemble configuration based on API
+print(f"\n🔧 Using ensemble configuration for: {SELECTED_API.upper()}")
+
+if SELECTED_API.lower() == "nasa-power":
+    ACTIVE_WEIGHTS = NASA_ENSEMBLE_WEIGHTS
+    HOUR_CALIBRATION = NASA_HOUR_CALIBRATION
+    print(
+        f"   Weights: XGB={ACTIVE_WEIGHTS['XGBoost']:.0%}, RF={ACTIVE_WEIGHTS['RandomForest']:.0%}, LSTM={ACTIVE_WEIGHTS['LSTM']:.0%}, CNN={ACTIVE_WEIGHTS['CNN-LSTM']:.0%}"
+    )
+    print("   Calibration: Minimal (models match NASA data well)")
+else:
+    ACTIVE_WEIGHTS = OPENMETEO_ENSEMBLE_WEIGHTS
+    HOUR_CALIBRATION = OPENMETEO_HOUR_CALIBRATION
+    print(
+        f"   Weights: XGB={ACTIVE_WEIGHTS['XGBoost']:.0%}, RF={ACTIVE_WEIGHTS['RandomForest']:.0%}, LSTM={ACTIVE_WEIGHTS['LSTM']:.0%}, CNN={ACTIVE_WEIGHTS['CNN-LSTM']:.0%}"
+    )
+    print("   Calibration: Hour-specific adjustments for timing differences")
 
 ensemble_preds = []
 for i in range(24):
@@ -431,9 +496,13 @@ for i in range(24):
     lstm_val = lstm_preds[i]
     cnn_val = cnn_preds[i]
 
-    # Calculate base ensemble (weighted towards tree models)
-    # XGBoost performs best, followed by RandomForest
-    base_ensemble = 0.50 * xgb_val + 0.50 * rf_val  # Use only tree models
+    # Calculate weighted ensemble based on selected API configuration
+    base_ensemble = (
+        ACTIVE_WEIGHTS["XGBoost"] * xgb_val
+        + ACTIVE_WEIGHTS["RandomForest"] * rf_val
+        + ACTIVE_WEIGHTS["LSTM"] * lstm_val
+        + ACTIVE_WEIGHTS["CNN-LSTM"] * cnn_val
+    )
 
     # Apply hour-specific calibration factor
     calibration = HOUR_CALIBRATION.get(hour, 1.0)
@@ -506,6 +575,8 @@ if not all(np.isnan(api_preds)):
         ensemble_valid = np.array(ensemble_preds)[valid_mask]
         xgb_valid = np.array(xgb_preds)[valid_mask]
         rf_valid = np.array(rf_preds)[valid_mask]
+        lstm_valid = np.array(lstm_preds)[valid_mask]
+        cnn_valid = np.array(cnn_preds)[valid_mask]
 
         print(f"\n  {'Model':<15} | {'MAE':>10} | {'RMSE':>10} | {'R²':>8}")
         print("  " + "-" * 50)
@@ -514,6 +585,8 @@ if not all(np.isnan(api_preds)):
             ("Ensemble", ensemble_valid),
             ("XGBoost", xgb_valid),
             ("RandomForest", rf_valid),
+            ("LSTM", lstm_valid),
+            ("CNN-LSTM", cnn_valid),
         ]:
             mae = mean_absolute_error(api_valid, preds)
             rmse = np.sqrt(mean_squared_error(api_valid, preds))

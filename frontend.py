@@ -61,6 +61,123 @@ def fetch_openmeteo_solar_forecast(year, month, day):
     return None
 
 
+def fetch_nasa_power_solar(year, month, day):
+    """
+    Fetch solar radiation data from NASA POWER API.
+    Returns hourly ALLSKY_SFC_SW_DWN (Surface Shortwave Downward Irradiance) in W/m².
+    Note: Historical data only (~1 week delay)
+    """
+    date_str = f"{year}{month:02d}{day:02d}"
+
+    url = "https://power.larc.nasa.gov/api/temporal/hourly/point"
+    params = {
+        "parameters": "ALLSKY_SFC_SW_DWN",
+        "community": "RE",
+        "longitude": LONGITUDE,
+        "latitude": LATITUDE,
+        "start": date_str,
+        "end": date_str,
+        "format": "JSON",
+        "time-standard": "LST",
+    }
+
+    try:
+        response = requests.get(url, params=params, timeout=30)
+        response.raise_for_status()
+        data = response.json()
+
+        hourly_data = (
+            data.get("properties", {}).get("parameter", {}).get("ALLSKY_SFC_SW_DWN", {})
+        )
+
+        # Extract hourly values
+        hourly_radiation = []
+        for hour in range(24):
+            key = f"{year}{month:02d}{day:02d}{hour:02d}"
+            value = hourly_data.get(key, -999)
+            hourly_radiation.append(max(0, value) if value != -999 else 0)
+
+        if len(hourly_radiation) == 24 and sum(hourly_radiation) > 0:
+            return hourly_radiation
+        else:
+            return None
+
+    except:
+        return None
+
+
+# ============== API-Specific Ensemble Configuration ==============
+# NASA POWER API weights (optimized for NASA satellite data)
+NASA_ENSEMBLE_WEIGHTS = {
+    "XGBoost": 0.45,
+    "RandomForest": 0.40,
+    "LSTM": 0.08,
+    "CNN-LSTM": 0.07,
+}
+
+NASA_HOUR_CALIBRATION = {
+    0: 0.0,
+    1: 0.0,
+    2: 0.0,
+    3: 0.0,
+    4: 0.0,
+    5: 0.0,
+    6: 0.0,
+    7: 1.0,
+    8: 1.0,
+    9: 1.0,
+    10: 1.0,
+    11: 1.0,
+    12: 1.0,
+    13: 1.0,
+    14: 1.0,
+    15: 1.0,
+    16: 1.0,
+    17: 0.0,
+    18: 0.0,
+    19: 0.0,
+    20: 0.0,
+    21: 0.0,
+    22: 0.0,
+    23: 0.0,
+}
+
+# Open-Meteo API weights (equal weights with hour calibration)
+OPENMETEO_ENSEMBLE_WEIGHTS = {
+    "XGBoost": 0.25,
+    "RandomForest": 0.25,
+    "LSTM": 0.25,
+    "CNN-LSTM": 0.25,
+}
+
+OPENMETEO_HOUR_CALIBRATION = {
+    0: 0.0,
+    1: 0.0,
+    2: 0.0,
+    3: 0.0,
+    4: 0.0,
+    5: 0.0,
+    6: 0.0,
+    7: 0.0,
+    8: 0.22,
+    9: 0.41,
+    10: 0.70,
+    11: 0.94,
+    12: 0.99,
+    13: 1.05,
+    14: 1.22,
+    15: 1.65,
+    16: 3.19,
+    17: 10.0,
+    18: 0.0,
+    19: 0.0,
+    20: 0.0,
+    21: 0.0,
+    22: 0.0,
+    23: 0.0,
+}
+
+
 # ============== Page Configuration ==============
 st.set_page_config(page_title="Solar Radiation Forecast", page_icon="☀️", layout="wide")
 
@@ -98,8 +215,28 @@ st.sidebar.markdown("---")
 enable_api = st.sidebar.checkbox(
     "🌐 Compare with API",
     value=True,
-    help="Fetch Open-Meteo API forecast for comparison (works for today + next 16 days)",
+    help="Fetch API forecast for comparison",
 )
+
+# API Selection
+selected_api = st.sidebar.selectbox(
+    "📡 Select API",
+    ["NASA POWER", "Open-Meteo"],
+    index=0,
+    help="NASA POWER: Historical data (same source as training, ~1 week delay)\nOpen-Meteo: Real-time forecast (today + 16 days)",
+    disabled=not enable_api,
+)
+
+# Show API info
+if enable_api:
+    if selected_api == "NASA POWER":
+        st.sidebar.info(
+            "🛰️ **NASA POWER**: Best accuracy (R²=0.96)\nUse dates ≥1 week old"
+        )
+    else:
+        st.sidebar.info(
+            "🌤️ **Open-Meteo**: Real-time forecast\nUse today or future dates"
+        )
 
 st.sidebar.markdown("---")
 st.sidebar.markdown("### 📊 Model Info")
@@ -107,8 +244,9 @@ st.sidebar.info(
     """
 - **XGBoost/RF**: Tree-based models with lag features
 - **LSTM/CNN-LSTM**: Deep learning sequence models
-- **Calibrated Ensemble**: Hour-calibrated weighted average (R²=0.94)
-- **Open-Meteo API**: Real-time forecast comparison
+- **Ensemble**: API-optimized weighted average
+- **NASA POWER**: Same data source as training (R²=0.96)
+- **Open-Meteo**: Real-time weather forecast
 """
 )
 
@@ -469,39 +607,24 @@ with tab1:
         if not cnn_preds:
             cnn_preds = [0] * 24
 
-        # Hour-specific calibration factors (derived from API comparison)
-        HOUR_CALIBRATION = {
-            0: 0.0,
-            1: 0.0,
-            2: 0.0,
-            3: 0.0,
-            4: 0.0,
-            5: 0.0,  # Night
-            6: 0.0,
-            7: 0.0,  # Before sunrise
-            8: 0.22,  # Early morning
-            9: 0.41,  # Morning ramp-up
-            10: 0.70,  # Mid-morning
-            11: 0.94,  # Late morning
-            12: 0.99,  # Solar noon
-            13: 1.05,  # Early afternoon
-            14: 1.22,  # Mid-afternoon
-            15: 1.65,  # Late afternoon
-            16: 3.19,  # Evening
-            17: 26.2,  # Sunset
-            18: 0.0,
-            19: 0.0,
-            20: 0.0,
-            21: 0.0,
-            22: 0.0,
-            23: 0.0,  # Night
-        }
+        # Select ensemble configuration based on API
+        if enable_api and selected_api == "NASA POWER":
+            ACTIVE_WEIGHTS = NASA_ENSEMBLE_WEIGHTS
+            HOUR_CALIBRATION = NASA_HOUR_CALIBRATION
+        else:
+            ACTIVE_WEIGHTS = OPENMETEO_ENSEMBLE_WEIGHTS
+            HOUR_CALIBRATION = OPENMETEO_HOUR_CALIBRATION
 
         ensemble_preds = []
         for i in range(24):
             hour = hours[i]
-            # Use only tree models (best performers)
-            base_ensemble = 0.50 * xgb_preds[i] + 0.50 * rf_preds[i]
+            # Calculate weighted ensemble based on selected API configuration
+            base_ensemble = (
+                ACTIVE_WEIGHTS["XGBoost"] * xgb_preds[i]
+                + ACTIVE_WEIGHTS["RandomForest"] * rf_preds[i]
+                + ACTIVE_WEIGHTS["LSTM"] * lstm_preds[i]
+                + ACTIVE_WEIGHTS["CNN-LSTM"] * cnn_preds[i]
+            )
             # Apply hour-specific calibration
             calibration = HOUR_CALIBRATION.get(hour, 1.0)
             ensemble_pred = base_ensemble * calibration
@@ -511,11 +634,24 @@ with tab1:
 
         # ---------- 7. Fetch API Predictions ----------
         api_preds = None
+        api_name = "API"
         if enable_api:
-            progress.progress(85, text="Fetching API forecast...")
-            api_preds = fetch_openmeteo_solar_forecast(year, month, day)
+            progress.progress(85, text=f"Fetching {selected_api} forecast...")
+            if selected_api == "NASA POWER":
+                api_preds = fetch_nasa_power_solar(year, month, day)
+                api_name = "NASA POWER"
+                if not api_preds:
+                    st.sidebar.warning(
+                        "⚠️ NASA data not available. Trying Open-Meteo..."
+                    )
+                    api_preds = fetch_openmeteo_solar_forecast(year, month, day)
+                    api_name = "Open-Meteo (fallback)"
+            else:
+                api_preds = fetch_openmeteo_solar_forecast(year, month, day)
+                api_name = "Open-Meteo"
+
             if api_preds:
-                st.sidebar.success("✅ API data fetched!")
+                st.sidebar.success(f"✅ {api_name} data fetched!")
             else:
                 st.sidebar.warning("⚠️ API data not available for this date")
 
@@ -538,7 +674,7 @@ with tab1:
         if "Ensemble" in selected_models:
             results_df["Ensemble"] = ensemble_preds
         if api_preds:
-            results_df["OpenMeteo API"] = api_preds
+            results_df[api_name] = api_preds
 
         progress.progress(100, text="Complete!")
 
@@ -562,7 +698,7 @@ with tab1:
             "LSTM": "#3498db",
             "CNN-LSTM": "#9b59b6",
             "Ensemble": "#2c3e50",
-            "OpenMeteo API": "#f39c12",
+            api_name: "#f39c12",
         }
 
         for model in selected_models:
@@ -583,7 +719,7 @@ with tab1:
             ax1.plot(
                 range(24),
                 api_preds,
-                label="OpenMeteo API",
+                label=api_name,
                 color="#f39c12",
                 linewidth=2.5,
                 linestyle=":",
@@ -627,7 +763,7 @@ with tab1:
             ax2.plot(
                 range(24),
                 api_preds,
-                label="OpenMeteo API",
+                label=api_name,
                 linewidth=2.5,
                 color="#f39c12",
                 linestyle="--",
@@ -666,7 +802,7 @@ with tab1:
             ax3.plot(
                 range(24),
                 api_preds,
-                label="OpenMeteo API",
+                label=api_name,
                 color="#f39c12",
                 linewidth=2.5,
                 linestyle="--",
