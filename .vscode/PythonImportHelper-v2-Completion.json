@@ -35,6 +35,223 @@
         "documentation": {}
     },
     {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "sys",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sys",
+        "description": "sys",
+        "detail": "sys",
+        "documentation": {}
+    },
+    {
+        "label": "warnings",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "warnings",
+        "description": "warnings",
+        "detail": "warnings",
+        "documentation": {}
+    },
+    {
+        "label": "numpy",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "numpy",
+        "description": "numpy",
+        "detail": "numpy",
+        "documentation": {}
+    },
+    {
+        "label": "math",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "math",
+        "description": "math",
+        "detail": "math",
+        "documentation": {}
+    },
+    {
+        "label": "torch",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "torch",
+        "description": "torch",
+        "detail": "torch",
+        "documentation": {}
+    },
+    {
+        "label": "Dataset",
+        "importPath": "torch.utils.data",
+        "description": "torch.utils.data",
+        "isExtraImport": true,
+        "detail": "torch.utils.data",
+        "documentation": {}
+    },
+    {
+        "label": "DataLoader",
+        "importPath": "torch.utils.data",
+        "description": "torch.utils.data",
+        "isExtraImport": true,
+        "detail": "torch.utils.data",
+        "documentation": {}
+    },
+    {
+        "label": "lightning",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "lightning",
+        "description": "lightning",
+        "detail": "lightning",
+        "documentation": {}
+    },
+    {
+        "label": "EarlyStopping",
+        "importPath": "lightning.pytorch.callbacks",
+        "description": "lightning.pytorch.callbacks",
+        "isExtraImport": true,
+        "detail": "lightning.pytorch.callbacks",
+        "documentation": {}
+    },
+    {
+        "label": "ModelCheckpoint",
+        "importPath": "lightning.pytorch.callbacks",
+        "description": "lightning.pytorch.callbacks",
+        "isExtraImport": true,
+        "detail": "lightning.pytorch.callbacks",
+        "documentation": {}
+    },
+    {
+        "label": "LearningRateMonitor",
+        "importPath": "lightning.pytorch.callbacks",
+        "description": "lightning.pytorch.callbacks",
+        "isExtraImport": true,
+        "detail": "lightning.pytorch.callbacks",
+        "documentation": {}
+    },
+    {
+        "label": "StandardScaler",
+        "importPath": "sklearn.preprocessing",
+        "description": "sklearn.preprocessing",
+        "isExtraImport": true,
+        "detail": "sklearn.preprocessing",
+        "documentation": {}
+    },
+    {
+        "label": "StandardScaler",
+        "importPath": "sklearn.preprocessing",
+        "description": "sklearn.preprocessing",
+        "isExtraImport": true,
+        "detail": "sklearn.preprocessing",
+        "documentation": {}
+    },
+    {
+        "label": "mean_absolute_error",
+        "importPath": "sklearn.metrics",
+        "description": "sklearn.metrics",
+        "isExtraImport": true,
+        "detail": "sklearn.metrics",
+        "documentation": {}
+    },
+    {
+        "label": "mean_squared_error",
+        "importPath": "sklearn.metrics",
+        "description": "sklearn.metrics",
+        "isExtraImport": true,
+        "detail": "sklearn.metrics",
+        "documentation": {}
+    },
+    {
+        "label": "r2_score",
+        "importPath": "sklearn.metrics",
+        "description": "sklearn.metrics",
+        "isExtraImport": true,
+        "detail": "sklearn.metrics",
+        "documentation": {}
+    },
+    {
+        "label": "mean_absolute_error",
+        "importPath": "sklearn.metrics",
+        "description": "sklearn.metrics",
+        "isExtraImport": true,
+        "detail": "sklearn.metrics",
+        "documentation": {}
+    },
+    {
+        "label": "mean_squared_error",
+        "importPath": "sklearn.metrics",
+        "description": "sklearn.metrics",
+        "isExtraImport": true,
+        "detail": "sklearn.metrics",
+        "documentation": {}
+    },
+    {
+        "label": "r2_score",
+        "importPath": "sklearn.metrics",
+        "description": "sklearn.metrics",
+        "isExtraImport": true,
+        "detail": "sklearn.metrics",
+        "documentation": {}
+    },
+    {
+        "label": "mean_absolute_error",
+        "importPath": "sklearn.metrics",
+        "description": "sklearn.metrics",
+        "isExtraImport": true,
+        "detail": "sklearn.metrics",
+        "documentation": {}
+    },
+    {
+        "label": "mean_squared_error",
+        "importPath": "sklearn.metrics",
+        "description": "sklearn.metrics",
+        "isExtraImport": true,
+        "detail": "sklearn.metrics",
+        "documentation": {}
+    },
+    {
+        "label": "r2_score",
+        "importPath": "sklearn.metrics",
+        "description": "sklearn.metrics",
+        "isExtraImport": true,
+        "detail": "sklearn.metrics",
+        "documentation": {}
+    },
+    {
+        "label": "joblib",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "joblib",
+        "description": "joblib",
+        "detail": "joblib",
+        "documentation": {}
+    },
+    {
+        "label": "LitTFT",
+        "importPath": "tft",
+        "description": "tft",
+        "isExtraImport": true,
+        "detail": "tft",
+        "documentation": {}
+    },
+    {
+        "label": "torch.nn",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "torch.nn",
+        "description": "torch.nn",
+        "detail": "torch.nn",
+        "documentation": {}
+    },
+    {
         "label": "streamlit",
         "kind": 6,
         "isExtraImport": true,
@@ -77,30 +294,12 @@
         "documentation": {}
     },
     {
-        "label": "numpy",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "numpy",
-        "description": "numpy",
-        "detail": "numpy",
-        "documentation": {}
-    },
-    {
         "label": "matplotlib.pyplot",
         "kind": 6,
         "isExtraImport": true,
         "importPath": "matplotlib.pyplot",
         "description": "matplotlib.pyplot",
         "detail": "matplotlib.pyplot",
-        "documentation": {}
-    },
-    {
-        "label": "joblib",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "joblib",
-        "description": "joblib",
-        "detail": "joblib",
         "documentation": {}
     },
     {
@@ -113,43 +312,11 @@
         "documentation": {}
     },
     {
-        "label": "mean_absolute_error",
-        "importPath": "sklearn.metrics",
-        "description": "sklearn.metrics",
-        "isExtraImport": true,
-        "detail": "sklearn.metrics",
-        "documentation": {}
-    },
-    {
-        "label": "mean_squared_error",
-        "importPath": "sklearn.metrics",
-        "description": "sklearn.metrics",
-        "isExtraImport": true,
-        "detail": "sklearn.metrics",
-        "documentation": {}
-    },
-    {
-        "label": "r2_score",
-        "importPath": "sklearn.metrics",
-        "description": "sklearn.metrics",
-        "isExtraImport": true,
-        "detail": "sklearn.metrics",
-        "documentation": {}
-    },
-    {
         "label": "RandomForestRegressor",
         "importPath": "sklearn.ensemble",
         "description": "sklearn.ensemble",
         "isExtraImport": true,
         "detail": "sklearn.ensemble",
-        "documentation": {}
-    },
-    {
-        "label": "StandardScaler",
-        "importPath": "sklearn.preprocessing",
-        "description": "sklearn.preprocessing",
-        "isExtraImport": true,
-        "detail": "sklearn.preprocessing",
         "documentation": {}
     },
     {
@@ -400,6 +567,60 @@
         "documentation": {}
     },
     {
+        "label": "SolarSequenceDataset",
+        "kind": 6,
+        "importPath": "tft.main",
+        "description": "tft.main",
+        "peekOfCode": "class SolarSequenceDataset(Dataset):\n    \"\"\"\n    Creates sequences from scaled data for TFT training.\n    Matches the sequence creation logic in training.py.\n    \"\"\"\n    def __init__(self, X_scaled, y_scaled, seq_len=24):\n        self.X = X_scaled\n        self.y = y_scaled\n        self.seq_len = seq_len\n    def __len__(self):",
+        "detail": "tft.main",
+        "documentation": {}
+    },
+    {
+        "label": "rmse",
+        "kind": 2,
+        "importPath": "tft.main",
+        "description": "tft.main",
+        "peekOfCode": "def rmse(a, b):\n    return np.sqrt(mean_squared_error(a, b))\n# ---------------------------------------------------\n# Custom Dataset for TFT (Sequence-based)\n# ---------------------------------------------------\nclass SolarSequenceDataset(Dataset):\n    \"\"\"\n    Creates sequences from scaled data for TFT training.\n    Matches the sequence creation logic in training.py.\n    \"\"\"",
+        "detail": "tft.main",
+        "documentation": {}
+    },
+    {
+        "label": "train_tft",
+        "kind": 2,
+        "importPath": "tft.main",
+        "description": "tft.main",
+        "peekOfCode": "def train_tft():\n    print(\"\\n\" + \"=\" * 60)\n    print(\"🌤 TFT (Temporal Fusion Transformer) Training\")\n    print(\"=\" * 60)\n    # ---------- 1. Load data (same as training.py) ----------\n    data_path = (\n        \"../NASA meteriological and solar radiaton data/lahore_hourly_filled.csv\"\n    )\n    df = pd.read_csv(data_path)\n    df.columns = df.columns.str.strip()",
+        "detail": "tft.main",
+        "documentation": {}
+    },
+    {
+        "label": "RANDOM_STATE",
+        "kind": 5,
+        "importPath": "tft.main",
+        "description": "tft.main",
+        "peekOfCode": "RANDOM_STATE = 42\nnp.random.seed(RANDOM_STATE)\ntorch.manual_seed(RANDOM_STATE)\nif torch.cuda.is_available():\n    torch.cuda.manual_seed_all(RANDOM_STATE)\n# Create save directory (same as training.py)\nos.makedirs(\"../saved_models\", exist_ok=True)\ndef rmse(a, b):\n    return np.sqrt(mean_squared_error(a, b))\n# ---------------------------------------------------",
+        "detail": "tft.main",
+        "documentation": {}
+    },
+    {
+        "label": "TemporalFusionTransformer",
+        "kind": 6,
+        "importPath": "tft.tft",
+        "description": "tft.tft",
+        "peekOfCode": "class TemporalFusionTransformer(nn.Module):\n    \"\"\"\n    Simplified TFT architecture with multi-head attention.\n    Aligned with the training.py workflow for solar radiation prediction.\n    \"\"\"\n    def __init__(\n        self,\n        input_size,\n        hidden_size,\n        output_size,",
+        "detail": "tft.tft",
+        "documentation": {}
+    },
+    {
+        "label": "LitTFT",
+        "kind": 6,
+        "importPath": "tft.tft",
+        "description": "tft.tft",
+        "peekOfCode": "class LitTFT(L.LightningModule):\n    \"\"\"\n    PyTorch Lightning wrapper for TFT model.\n    Aligned with training.py metrics and evaluation structure.\n    \"\"\"\n    def __init__(\n        self,\n        input_size,\n        hidden_size,\n        output_size,",
+        "detail": "tft.tft",
+        "documentation": {}
+    },
+    {
         "label": "fetch_openmeteo_solar_forecast",
         "kind": 2,
         "importPath": "frontend",
@@ -476,7 +697,7 @@
         "kind": 5,
         "importPath": "frontend",
         "description": "frontend",
-        "peekOfCode": "OPENMETEO_ENSEMBLE_WEIGHTS = {\n    \"XGBoost\": 0.25,\n    \"RandomForest\": 0.25,\n    \"LSTM\": 0.25,\n    \"CNN-LSTM\": 0.25,\n}\nOPENMETEO_HOUR_CALIBRATION = {\n    0: 0.0,\n    1: 0.0,\n    2: 0.0,",
+        "peekOfCode": "OPENMETEO_ENSEMBLE_WEIGHTS = {\n    \"XGBoost\": 0.257051842842307,\n    \"RandomForest\": 0.2569732086168074,\n    \"LSTM\": 0.24311723628987492,\n    \"CNN-LSTM\": 0.24285771225101077,\n}\nOPENMETEO_HOUR_CALIBRATION = {\n    0: 0.0,\n    1: 0.0,\n    2: 0.0,",
         "detail": "frontend",
         "documentation": {}
     },
