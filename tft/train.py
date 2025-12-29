@@ -1,24 +1,19 @@
 # ==========================================
-# 🌤 TFT (Temporal Fusion Transformer) Training
+# 🌤 Unified Training Script for TFT & TCN Models
 # Aligned with training.py for Solar Radiation Prediction
-#
-# NOTE: For unified training of TFT and TCN, use train.py instead:
-#   python train.py --model all     # Train both TFT and TCN
-#   python train.py --model tft     # Train only TFT
-#   python train.py --model tcn     # Train only TCN
 # ==========================================
 
 import os
 import sys
 import warnings
+import argparse
 
 warnings.filterwarnings("ignore")
 
 import numpy as np
 import pandas as pd
-import math
 import torch
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 import lightning as L
 from lightning.pytorch.callbacks import (
     EarlyStopping,
@@ -32,8 +27,9 @@ import joblib
 # Add parent directory to path to access shared files
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Import TFT model from tft.py
+# Import models
 from tft import LitTFT
+from tcn import LitTCN
 
 # Reproducibility
 RANDOM_STATE = 42
@@ -51,39 +47,18 @@ def rmse(a, b):
 
 
 # ---------------------------------------------------
-# Custom Dataset for TFT (Sequence-based)
+# Data Loading and Preprocessing
 # ---------------------------------------------------
-class SolarSequenceDataset(Dataset):
+def load_and_prepare_data():
     """
-    Creates sequences from scaled data for TFT training.
-    Matches the sequence creation logic in training.py.
+    Load data and prepare features exactly as training.py does.
+    Returns prepared data loaders and scalers.
     """
-
-    def __init__(self, X_scaled, y_scaled, seq_len=24):
-        self.X = X_scaled
-        self.y = y_scaled
-        self.seq_len = seq_len
-
-    def __len__(self):
-        return len(self.X) - self.seq_len
-
-    def __getitem__(self, idx):
-        # Sequence of features
-        x_seq = torch.tensor(self.X[idx : idx + self.seq_len], dtype=torch.float32)
-        # Target is the value at the end of the sequence
-        y_val = torch.tensor([self.y[idx + self.seq_len]], dtype=torch.float32)
-        return x_seq, y_val
-
-
-# ---------------------------------------------------
-# Main Training Function
-# ---------------------------------------------------
-def train_tft():
     print("\n" + "=" * 60)
-    print("🌤 TFT (Temporal Fusion Transformer) Training")
+    print("📊 Loading and Preparing Data")
     print("=" * 60)
 
-    # ---------- 1. Load data (same as training.py) ----------
+    # Load data (same as training.py)
     data_path = (
         "../NASA meteriological and solar radiaton data/lahore_hourly_filled.csv"
     )
@@ -123,8 +98,7 @@ def train_tft():
     df_day = df.copy()
     df_day.dropna(subset=["SolarRadiation"], inplace=True)
 
-    # ---------- 2. Feature Engineering (exactly as training.py) ----------
-    # Add cyclical encoding for hour and month
+    # Feature Engineering (exactly as training.py)
     df_day["hour"] = df_day.index.hour
     df_day["month"] = df_day.index.month
     df_day["day_of_year"] = df_day.index.dayofyear
@@ -146,17 +120,14 @@ def train_tft():
     target_col = "SolarRadiation"
     print(f"Total records (including night): {len(df_day)}")
 
-    # ---------- 3. Train/Test split (same as training.py) ----------
+    # Train/Test split (same as training.py)
     split_idx = int(len(df_day) * 0.8)
     train = df_day.iloc[:split_idx].copy()
     test = df_day.iloc[split_idx:].copy()
 
-    # ---------- 4. Prepare features for TFT ----------
-    SEQ_LEN = 24
-
     # Features for sequence models (same order as training.py)
+    SEQ_LEN = 24
     features = [
-        # Time features
         "hour",
         "month",
         "day_of_year",
@@ -166,26 +137,21 @@ def train_tft():
         "month_cos",
         "doy_sin",
         "doy_cos",
-        # Solar geometry
         "SolarZenith",
         "ClearSkyRadiation",
-        # Weather features
         "Temperature",
         "HumiditySpecific",
         "HumidityRelative",
         "Pressure",
         "WindSpeed",
         "WindDirection",
-        # Target (must be last for consistency)
         target_col,
     ]
 
     df_seq = df_day[features].dropna()
-
-    # ---------- 5. Scaling (same as training.py) ----------
     train_seq_df = df_seq.loc[: train.index.max()]
 
-    # Try to load existing scalers, otherwise create new ones
+    # Load or create scalers
     try:
         scaler_X = joblib.load("../saved_models/scaler_X.pkl")
         scaler_y = joblib.load("../saved_models/scaler_y.pkl")
@@ -196,11 +162,10 @@ def train_tft():
         scaler_y = StandardScaler()
         scaler_X.fit(train_seq_df.drop(columns=[target_col]))
         scaler_y.fit(train_seq_df[[target_col]])
-        # Save scalers
         joblib.dump(scaler_X, "../saved_models/scaler_X.pkl")
         joblib.dump(scaler_y, "../saved_models/scaler_y.pkl")
 
-    # Create sequences (same logic as training.py)
+    # Create sequences
     def create_sequences(df_in, seq_len=24):
         Xs, ys, idxs = [], [], []
         X_arr = scaler_X.transform(df_in.drop(columns=[target_col]))
@@ -235,16 +200,15 @@ def train_tft():
     print(f"Sequence length: {SEQ_LEN}")
     print(f"Number of features: {X_train_seq.shape[2]}")
 
-    # ---------- 6. Create DataLoaders ----------
+    # Create DataLoaders
     BATCH_SIZE = 64
 
-    # Create datasets using the pre-created sequences
     train_dataset = torch.utils.data.TensorDataset(
         torch.tensor(X_train_seq, dtype=torch.float32),
         torch.tensor(y_train_seq.reshape(-1, 1), dtype=torch.float32),
     )
 
-    # Split training into train/val (90/10 like training.py)
+    # Split training into train/val (90/10)
     val_size = int(0.1 * len(train_dataset))
     train_size = len(train_dataset) - val_size
     train_subset, val_subset = torch.utils.data.random_split(
@@ -268,35 +232,74 @@ def train_tft():
         test_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=0
     )
 
-    # ---------- 7. Initialize TFT Model ----------
-    input_size = X_train_seq.shape[2]  # Number of features
+    return {
+        "train_loader": train_loader,
+        "val_loader": val_loader,
+        "test_loader": test_loader,
+        "train_dataset": train_dataset,
+        "test_dataset": test_dataset,
+        "scaler_X": scaler_X,
+        "scaler_y": scaler_y,
+        "y_train_unscaled": y_train_unscaled,
+        "y_test_unscaled": y_test_unscaled,
+        "input_size": X_train_seq.shape[2],
+        "batch_size": BATCH_SIZE,
+    }
+
+
+# ---------------------------------------------------
+# Model Training Function
+# ---------------------------------------------------
+def train_model(model_name, data, max_epochs=100, learning_rate=1e-3):
+    """
+    Train a model (TFT or TCN) and return metrics.
+    """
+    print(f"\n{'='*60}")
+    print(f"🚀 Training {model_name}")
+    print(f"{'='*60}")
+
+    input_size = data["input_size"]
     hidden_size = 64
     output_size = 1
-    learning_rate = 1e-3
 
-    print(f"\n=== Training TFT ===")
+    # Create model based on name
+    if model_name.upper() == "TFT":
+        model = LitTFT(
+            input_size=input_size,
+            hidden_size=hidden_size,
+            output_size=output_size,
+            learning_rate=learning_rate,
+            num_heads=4,
+            num_layers=2,
+            dropout=0.2,
+        )
+        model_filename = "tft_model"
+    elif model_name.upper() == "TCN":
+        model = LitTCN(
+            input_size=input_size,
+            hidden_size=hidden_size,
+            output_size=output_size,
+            learning_rate=learning_rate,
+            num_layers=4,
+            kernel_size=3,
+            dropout=0.2,
+        )
+        model_filename = "tcn_model"
+    else:
+        raise ValueError(f"Unknown model: {model_name}. Choose 'TFT' or 'TCN'.")
+
     print(f"Input size: {input_size}")
     print(f"Hidden size: {hidden_size}")
     print(f"Learning rate: {learning_rate}")
 
-    model = LitTFT(
-        input_size=input_size,
-        hidden_size=hidden_size,
-        output_size=output_size,
-        learning_rate=learning_rate,
-        num_heads=4,
-        num_layers=2,
-        dropout=0.2,
-    )
-
-    # ---------- 8. Callbacks (similar to training.py) ----------
+    # Callbacks
     early_stop = EarlyStopping(
         monitor="val_loss", patience=10, mode="min", verbose=True
     )
 
     checkpoint = ModelCheckpoint(
         dirpath="../saved_models",
-        filename="tft_model_best",
+        filename=f"{model_filename}_best",
         monitor="val_loss",
         mode="min",
         save_top_k=1,
@@ -305,9 +308,9 @@ def train_tft():
 
     lr_monitor = LearningRateMonitor(logging_interval="epoch")
 
-    # ---------- 9. Train TFT ----------
+    # Trainer
     trainer = L.Trainer(
-        max_epochs=100,
+        max_epochs=max_epochs,
         accelerator="auto",
         devices=1,
         callbacks=[early_stop, checkpoint, lr_monitor],
@@ -316,53 +319,62 @@ def train_tft():
         enable_progress_bar=True,
     )
 
-    trainer.fit(model, train_loader, val_loader)
+    # Train
+    trainer.fit(model, data["train_loader"], data["val_loader"])
 
     # Load best checkpoint
     best_model_path = checkpoint.best_model_path
     if best_model_path:
         print(f"\nLoading best model from: {best_model_path}")
-        model = LitTFT.load_from_checkpoint(best_model_path)
+        if model_name.upper() == "TFT":
+            model = LitTFT.load_from_checkpoint(best_model_path)
+        else:
+            model = LitTCN.load_from_checkpoint(best_model_path)
 
-    # ---------- 10. Evaluate on Test Set ----------
-    print("\n=== Evaluating TFT ===")
-
+    # Evaluate
+    print(f"\n=== Evaluating {model_name} ===")
     model.eval()
 
-    # Get predictions
+    # Get the device the model is on
+    device = next(model.parameters()).device
+
     train_preds = []
     test_preds = []
 
     with torch.no_grad():
-        for batch in DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=False):
+        for batch in DataLoader(
+            data["train_dataset"], batch_size=data["batch_size"], shuffle=False
+        ):
             x, _ = batch
+            x = x.to(device)  # Move to same device as model
             pred = model(x)
             train_preds.append(pred.cpu().numpy())
 
-        for batch in test_loader:
+        for batch in data["test_loader"]:
             x, _ = batch
+            x = x.to(device)  # Move to same device as model
             pred = model(x)
             test_preds.append(pred.cpu().numpy())
 
     train_preds = np.concatenate(train_preds).flatten()
     test_preds = np.concatenate(test_preds).flatten()
 
-    # Inverse transform predictions to original scale
-    train_preds_unscaled = scaler_y.inverse_transform(
-        train_preds.reshape(-1, 1)
-    ).flatten()
-    test_preds_unscaled = scaler_y.inverse_transform(
-        test_preds.reshape(-1, 1)
-    ).flatten()
+    # Inverse transform predictions
+    train_preds_unscaled = (
+        data["scaler_y"].inverse_transform(train_preds.reshape(-1, 1)).flatten()
+    )
+    test_preds_unscaled = (
+        data["scaler_y"].inverse_transform(test_preds.reshape(-1, 1)).flatten()
+    )
 
-    # Calculate metrics (same as training.py)
-    train_r2 = r2_score(y_train_unscaled, train_preds_unscaled)
-    test_r2 = r2_score(y_test_unscaled, test_preds_unscaled)
-    test_mae = mean_absolute_error(y_test_unscaled, test_preds_unscaled)
-    test_rmse = rmse(y_test_unscaled, test_preds_unscaled)
+    # Calculate metrics
+    train_r2 = r2_score(data["y_train_unscaled"], train_preds_unscaled)
+    test_r2 = r2_score(data["y_test_unscaled"], test_preds_unscaled)
+    test_mae = mean_absolute_error(data["y_test_unscaled"], test_preds_unscaled)
+    test_rmse = rmse(data["y_test_unscaled"], test_preds_unscaled)
 
     print(f"\n{'='*50}")
-    print(f"TFT Results:")
+    print(f"{model_name} Results:")
     print(f"{'='*50}")
     print(f"Train R²:  {train_r2:.4f}")
     print(f"Test R²:   {test_r2:.4f}")
@@ -370,55 +382,110 @@ def train_tft():
     print(f"Test RMSE: {test_rmse:.4f}")
     print(f"{'='*50}")
 
-    # ---------- 11. Save Results (same format as training.py) ----------
     # Save model state dict
-    torch.save(model.state_dict(), "../saved_models/tft_model.pt")
-    print(f"\nModel saved to: saved_models/tft_model.pt")
+    torch.save(model.state_dict(), f"../saved_models/{model_filename}.pt")
+    print(f"\nModel saved to: saved_models/{model_filename}.pt")
 
-    # Load existing results if available
+    return {
+        "model": model,
+        "metrics": {
+            "Model": model_name.upper(),
+            "R2_Train": train_r2,
+            "R2_Test": test_r2,
+            "MAE_Test": test_mae,
+            "RMSE_Test": test_rmse,
+        },
+    }
+
+
+# ---------------------------------------------------
+# Update Results CSV
+# ---------------------------------------------------
+def update_results(metrics_list):
+    """
+    Update the model_results.csv with new metrics.
+    """
     results_path = "../saved_models/model_results.csv"
+
     try:
         results_df = pd.read_csv(results_path)
-        # Remove existing TFT row if present
-        results_df = results_df[results_df["Model"] != "TFT"]
     except FileNotFoundError:
         results_df = pd.DataFrame(
             columns=["Model", "R2_Train", "R2_Test", "MAE_Test", "RMSE_Test"]
         )
 
-    # Add TFT results
-    tft_results = pd.DataFrame(
-        [
-            {
-                "Model": "TFT",
-                "R2_Train": train_r2,
-                "R2_Test": test_r2,
-                "MAE_Test": test_mae,
-                "RMSE_Test": test_rmse,
-            }
-        ]
+    for metrics in metrics_list:
+        model_name = metrics["Model"]
+        # Remove existing row for this model
+        results_df = results_df[results_df["Model"] != model_name]
+        # Add new row
+        results_df = pd.concat([results_df, pd.DataFrame([metrics])], ignore_index=True)
+
+    results_df.to_csv(results_path, index=False)
+    print(f"\nResults saved to: {results_path}")
+
+    return results_df
+
+
+# ---------------------------------------------------
+# Main Entry Point
+# ---------------------------------------------------
+def main():
+    parser = argparse.ArgumentParser(
+        description="Train TFT and/or TCN models for Solar Radiation Prediction"
+    )
+    parser.add_argument(
+        "--model",
+        type=str,
+        choices=["tft", "tcn", "all"],
+        default="all",
+        help="Model to train: 'tft', 'tcn', or 'all' (default: all)",
+    )
+    parser.add_argument(
+        "--epochs",
+        type=int,
+        default=100,
+        help="Maximum number of training epochs (default: 100)",
+    )
+    parser.add_argument(
+        "--lr", type=float, default=1e-3, help="Learning rate (default: 0.001)"
     )
 
-    results_df = pd.concat([results_df, tft_results], ignore_index=True)
-    results_df.to_csv(results_path, index=False)
-    print(f"Results appended to: {results_path}")
+    args = parser.parse_args()
 
-    # Print comparison with other models
+    print("\n" + "=" * 60)
+    print("🌤 Solar Radiation Prediction - TFT & TCN Training")
+    print("=" * 60)
+    print(f"Model(s): {args.model.upper()}")
+    print(f"Max Epochs: {args.epochs}")
+    print(f"Learning Rate: {args.lr}")
+
+    # Load and prepare data (shared across models)
+    data = load_and_prepare_data()
+
+    # Train selected model(s)
+    all_metrics = []
+
+    if args.model.lower() in ["tft", "all"]:
+        result = train_model("TFT", data, max_epochs=args.epochs, learning_rate=args.lr)
+        all_metrics.append(result["metrics"])
+
+    if args.model.lower() in ["tcn", "all"]:
+        result = train_model("TCN", data, max_epochs=args.epochs, learning_rate=args.lr)
+        all_metrics.append(result["metrics"])
+
+    # Update results CSV
+    results_df = update_results(all_metrics)
+
+    # Print final comparison
     print(f"\n{'='*60}")
-    print("Model Comparison:")
+    print("📊 Model Comparison:")
     print(f"{'='*60}")
     print(results_df.to_string(index=False))
     print(f"{'='*60}")
 
-    print("\n🎉 TFT training complete!")
-
-    return model, {
-        "R2_Train": train_r2,
-        "R2_Test": test_r2,
-        "MAE_Test": test_mae,
-        "RMSE_Test": test_rmse,
-    }
+    print("\n🎉 Training complete!")
 
 
 if __name__ == "__main__":
-    model, metrics = train_tft()
+    main()

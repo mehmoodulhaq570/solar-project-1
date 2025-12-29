@@ -291,33 +291,57 @@ results.append(
 )
 
 # ======================================
-# 8. LSTM
+# 8. LSTM (Improved Architecture)
 # ======================================
 print("\n=== Training LSTM ===")
 K.clear_session()
 
-# Improved LSTM architecture with Bidirectional layers
-lstm_model = models.Sequential(
-    [
-        layers.Input(shape=(SEQ_LEN, X_train_seq.shape[2])),
-        layers.Bidirectional(layers.LSTM(64, return_sequences=True)),
-        layers.Dropout(0.2),
-        layers.Bidirectional(layers.LSTM(32)),
-        layers.Dropout(0.2),
-        layers.Dense(32, activation="relu"),
-        layers.Dense(16, activation="relu"),
-        layers.Dense(1),
-    ]
-)
+# Build improved LSTM with attention and residual connections
+inp_lstm = layers.Input(shape=(SEQ_LEN, X_train_seq.shape[2]))
+
+# First LSTM block with more units
+x = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(inp_lstm)
+x = layers.BatchNormalization()(x)
+x = layers.Dropout(0.3)(x)
+
+# Second LSTM block
+x = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)
+x = layers.BatchNormalization()(x)
+x = layers.Dropout(0.3)(x)
+
+# Attention mechanism - learn which timesteps are important
+attention = layers.Dense(1, activation="tanh")(x)
+attention = layers.Flatten()(attention)
+attention = layers.Activation("softmax")(attention)
+attention = layers.RepeatVector(256)(attention)  # 128*2 for bidirectional
+attention = layers.Permute([2, 1])(attention)
+
+# Apply attention
+x = layers.Multiply()([x, attention])
+x = layers.Lambda(lambda xin: K.sum(xin, axis=1))(x)
+
+# Dense layers with residual-like structure
+x = layers.Dense(128, activation="relu")(x)
+x = layers.BatchNormalization()(x)
+x = layers.Dropout(0.3)(x)
+x = layers.Dense(64, activation="relu")(x)
+x = layers.BatchNormalization()(x)
+x = layers.Dropout(0.2)(x)
+x = layers.Dense(32, activation="relu")(x)
+out_lstm = layers.Dense(1)(x)
+
+lstm_model = models.Model(inp_lstm, out_lstm)
 
 # Learning rate scheduler for better convergence
 lr_schedule = callbacks.ReduceLROnPlateau(
-    monitor="val_loss", factor=0.5, patience=3, min_lr=1e-6, verbose=0
+    monitor="val_loss", factor=0.5, patience=5, min_lr=1e-7, verbose=0
 )
-es = callbacks.EarlyStopping(patience=10, restore_best_weights=True, monitor="val_loss")
+es = callbacks.EarlyStopping(patience=15, restore_best_weights=True, monitor="val_loss")
 
 lstm_model.compile(
-    optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), loss="mse", metrics=["mae"]
+    optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),
+    loss="mse",
+    metrics=["mae"],
 )
 
 lstm_model.fit(
@@ -350,39 +374,71 @@ results.append(
 )
 
 # ======================================
-# 9. CNN-LSTM
+# 9. CNN-LSTM (Improved Architecture)
 # ======================================
 print("\n=== Training CNN-LSTM ===")
 K.clear_session()
 
-# Improved CNN-LSTM architecture with more convolutional layers
+# Build improved CNN-LSTM with multi-scale convolutions and attention
 inp = layers.Input(shape=(SEQ_LEN, X_train_seq.shape[2]))
-# Multi-scale convolution for capturing different temporal patterns
-x = layers.Conv1D(64, 3, padding="same", activation="relu")(inp)
+
+# Multi-scale convolution block 1 - capture different temporal patterns
+conv1 = layers.Conv1D(64, 2, padding="same", activation="relu")(inp)
+conv2 = layers.Conv1D(64, 3, padding="same", activation="relu")(inp)
+conv3 = layers.Conv1D(64, 5, padding="same", activation="relu")(inp)
+x = layers.Concatenate()([conv1, conv2, conv3])  # Multi-scale features
 x = layers.BatchNormalization()(x)
-x = layers.Conv1D(64, 3, padding="same", activation="relu")(x)
-x = layers.MaxPool1D(2)(x)
 x = layers.Dropout(0.2)(x)
-x = layers.Bidirectional(layers.LSTM(64, return_sequences=True))(x)
+
+# Second conv block
+x = layers.Conv1D(128, 3, padding="same", activation="relu")(x)
+x = layers.BatchNormalization()(x)
+x = layers.Conv1D(128, 3, padding="same", activation="relu")(x)
+x = layers.BatchNormalization()(x)
 x = layers.Dropout(0.2)(x)
-x = layers.Bidirectional(layers.LSTM(32))(x)
+
+# LSTM layers with more capacity
+x = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)
+x = layers.BatchNormalization()(x)
+x = layers.Dropout(0.3)(x)
+
+x = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)
+x = layers.BatchNormalization()(x)
+x = layers.Dropout(0.3)(x)
+
+# Self-attention layer
+attention = layers.Dense(1, activation="tanh")(x)
+attention = layers.Flatten()(attention)
+attention = layers.Activation("softmax")(attention)
+attention = layers.RepeatVector(256)(attention)  # 128*2 for bidirectional
+attention = layers.Permute([2, 1])(attention)
+x = layers.Multiply()([x, attention])
+x = layers.Lambda(lambda xin: K.sum(xin, axis=1))(x)
+
+# Dense output layers
+x = layers.Dense(128, activation="relu")(x)
+x = layers.BatchNormalization()(x)
+x = layers.Dropout(0.3)(x)
+x = layers.Dense(64, activation="relu")(x)
+x = layers.BatchNormalization()(x)
 x = layers.Dropout(0.2)(x)
 x = layers.Dense(32, activation="relu")(x)
-x = layers.Dense(16, activation="relu")(x)
 out = layers.Dense(1)(x)
 
 cnn_lstm_model = models.Model(inp, out)
 
 # Learning rate scheduler
 lr_schedule_cnn = callbacks.ReduceLROnPlateau(
-    monitor="val_loss", factor=0.5, patience=3, min_lr=1e-6, verbose=0
+    monitor="val_loss", factor=0.5, patience=5, min_lr=1e-7, verbose=0
 )
 es_cnn = callbacks.EarlyStopping(
-    patience=10, restore_best_weights=True, monitor="val_loss"
+    patience=15, restore_best_weights=True, monitor="val_loss"
 )
 
 cnn_lstm_model.compile(
-    optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), loss="mse", metrics=["mae"]
+    optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),
+    loss="mse",
+    metrics=["mae"],
 )
 
 cnn_lstm_model.fit(

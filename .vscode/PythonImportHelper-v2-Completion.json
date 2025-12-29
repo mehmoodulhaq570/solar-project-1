@@ -105,12 +105,44 @@
         "documentation": {}
     },
     {
+        "label": "DataLoader",
+        "importPath": "torch.utils.data",
+        "description": "torch.utils.data",
+        "isExtraImport": true,
+        "detail": "torch.utils.data",
+        "documentation": {}
+    },
+    {
         "label": "lightning",
         "kind": 6,
         "isExtraImport": true,
         "importPath": "lightning",
         "description": "lightning",
         "detail": "lightning",
+        "documentation": {}
+    },
+    {
+        "label": "EarlyStopping",
+        "importPath": "lightning.pytorch.callbacks",
+        "description": "lightning.pytorch.callbacks",
+        "isExtraImport": true,
+        "detail": "lightning.pytorch.callbacks",
+        "documentation": {}
+    },
+    {
+        "label": "ModelCheckpoint",
+        "importPath": "lightning.pytorch.callbacks",
+        "description": "lightning.pytorch.callbacks",
+        "isExtraImport": true,
+        "detail": "lightning.pytorch.callbacks",
+        "documentation": {}
+    },
+    {
+        "label": "LearningRateMonitor",
+        "importPath": "lightning.pytorch.callbacks",
+        "description": "lightning.pytorch.callbacks",
+        "isExtraImport": true,
+        "detail": "lightning.pytorch.callbacks",
         "documentation": {}
     },
     {
@@ -151,6 +183,62 @@
         "description": "sklearn.preprocessing",
         "isExtraImport": true,
         "detail": "sklearn.preprocessing",
+        "documentation": {}
+    },
+    {
+        "label": "StandardScaler",
+        "importPath": "sklearn.preprocessing",
+        "description": "sklearn.preprocessing",
+        "isExtraImport": true,
+        "detail": "sklearn.preprocessing",
+        "documentation": {}
+    },
+    {
+        "label": "mean_absolute_error",
+        "importPath": "sklearn.metrics",
+        "description": "sklearn.metrics",
+        "isExtraImport": true,
+        "detail": "sklearn.metrics",
+        "documentation": {}
+    },
+    {
+        "label": "mean_squared_error",
+        "importPath": "sklearn.metrics",
+        "description": "sklearn.metrics",
+        "isExtraImport": true,
+        "detail": "sklearn.metrics",
+        "documentation": {}
+    },
+    {
+        "label": "r2_score",
+        "importPath": "sklearn.metrics",
+        "description": "sklearn.metrics",
+        "isExtraImport": true,
+        "detail": "sklearn.metrics",
+        "documentation": {}
+    },
+    {
+        "label": "mean_absolute_error",
+        "importPath": "sklearn.metrics",
+        "description": "sklearn.metrics",
+        "isExtraImport": true,
+        "detail": "sklearn.metrics",
+        "documentation": {}
+    },
+    {
+        "label": "mean_squared_error",
+        "importPath": "sklearn.metrics",
+        "description": "sklearn.metrics",
+        "isExtraImport": true,
+        "detail": "sklearn.metrics",
+        "documentation": {}
+    },
+    {
+        "label": "r2_score",
+        "importPath": "sklearn.metrics",
+        "description": "sklearn.metrics",
+        "isExtraImport": true,
+        "detail": "sklearn.metrics",
         "documentation": {}
     },
     {
@@ -243,12 +331,37 @@
         "documentation": {}
     },
     {
+        "label": "LitTFT",
+        "importPath": "tft",
+        "description": "tft",
+        "isExtraImport": true,
+        "detail": "tft",
+        "documentation": {}
+    },
+    {
         "label": "torch.nn",
         "kind": 6,
         "isExtraImport": true,
         "importPath": "torch.nn",
         "description": "torch.nn",
         "detail": "torch.nn",
+        "documentation": {}
+    },
+    {
+        "label": "argparse",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "argparse",
+        "description": "argparse",
+        "detail": "argparse",
+        "documentation": {}
+    },
+    {
+        "label": "LitTCN",
+        "importPath": "tcn",
+        "description": "tcn",
+        "isExtraImport": true,
+        "detail": "tcn",
         "documentation": {}
     },
     {
@@ -603,6 +716,42 @@
         "documentation": {}
     },
     {
+        "label": "CausalConv1d",
+        "kind": 6,
+        "importPath": "tft.tcn",
+        "description": "tft.tcn",
+        "peekOfCode": "class CausalConv1d(nn.Module):\n    \"\"\"\n    Causal convolution layer that ensures no future information leakage.\n    \"\"\"\n    def __init__(self, in_channels, out_channels, kernel_size, dilation=1):\n        super().__init__()\n        self.padding = (kernel_size - 1) * dilation\n        self.conv = nn.Conv1d(\n            in_channels,\n            out_channels,",
+        "detail": "tft.tcn",
+        "documentation": {}
+    },
+    {
+        "label": "TemporalBlock",
+        "kind": 6,
+        "importPath": "tft.tcn",
+        "description": "tft.tcn",
+        "peekOfCode": "class TemporalBlock(nn.Module):\n    \"\"\"\n    A residual block with causal dilated convolutions.\n    \"\"\"\n    def __init__(self, in_channels, out_channels, kernel_size, dilation, dropout=0.2):\n        super().__init__()\n        # First causal convolution\n        self.conv1 = CausalConv1d(in_channels, out_channels, kernel_size, dilation)\n        self.bn1 = nn.BatchNorm1d(out_channels)\n        self.relu1 = nn.ReLU()",
+        "detail": "tft.tcn",
+        "documentation": {}
+    },
+    {
+        "label": "TemporalConvolutionalNetwork",
+        "kind": 6,
+        "importPath": "tft.tcn",
+        "description": "tft.tcn",
+        "peekOfCode": "class TemporalConvolutionalNetwork(nn.Module):\n    \"\"\"\n    TCN architecture for time series forecasting.\n    Uses dilated causal convolutions to capture long-range dependencies.\n    \"\"\"\n    def __init__(\n        self,\n        input_size,\n        hidden_size,\n        output_size,",
+        "detail": "tft.tcn",
+        "documentation": {}
+    },
+    {
+        "label": "LitTCN",
+        "kind": 6,
+        "importPath": "tft.tcn",
+        "description": "tft.tcn",
+        "peekOfCode": "class LitTCN(L.LightningModule):\n    \"\"\"\n    PyTorch Lightning wrapper for TCN model.\n    Aligned with training.py metrics and evaluation structure.\n    \"\"\"\n    def __init__(\n        self,\n        input_size,\n        hidden_size,\n        output_size,",
+        "detail": "tft.tcn",
+        "documentation": {}
+    },
+    {
         "label": "TemporalFusionTransformer",
         "kind": 6,
         "importPath": "tft.tft",
@@ -618,6 +767,60 @@
         "description": "tft.tft",
         "peekOfCode": "class LitTFT(L.LightningModule):\n    \"\"\"\n    PyTorch Lightning wrapper for TFT model.\n    Aligned with training.py metrics and evaluation structure.\n    \"\"\"\n    def __init__(\n        self,\n        input_size,\n        hidden_size,\n        output_size,",
         "detail": "tft.tft",
+        "documentation": {}
+    },
+    {
+        "label": "rmse",
+        "kind": 2,
+        "importPath": "tft.train",
+        "description": "tft.train",
+        "peekOfCode": "def rmse(a, b):\n    return np.sqrt(mean_squared_error(a, b))\n# ---------------------------------------------------\n# Data Loading and Preprocessing\n# ---------------------------------------------------\ndef load_and_prepare_data():\n    \"\"\"\n    Load data and prepare features exactly as training.py does.\n    Returns prepared data loaders and scalers.\n    \"\"\"",
+        "detail": "tft.train",
+        "documentation": {}
+    },
+    {
+        "label": "load_and_prepare_data",
+        "kind": 2,
+        "importPath": "tft.train",
+        "description": "tft.train",
+        "peekOfCode": "def load_and_prepare_data():\n    \"\"\"\n    Load data and prepare features exactly as training.py does.\n    Returns prepared data loaders and scalers.\n    \"\"\"\n    print(\"\\n\" + \"=\" * 60)\n    print(\"📊 Loading and Preparing Data\")\n    print(\"=\" * 60)\n    # Load data (same as training.py)\n    data_path = (",
+        "detail": "tft.train",
+        "documentation": {}
+    },
+    {
+        "label": "train_model",
+        "kind": 2,
+        "importPath": "tft.train",
+        "description": "tft.train",
+        "peekOfCode": "def train_model(model_name, data, max_epochs=100, learning_rate=1e-3):\n    \"\"\"\n    Train a model (TFT or TCN) and return metrics.\n    \"\"\"\n    print(f\"\\n{'='*60}\")\n    print(f\"🚀 Training {model_name}\")\n    print(f\"{'='*60}\")\n    input_size = data[\"input_size\"]\n    hidden_size = 64\n    output_size = 1",
+        "detail": "tft.train",
+        "documentation": {}
+    },
+    {
+        "label": "update_results",
+        "kind": 2,
+        "importPath": "tft.train",
+        "description": "tft.train",
+        "peekOfCode": "def update_results(metrics_list):\n    \"\"\"\n    Update the model_results.csv with new metrics.\n    \"\"\"\n    results_path = \"../saved_models/model_results.csv\"\n    try:\n        results_df = pd.read_csv(results_path)\n    except FileNotFoundError:\n        results_df = pd.DataFrame(\n            columns=[\"Model\", \"R2_Train\", \"R2_Test\", \"MAE_Test\", \"RMSE_Test\"]",
+        "detail": "tft.train",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "tft.train",
+        "description": "tft.train",
+        "peekOfCode": "def main():\n    parser = argparse.ArgumentParser(\n        description=\"Train TFT and/or TCN models for Solar Radiation Prediction\"\n    )\n    parser.add_argument(\n        \"--model\",\n        type=str,\n        choices=[\"tft\", \"tcn\", \"all\"],\n        default=\"all\",\n        help=\"Model to train: 'tft', 'tcn', or 'all' (default: all)\",",
+        "detail": "tft.train",
+        "documentation": {}
+    },
+    {
+        "label": "RANDOM_STATE",
+        "kind": 5,
+        "importPath": "tft.train",
+        "description": "tft.train",
+        "peekOfCode": "RANDOM_STATE = 42\nnp.random.seed(RANDOM_STATE)\ntorch.manual_seed(RANDOM_STATE)\nif torch.cuda.is_available():\n    torch.cuda.manual_seed_all(RANDOM_STATE)\n# Create save directory (same as training.py)\nos.makedirs(\"../saved_models\", exist_ok=True)\ndef rmse(a, b):\n    return np.sqrt(mean_squared_error(a, b))\n# ---------------------------------------------------",
+        "detail": "tft.train",
         "documentation": {}
     },
     {
@@ -1314,11 +1517,209 @@
         "documentation": {}
     },
     {
+        "label": "inp_lstm",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "inp_lstm = layers.Input(shape=(SEQ_LEN, X_train_seq.shape[2]))\n# First LSTM block with more units\nx = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(inp_lstm)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\n# Second LSTM block\nx = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\n# Attention mechanism - learn which timesteps are important",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(inp_lstm)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\n# Second LSTM block\nx = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\n# Attention mechanism - learn which timesteps are important\nattention = layers.Dense(1, activation=\"tanh\")(x)\nattention = layers.Flatten()(attention)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\n# Second LSTM block\nx = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\n# Attention mechanism - learn which timesteps are important\nattention = layers.Dense(1, activation=\"tanh\")(x)\nattention = layers.Flatten()(attention)\nattention = layers.Activation(\"softmax\")(attention)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.Dropout(0.3)(x)\n# Second LSTM block\nx = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\n# Attention mechanism - learn which timesteps are important\nattention = layers.Dense(1, activation=\"tanh\")(x)\nattention = layers.Flatten()(attention)\nattention = layers.Activation(\"softmax\")(attention)\nattention = layers.RepeatVector(256)(attention)  # 128*2 for bidirectional",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\n# Attention mechanism - learn which timesteps are important\nattention = layers.Dense(1, activation=\"tanh\")(x)\nattention = layers.Flatten()(attention)\nattention = layers.Activation(\"softmax\")(attention)\nattention = layers.RepeatVector(256)(attention)  # 128*2 for bidirectional\nattention = layers.Permute([2, 1])(attention)\n# Apply attention",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\n# Attention mechanism - learn which timesteps are important\nattention = layers.Dense(1, activation=\"tanh\")(x)\nattention = layers.Flatten()(attention)\nattention = layers.Activation(\"softmax\")(attention)\nattention = layers.RepeatVector(256)(attention)  # 128*2 for bidirectional\nattention = layers.Permute([2, 1])(attention)\n# Apply attention\nx = layers.Multiply()([x, attention])",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.Dropout(0.3)(x)\n# Attention mechanism - learn which timesteps are important\nattention = layers.Dense(1, activation=\"tanh\")(x)\nattention = layers.Flatten()(attention)\nattention = layers.Activation(\"softmax\")(attention)\nattention = layers.RepeatVector(256)(attention)  # 128*2 for bidirectional\nattention = layers.Permute([2, 1])(attention)\n# Apply attention\nx = layers.Multiply()([x, attention])\nx = layers.Lambda(lambda xin: K.sum(xin, axis=1))(x)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "attention",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "attention = layers.Dense(1, activation=\"tanh\")(x)\nattention = layers.Flatten()(attention)\nattention = layers.Activation(\"softmax\")(attention)\nattention = layers.RepeatVector(256)(attention)  # 128*2 for bidirectional\nattention = layers.Permute([2, 1])(attention)\n# Apply attention\nx = layers.Multiply()([x, attention])\nx = layers.Lambda(lambda xin: K.sum(xin, axis=1))(x)\n# Dense layers with residual-like structure\nx = layers.Dense(128, activation=\"relu\")(x)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "attention",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "attention = layers.Flatten()(attention)\nattention = layers.Activation(\"softmax\")(attention)\nattention = layers.RepeatVector(256)(attention)  # 128*2 for bidirectional\nattention = layers.Permute([2, 1])(attention)\n# Apply attention\nx = layers.Multiply()([x, attention])\nx = layers.Lambda(lambda xin: K.sum(xin, axis=1))(x)\n# Dense layers with residual-like structure\nx = layers.Dense(128, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "attention",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "attention = layers.Activation(\"softmax\")(attention)\nattention = layers.RepeatVector(256)(attention)  # 128*2 for bidirectional\nattention = layers.Permute([2, 1])(attention)\n# Apply attention\nx = layers.Multiply()([x, attention])\nx = layers.Lambda(lambda xin: K.sum(xin, axis=1))(x)\n# Dense layers with residual-like structure\nx = layers.Dense(128, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "attention",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "attention = layers.RepeatVector(256)(attention)  # 128*2 for bidirectional\nattention = layers.Permute([2, 1])(attention)\n# Apply attention\nx = layers.Multiply()([x, attention])\nx = layers.Lambda(lambda xin: K.sum(xin, axis=1))(x)\n# Dense layers with residual-like structure\nx = layers.Dense(128, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\nx = layers.Dense(64, activation=\"relu\")(x)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "attention",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "attention = layers.Permute([2, 1])(attention)\n# Apply attention\nx = layers.Multiply()([x, attention])\nx = layers.Lambda(lambda xin: K.sum(xin, axis=1))(x)\n# Dense layers with residual-like structure\nx = layers.Dense(128, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\nx = layers.Dense(64, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.Multiply()([x, attention])\nx = layers.Lambda(lambda xin: K.sum(xin, axis=1))(x)\n# Dense layers with residual-like structure\nx = layers.Dense(128, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\nx = layers.Dense(64, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(32, activation=\"relu\")(x)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.Lambda(lambda xin: K.sum(xin, axis=1))(x)\n# Dense layers with residual-like structure\nx = layers.Dense(128, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\nx = layers.Dense(64, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(32, activation=\"relu\")(x)\nout_lstm = layers.Dense(1)(x)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.Dense(128, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\nx = layers.Dense(64, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(32, activation=\"relu\")(x)\nout_lstm = layers.Dense(1)(x)\nlstm_model = models.Model(inp_lstm, out_lstm)\n# Learning rate scheduler for better convergence",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\nx = layers.Dense(64, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(32, activation=\"relu\")(x)\nout_lstm = layers.Dense(1)(x)\nlstm_model = models.Model(inp_lstm, out_lstm)\n# Learning rate scheduler for better convergence\nlr_schedule = callbacks.ReduceLROnPlateau(",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.Dropout(0.3)(x)\nx = layers.Dense(64, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(32, activation=\"relu\")(x)\nout_lstm = layers.Dense(1)(x)\nlstm_model = models.Model(inp_lstm, out_lstm)\n# Learning rate scheduler for better convergence\nlr_schedule = callbacks.ReduceLROnPlateau(\n    monitor=\"val_loss\", factor=0.5, patience=5, min_lr=1e-7, verbose=0",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.Dense(64, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(32, activation=\"relu\")(x)\nout_lstm = layers.Dense(1)(x)\nlstm_model = models.Model(inp_lstm, out_lstm)\n# Learning rate scheduler for better convergence\nlr_schedule = callbacks.ReduceLROnPlateau(\n    monitor=\"val_loss\", factor=0.5, patience=5, min_lr=1e-7, verbose=0\n)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(32, activation=\"relu\")(x)\nout_lstm = layers.Dense(1)(x)\nlstm_model = models.Model(inp_lstm, out_lstm)\n# Learning rate scheduler for better convergence\nlr_schedule = callbacks.ReduceLROnPlateau(\n    monitor=\"val_loss\", factor=0.5, patience=5, min_lr=1e-7, verbose=0\n)\nes = callbacks.EarlyStopping(patience=15, restore_best_weights=True, monitor=\"val_loss\")",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.Dropout(0.2)(x)\nx = layers.Dense(32, activation=\"relu\")(x)\nout_lstm = layers.Dense(1)(x)\nlstm_model = models.Model(inp_lstm, out_lstm)\n# Learning rate scheduler for better convergence\nlr_schedule = callbacks.ReduceLROnPlateau(\n    monitor=\"val_loss\", factor=0.5, patience=5, min_lr=1e-7, verbose=0\n)\nes = callbacks.EarlyStopping(patience=15, restore_best_weights=True, monitor=\"val_loss\")\nlstm_model.compile(",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.Dense(32, activation=\"relu\")(x)\nout_lstm = layers.Dense(1)(x)\nlstm_model = models.Model(inp_lstm, out_lstm)\n# Learning rate scheduler for better convergence\nlr_schedule = callbacks.ReduceLROnPlateau(\n    monitor=\"val_loss\", factor=0.5, patience=5, min_lr=1e-7, verbose=0\n)\nes = callbacks.EarlyStopping(patience=15, restore_best_weights=True, monitor=\"val_loss\")\nlstm_model.compile(\n    optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "out_lstm",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "out_lstm = layers.Dense(1)(x)\nlstm_model = models.Model(inp_lstm, out_lstm)\n# Learning rate scheduler for better convergence\nlr_schedule = callbacks.ReduceLROnPlateau(\n    monitor=\"val_loss\", factor=0.5, patience=5, min_lr=1e-7, verbose=0\n)\nes = callbacks.EarlyStopping(patience=15, restore_best_weights=True, monitor=\"val_loss\")\nlstm_model.compile(\n    optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),\n    loss=\"mse\",",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
         "label": "lstm_model",
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "lstm_model = models.Sequential(\n    [\n        layers.Input(shape=(SEQ_LEN, X_train_seq.shape[2])),\n        layers.Bidirectional(layers.LSTM(64, return_sequences=True)),\n        layers.Dropout(0.2),\n        layers.Bidirectional(layers.LSTM(32)),\n        layers.Dropout(0.2),\n        layers.Dense(32, activation=\"relu\"),\n        layers.Dense(16, activation=\"relu\"),\n        layers.Dense(1),",
+        "peekOfCode": "lstm_model = models.Model(inp_lstm, out_lstm)\n# Learning rate scheduler for better convergence\nlr_schedule = callbacks.ReduceLROnPlateau(\n    monitor=\"val_loss\", factor=0.5, patience=5, min_lr=1e-7, verbose=0\n)\nes = callbacks.EarlyStopping(patience=15, restore_best_weights=True, monitor=\"val_loss\")\nlstm_model.compile(\n    optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),\n    loss=\"mse\",\n    metrics=[\"mae\"],",
         "detail": "training",
         "documentation": {}
     },
@@ -1327,7 +1728,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "lr_schedule = callbacks.ReduceLROnPlateau(\n    monitor=\"val_loss\", factor=0.5, patience=3, min_lr=1e-6, verbose=0\n)\nes = callbacks.EarlyStopping(patience=10, restore_best_weights=True, monitor=\"val_loss\")\nlstm_model.compile(\n    optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), loss=\"mse\", metrics=[\"mae\"]\n)\nlstm_model.fit(\n    X_train_seq,\n    y_train_seq,",
+        "peekOfCode": "lr_schedule = callbacks.ReduceLROnPlateau(\n    monitor=\"val_loss\", factor=0.5, patience=5, min_lr=1e-7, verbose=0\n)\nes = callbacks.EarlyStopping(patience=15, restore_best_weights=True, monitor=\"val_loss\")\nlstm_model.compile(\n    optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),\n    loss=\"mse\",\n    metrics=[\"mae\"],\n)\nlstm_model.fit(",
         "detail": "training",
         "documentation": {}
     },
@@ -1336,7 +1737,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "es = callbacks.EarlyStopping(patience=10, restore_best_weights=True, monitor=\"val_loss\")\nlstm_model.compile(\n    optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), loss=\"mse\", metrics=[\"mae\"]\n)\nlstm_model.fit(\n    X_train_seq,\n    y_train_seq,\n    validation_split=0.1,\n    epochs=100,\n    batch_size=64,",
+        "peekOfCode": "es = callbacks.EarlyStopping(patience=15, restore_best_weights=True, monitor=\"val_loss\")\nlstm_model.compile(\n    optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),\n    loss=\"mse\",\n    metrics=[\"mae\"],\n)\nlstm_model.fit(\n    X_train_seq,\n    y_train_seq,\n    validation_split=0.1,",
         "detail": "training",
         "documentation": {}
     },
@@ -1381,7 +1782,34 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "inp = layers.Input(shape=(SEQ_LEN, X_train_seq.shape[2]))\n# Multi-scale convolution for capturing different temporal patterns\nx = layers.Conv1D(64, 3, padding=\"same\", activation=\"relu\")(inp)\nx = layers.BatchNormalization()(x)\nx = layers.Conv1D(64, 3, padding=\"same\", activation=\"relu\")(x)\nx = layers.MaxPool1D(2)(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Bidirectional(layers.LSTM(64, return_sequences=True))(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Bidirectional(layers.LSTM(32))(x)",
+        "peekOfCode": "inp = layers.Input(shape=(SEQ_LEN, X_train_seq.shape[2]))\n# Multi-scale convolution block 1 - capture different temporal patterns\nconv1 = layers.Conv1D(64, 2, padding=\"same\", activation=\"relu\")(inp)\nconv2 = layers.Conv1D(64, 3, padding=\"same\", activation=\"relu\")(inp)\nconv3 = layers.Conv1D(64, 5, padding=\"same\", activation=\"relu\")(inp)\nx = layers.Concatenate()([conv1, conv2, conv3])  # Multi-scale features\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\n# Second conv block\nx = layers.Conv1D(128, 3, padding=\"same\", activation=\"relu\")(x)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "conv1",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "conv1 = layers.Conv1D(64, 2, padding=\"same\", activation=\"relu\")(inp)\nconv2 = layers.Conv1D(64, 3, padding=\"same\", activation=\"relu\")(inp)\nconv3 = layers.Conv1D(64, 5, padding=\"same\", activation=\"relu\")(inp)\nx = layers.Concatenate()([conv1, conv2, conv3])  # Multi-scale features\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\n# Second conv block\nx = layers.Conv1D(128, 3, padding=\"same\", activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Conv1D(128, 3, padding=\"same\", activation=\"relu\")(x)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "conv2",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "conv2 = layers.Conv1D(64, 3, padding=\"same\", activation=\"relu\")(inp)\nconv3 = layers.Conv1D(64, 5, padding=\"same\", activation=\"relu\")(inp)\nx = layers.Concatenate()([conv1, conv2, conv3])  # Multi-scale features\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\n# Second conv block\nx = layers.Conv1D(128, 3, padding=\"same\", activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Conv1D(128, 3, padding=\"same\", activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "conv3",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "conv3 = layers.Conv1D(64, 5, padding=\"same\", activation=\"relu\")(inp)\nx = layers.Concatenate()([conv1, conv2, conv3])  # Multi-scale features\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\n# Second conv block\nx = layers.Conv1D(128, 3, padding=\"same\", activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Conv1D(128, 3, padding=\"same\", activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)",
         "detail": "training",
         "documentation": {}
     },
@@ -1390,7 +1818,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "x = layers.Conv1D(64, 3, padding=\"same\", activation=\"relu\")(inp)\nx = layers.BatchNormalization()(x)\nx = layers.Conv1D(64, 3, padding=\"same\", activation=\"relu\")(x)\nx = layers.MaxPool1D(2)(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Bidirectional(layers.LSTM(64, return_sequences=True))(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Bidirectional(layers.LSTM(32))(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(32, activation=\"relu\")(x)",
+        "peekOfCode": "x = layers.Concatenate()([conv1, conv2, conv3])  # Multi-scale features\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\n# Second conv block\nx = layers.Conv1D(128, 3, padding=\"same\", activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Conv1D(128, 3, padding=\"same\", activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\n# LSTM layers with more capacity",
         "detail": "training",
         "documentation": {}
     },
@@ -1399,7 +1827,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "x = layers.BatchNormalization()(x)\nx = layers.Conv1D(64, 3, padding=\"same\", activation=\"relu\")(x)\nx = layers.MaxPool1D(2)(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Bidirectional(layers.LSTM(64, return_sequences=True))(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Bidirectional(layers.LSTM(32))(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(32, activation=\"relu\")(x)\nx = layers.Dense(16, activation=\"relu\")(x)",
+        "peekOfCode": "x = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\n# Second conv block\nx = layers.Conv1D(128, 3, padding=\"same\", activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Conv1D(128, 3, padding=\"same\", activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\n# LSTM layers with more capacity\nx = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)",
         "detail": "training",
         "documentation": {}
     },
@@ -1408,7 +1836,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "x = layers.Conv1D(64, 3, padding=\"same\", activation=\"relu\")(x)\nx = layers.MaxPool1D(2)(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Bidirectional(layers.LSTM(64, return_sequences=True))(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Bidirectional(layers.LSTM(32))(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(32, activation=\"relu\")(x)\nx = layers.Dense(16, activation=\"relu\")(x)\nout = layers.Dense(1)(x)",
+        "peekOfCode": "x = layers.Dropout(0.2)(x)\n# Second conv block\nx = layers.Conv1D(128, 3, padding=\"same\", activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Conv1D(128, 3, padding=\"same\", activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\n# LSTM layers with more capacity\nx = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)\nx = layers.BatchNormalization()(x)",
         "detail": "training",
         "documentation": {}
     },
@@ -1417,7 +1845,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "x = layers.MaxPool1D(2)(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Bidirectional(layers.LSTM(64, return_sequences=True))(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Bidirectional(layers.LSTM(32))(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(32, activation=\"relu\")(x)\nx = layers.Dense(16, activation=\"relu\")(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)",
+        "peekOfCode": "x = layers.Conv1D(128, 3, padding=\"same\", activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Conv1D(128, 3, padding=\"same\", activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\n# LSTM layers with more capacity\nx = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\nx = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)",
         "detail": "training",
         "documentation": {}
     },
@@ -1426,7 +1854,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "x = layers.Dropout(0.2)(x)\nx = layers.Bidirectional(layers.LSTM(64, return_sequences=True))(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Bidirectional(layers.LSTM(32))(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(32, activation=\"relu\")(x)\nx = layers.Dense(16, activation=\"relu\")(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\n# Learning rate scheduler",
+        "peekOfCode": "x = layers.BatchNormalization()(x)\nx = layers.Conv1D(128, 3, padding=\"same\", activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\n# LSTM layers with more capacity\nx = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\nx = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)\nx = layers.BatchNormalization()(x)",
         "detail": "training",
         "documentation": {}
     },
@@ -1435,7 +1863,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "x = layers.Bidirectional(layers.LSTM(64, return_sequences=True))(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Bidirectional(layers.LSTM(32))(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(32, activation=\"relu\")(x)\nx = layers.Dense(16, activation=\"relu\")(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\n# Learning rate scheduler\nlr_schedule_cnn = callbacks.ReduceLROnPlateau(",
+        "peekOfCode": "x = layers.Conv1D(128, 3, padding=\"same\", activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\n# LSTM layers with more capacity\nx = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\nx = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)",
         "detail": "training",
         "documentation": {}
     },
@@ -1444,7 +1872,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "x = layers.Dropout(0.2)(x)\nx = layers.Bidirectional(layers.LSTM(32))(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(32, activation=\"relu\")(x)\nx = layers.Dense(16, activation=\"relu\")(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\n# Learning rate scheduler\nlr_schedule_cnn = callbacks.ReduceLROnPlateau(\n    monitor=\"val_loss\", factor=0.5, patience=3, min_lr=1e-6, verbose=0",
+        "peekOfCode": "x = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\n# LSTM layers with more capacity\nx = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\nx = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\n# Self-attention layer",
         "detail": "training",
         "documentation": {}
     },
@@ -1453,7 +1881,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "x = layers.Bidirectional(layers.LSTM(32))(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(32, activation=\"relu\")(x)\nx = layers.Dense(16, activation=\"relu\")(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\n# Learning rate scheduler\nlr_schedule_cnn = callbacks.ReduceLROnPlateau(\n    monitor=\"val_loss\", factor=0.5, patience=3, min_lr=1e-6, verbose=0\n)",
+        "peekOfCode": "x = layers.Dropout(0.2)(x)\n# LSTM layers with more capacity\nx = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\nx = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\n# Self-attention layer\nattention = layers.Dense(1, activation=\"tanh\")(x)",
         "detail": "training",
         "documentation": {}
     },
@@ -1462,7 +1890,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "x = layers.Dropout(0.2)(x)\nx = layers.Dense(32, activation=\"relu\")(x)\nx = layers.Dense(16, activation=\"relu\")(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\n# Learning rate scheduler\nlr_schedule_cnn = callbacks.ReduceLROnPlateau(\n    monitor=\"val_loss\", factor=0.5, patience=3, min_lr=1e-6, verbose=0\n)\nes_cnn = callbacks.EarlyStopping(",
+        "peekOfCode": "x = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\nx = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\n# Self-attention layer\nattention = layers.Dense(1, activation=\"tanh\")(x)\nattention = layers.Flatten()(attention)\nattention = layers.Activation(\"softmax\")(attention)",
         "detail": "training",
         "documentation": {}
     },
@@ -1471,7 +1899,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "x = layers.Dense(32, activation=\"relu\")(x)\nx = layers.Dense(16, activation=\"relu\")(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\n# Learning rate scheduler\nlr_schedule_cnn = callbacks.ReduceLROnPlateau(\n    monitor=\"val_loss\", factor=0.5, patience=3, min_lr=1e-6, verbose=0\n)\nes_cnn = callbacks.EarlyStopping(\n    patience=10, restore_best_weights=True, monitor=\"val_loss\"",
+        "peekOfCode": "x = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\nx = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\n# Self-attention layer\nattention = layers.Dense(1, activation=\"tanh\")(x)\nattention = layers.Flatten()(attention)\nattention = layers.Activation(\"softmax\")(attention)\nattention = layers.RepeatVector(256)(attention)  # 128*2 for bidirectional",
         "detail": "training",
         "documentation": {}
     },
@@ -1480,7 +1908,160 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "x = layers.Dense(16, activation=\"relu\")(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\n# Learning rate scheduler\nlr_schedule_cnn = callbacks.ReduceLROnPlateau(\n    monitor=\"val_loss\", factor=0.5, patience=3, min_lr=1e-6, verbose=0\n)\nes_cnn = callbacks.EarlyStopping(\n    patience=10, restore_best_weights=True, monitor=\"val_loss\"\n)",
+        "peekOfCode": "x = layers.Dropout(0.3)(x)\nx = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\n# Self-attention layer\nattention = layers.Dense(1, activation=\"tanh\")(x)\nattention = layers.Flatten()(attention)\nattention = layers.Activation(\"softmax\")(attention)\nattention = layers.RepeatVector(256)(attention)  # 128*2 for bidirectional\nattention = layers.Permute([2, 1])(attention)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\n# Self-attention layer\nattention = layers.Dense(1, activation=\"tanh\")(x)\nattention = layers.Flatten()(attention)\nattention = layers.Activation(\"softmax\")(attention)\nattention = layers.RepeatVector(256)(attention)  # 128*2 for bidirectional\nattention = layers.Permute([2, 1])(attention)\nx = layers.Multiply()([x, attention])",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\n# Self-attention layer\nattention = layers.Dense(1, activation=\"tanh\")(x)\nattention = layers.Flatten()(attention)\nattention = layers.Activation(\"softmax\")(attention)\nattention = layers.RepeatVector(256)(attention)  # 128*2 for bidirectional\nattention = layers.Permute([2, 1])(attention)\nx = layers.Multiply()([x, attention])\nx = layers.Lambda(lambda xin: K.sum(xin, axis=1))(x)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.Dropout(0.3)(x)\n# Self-attention layer\nattention = layers.Dense(1, activation=\"tanh\")(x)\nattention = layers.Flatten()(attention)\nattention = layers.Activation(\"softmax\")(attention)\nattention = layers.RepeatVector(256)(attention)  # 128*2 for bidirectional\nattention = layers.Permute([2, 1])(attention)\nx = layers.Multiply()([x, attention])\nx = layers.Lambda(lambda xin: K.sum(xin, axis=1))(x)\n# Dense output layers",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "attention",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "attention = layers.Dense(1, activation=\"tanh\")(x)\nattention = layers.Flatten()(attention)\nattention = layers.Activation(\"softmax\")(attention)\nattention = layers.RepeatVector(256)(attention)  # 128*2 for bidirectional\nattention = layers.Permute([2, 1])(attention)\nx = layers.Multiply()([x, attention])\nx = layers.Lambda(lambda xin: K.sum(xin, axis=1))(x)\n# Dense output layers\nx = layers.Dense(128, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "attention",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "attention = layers.Flatten()(attention)\nattention = layers.Activation(\"softmax\")(attention)\nattention = layers.RepeatVector(256)(attention)  # 128*2 for bidirectional\nattention = layers.Permute([2, 1])(attention)\nx = layers.Multiply()([x, attention])\nx = layers.Lambda(lambda xin: K.sum(xin, axis=1))(x)\n# Dense output layers\nx = layers.Dense(128, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "attention",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "attention = layers.Activation(\"softmax\")(attention)\nattention = layers.RepeatVector(256)(attention)  # 128*2 for bidirectional\nattention = layers.Permute([2, 1])(attention)\nx = layers.Multiply()([x, attention])\nx = layers.Lambda(lambda xin: K.sum(xin, axis=1))(x)\n# Dense output layers\nx = layers.Dense(128, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\nx = layers.Dense(64, activation=\"relu\")(x)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "attention",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "attention = layers.RepeatVector(256)(attention)  # 128*2 for bidirectional\nattention = layers.Permute([2, 1])(attention)\nx = layers.Multiply()([x, attention])\nx = layers.Lambda(lambda xin: K.sum(xin, axis=1))(x)\n# Dense output layers\nx = layers.Dense(128, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\nx = layers.Dense(64, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "attention",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "attention = layers.Permute([2, 1])(attention)\nx = layers.Multiply()([x, attention])\nx = layers.Lambda(lambda xin: K.sum(xin, axis=1))(x)\n# Dense output layers\nx = layers.Dense(128, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\nx = layers.Dense(64, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.Multiply()([x, attention])\nx = layers.Lambda(lambda xin: K.sum(xin, axis=1))(x)\n# Dense output layers\nx = layers.Dense(128, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\nx = layers.Dense(64, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(32, activation=\"relu\")(x)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.Lambda(lambda xin: K.sum(xin, axis=1))(x)\n# Dense output layers\nx = layers.Dense(128, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\nx = layers.Dense(64, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(32, activation=\"relu\")(x)\nout = layers.Dense(1)(x)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.Dense(128, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\nx = layers.Dense(64, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(32, activation=\"relu\")(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\n# Learning rate scheduler",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.BatchNormalization()(x)\nx = layers.Dropout(0.3)(x)\nx = layers.Dense(64, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(32, activation=\"relu\")(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\n# Learning rate scheduler\nlr_schedule_cnn = callbacks.ReduceLROnPlateau(",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.Dropout(0.3)(x)\nx = layers.Dense(64, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(32, activation=\"relu\")(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\n# Learning rate scheduler\nlr_schedule_cnn = callbacks.ReduceLROnPlateau(\n    monitor=\"val_loss\", factor=0.5, patience=5, min_lr=1e-7, verbose=0",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.Dense(64, activation=\"relu\")(x)\nx = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(32, activation=\"relu\")(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\n# Learning rate scheduler\nlr_schedule_cnn = callbacks.ReduceLROnPlateau(\n    monitor=\"val_loss\", factor=0.5, patience=5, min_lr=1e-7, verbose=0\n)",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.BatchNormalization()(x)\nx = layers.Dropout(0.2)(x)\nx = layers.Dense(32, activation=\"relu\")(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\n# Learning rate scheduler\nlr_schedule_cnn = callbacks.ReduceLROnPlateau(\n    monitor=\"val_loss\", factor=0.5, patience=5, min_lr=1e-7, verbose=0\n)\nes_cnn = callbacks.EarlyStopping(",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.Dropout(0.2)(x)\nx = layers.Dense(32, activation=\"relu\")(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\n# Learning rate scheduler\nlr_schedule_cnn = callbacks.ReduceLROnPlateau(\n    monitor=\"val_loss\", factor=0.5, patience=5, min_lr=1e-7, verbose=0\n)\nes_cnn = callbacks.EarlyStopping(\n    patience=15, restore_best_weights=True, monitor=\"val_loss\"",
+        "detail": "training",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "training",
+        "description": "training",
+        "peekOfCode": "x = layers.Dense(32, activation=\"relu\")(x)\nout = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\n# Learning rate scheduler\nlr_schedule_cnn = callbacks.ReduceLROnPlateau(\n    monitor=\"val_loss\", factor=0.5, patience=5, min_lr=1e-7, verbose=0\n)\nes_cnn = callbacks.EarlyStopping(\n    patience=15, restore_best_weights=True, monitor=\"val_loss\"\n)",
         "detail": "training",
         "documentation": {}
     },
@@ -1489,7 +2070,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "out = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\n# Learning rate scheduler\nlr_schedule_cnn = callbacks.ReduceLROnPlateau(\n    monitor=\"val_loss\", factor=0.5, patience=3, min_lr=1e-6, verbose=0\n)\nes_cnn = callbacks.EarlyStopping(\n    patience=10, restore_best_weights=True, monitor=\"val_loss\"\n)\ncnn_lstm_model.compile(",
+        "peekOfCode": "out = layers.Dense(1)(x)\ncnn_lstm_model = models.Model(inp, out)\n# Learning rate scheduler\nlr_schedule_cnn = callbacks.ReduceLROnPlateau(\n    monitor=\"val_loss\", factor=0.5, patience=5, min_lr=1e-7, verbose=0\n)\nes_cnn = callbacks.EarlyStopping(\n    patience=15, restore_best_weights=True, monitor=\"val_loss\"\n)\ncnn_lstm_model.compile(",
         "detail": "training",
         "documentation": {}
     },
@@ -1498,7 +2079,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "cnn_lstm_model = models.Model(inp, out)\n# Learning rate scheduler\nlr_schedule_cnn = callbacks.ReduceLROnPlateau(\n    monitor=\"val_loss\", factor=0.5, patience=3, min_lr=1e-6, verbose=0\n)\nes_cnn = callbacks.EarlyStopping(\n    patience=10, restore_best_weights=True, monitor=\"val_loss\"\n)\ncnn_lstm_model.compile(\n    optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), loss=\"mse\", metrics=[\"mae\"]",
+        "peekOfCode": "cnn_lstm_model = models.Model(inp, out)\n# Learning rate scheduler\nlr_schedule_cnn = callbacks.ReduceLROnPlateau(\n    monitor=\"val_loss\", factor=0.5, patience=5, min_lr=1e-7, verbose=0\n)\nes_cnn = callbacks.EarlyStopping(\n    patience=15, restore_best_weights=True, monitor=\"val_loss\"\n)\ncnn_lstm_model.compile(\n    optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),",
         "detail": "training",
         "documentation": {}
     },
@@ -1507,7 +2088,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "lr_schedule_cnn = callbacks.ReduceLROnPlateau(\n    monitor=\"val_loss\", factor=0.5, patience=3, min_lr=1e-6, verbose=0\n)\nes_cnn = callbacks.EarlyStopping(\n    patience=10, restore_best_weights=True, monitor=\"val_loss\"\n)\ncnn_lstm_model.compile(\n    optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), loss=\"mse\", metrics=[\"mae\"]\n)\ncnn_lstm_model.fit(",
+        "peekOfCode": "lr_schedule_cnn = callbacks.ReduceLROnPlateau(\n    monitor=\"val_loss\", factor=0.5, patience=5, min_lr=1e-7, verbose=0\n)\nes_cnn = callbacks.EarlyStopping(\n    patience=15, restore_best_weights=True, monitor=\"val_loss\"\n)\ncnn_lstm_model.compile(\n    optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),\n    loss=\"mse\",\n    metrics=[\"mae\"],",
         "detail": "training",
         "documentation": {}
     },
@@ -1516,7 +2097,7 @@
         "kind": 5,
         "importPath": "training",
         "description": "training",
-        "peekOfCode": "es_cnn = callbacks.EarlyStopping(\n    patience=10, restore_best_weights=True, monitor=\"val_loss\"\n)\ncnn_lstm_model.compile(\n    optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), loss=\"mse\", metrics=[\"mae\"]\n)\ncnn_lstm_model.fit(\n    X_train_seq,\n    y_train_seq,\n    validation_split=0.1,",
+        "peekOfCode": "es_cnn = callbacks.EarlyStopping(\n    patience=15, restore_best_weights=True, monitor=\"val_loss\"\n)\ncnn_lstm_model.compile(\n    optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),\n    loss=\"mse\",\n    metrics=[\"mae\"],\n)\ncnn_lstm_model.fit(\n    X_train_seq,",
         "detail": "training",
         "documentation": {}
     },
