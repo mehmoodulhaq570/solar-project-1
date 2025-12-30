@@ -162,12 +162,9 @@ y_test = test_lag[target_col]
 # ---------- 4. Scaling for deep learning ----------
 SEQ_LEN = 24
 # Features for sequence models (LSTM, CNN-LSTM)
-# Order matches tree models (excluding target which goes last)
-features = [
+# KEY: Include SolarRadiation so model can learn from past radiation values (like tree models)
+features_seq = [
     # Time features
-    "hour",
-    "month",
-    "day_of_year",
     "hour_sin",
     "hour_cos",
     "month_sin",
@@ -184,31 +181,42 @@ features = [
     "Pressure",
     "WindSpeed",
     "WindDirection",
-    # Target (must be last)
+    # IMPORTANT: Include past radiation values in sequence (like lag features for tree models)
     target_col,
 ]
-df_seq = df_day[features].dropna()
+df_seq = df_day[features_seq].dropna()
 
 train_seq_df = df_seq.loc[: train.index.max()]
-scaler_X = StandardScaler()
-scaler_y = StandardScaler()
 
-scaler_X.fit(train_seq_df.drop(columns=[target_col]))
+# Scale ALL features including SolarRadiation for sequences
+scaler_seq = StandardScaler()
+scaler_seq.fit(train_seq_df)
+
+# Separate scaler for target (for inverse transform)
+scaler_y = StandardScaler()
 scaler_y.fit(train_seq_df[[target_col]])
+
+# Also keep scaler_X for compatibility with TFT/TCN
+scaler_X = StandardScaler()
+scaler_X.fit(train_seq_df.drop(columns=[target_col]))
 
 # Save scalers
 joblib.dump(scaler_X, "saved_models/scaler_X.pkl")
 joblib.dump(scaler_y, "saved_models/scaler_y.pkl")
+joblib.dump(scaler_seq, "saved_models/scaler_seq.pkl")
 
 
 def create_sequences(df_in, seq_len=24):
+    """Create sequences where model sees past radiation values in sequence."""
     Xs, ys, idxs = [], [], []
-    X_arr = scaler_X.transform(df_in.drop(columns=[target_col]))
-    y_arr = scaler_y.transform(df_in[[target_col]]).flatten()
+    # Scale ALL features including SolarRadiation
+    all_arr = scaler_seq.transform(df_in)
 
     for i in range(seq_len, len(df_in)):
-        Xs.append(X_arr[i - seq_len : i])
-        ys.append(y_arr[i])
+        # Sequence includes past SolarRadiation values (last column)
+        Xs.append(all_arr[i - seq_len : i])
+        # Target is scaled SolarRadiation at time i
+        ys.append(all_arr[i, -1])  # Last column is SolarRadiation
         idxs.append(df_in.index[i])
 
     return np.array(Xs), np.array(ys), np.array(idxs)
@@ -291,55 +299,36 @@ results.append(
 )
 
 # ======================================
-# 8. LSTM (Improved Architecture)
+# 8. LSTM (Optimized Architecture)
 # ======================================
 print("\n=== Training LSTM ===")
 K.clear_session()
 
-# Build improved LSTM with attention and residual connections
-inp_lstm = layers.Input(shape=(SEQ_LEN, X_train_seq.shape[2]))
-
-# First LSTM block with more units
-x = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(inp_lstm)
-x = layers.BatchNormalization()(x)
-x = layers.Dropout(0.3)(x)
-
-# Second LSTM block
-x = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)
-x = layers.BatchNormalization()(x)
-x = layers.Dropout(0.3)(x)
-
-# Attention mechanism - learn which timesteps are important
-attention = layers.Dense(1, activation="tanh")(x)
-attention = layers.Flatten()(attention)
-attention = layers.Activation("softmax")(attention)
-attention = layers.RepeatVector(256)(attention)  # 128*2 for bidirectional
-attention = layers.Permute([2, 1])(attention)
-
-# Apply attention
-x = layers.Multiply()([x, attention])
-x = layers.Lambda(lambda xin: K.sum(xin, axis=1))(x)
-
-# Dense layers with residual-like structure
-x = layers.Dense(128, activation="relu")(x)
-x = layers.BatchNormalization()(x)
-x = layers.Dropout(0.3)(x)
-x = layers.Dense(64, activation="relu")(x)
-x = layers.BatchNormalization()(x)
-x = layers.Dropout(0.2)(x)
-x = layers.Dense(32, activation="relu")(x)
-out_lstm = layers.Dense(1)(x)
-
-lstm_model = models.Model(inp_lstm, out_lstm)
+# Simpler but effective LSTM - key is that sequences now include past radiation values
+lstm_model = models.Sequential(
+    [
+        layers.Input(shape=(SEQ_LEN, X_train_seq.shape[2])),
+        # First LSTM layer - captures temporal patterns
+        layers.Bidirectional(layers.LSTM(64, return_sequences=True)),
+        layers.Dropout(0.2),
+        # Second LSTM layer - extracts higher-level features
+        layers.Bidirectional(layers.LSTM(32)),
+        layers.Dropout(0.2),
+        # Dense layers for regression
+        layers.Dense(64, activation="relu"),
+        layers.Dense(32, activation="relu"),
+        layers.Dense(1),
+    ]
+)
 
 # Learning rate scheduler for better convergence
 lr_schedule = callbacks.ReduceLROnPlateau(
-    monitor="val_loss", factor=0.5, patience=5, min_lr=1e-7, verbose=0
+    monitor="val_loss", factor=0.5, patience=5, min_lr=1e-6, verbose=0
 )
 es = callbacks.EarlyStopping(patience=15, restore_best_weights=True, monitor="val_loss")
 
 lstm_model.compile(
-    optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),
+    optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
     loss="mse",
     metrics=["mae"],
 )
@@ -348,8 +337,8 @@ lstm_model.fit(
     X_train_seq,
     y_train_seq,
     validation_split=0.1,
-    epochs=100,
-    batch_size=64,
+    epochs=150,
+    batch_size=32,
     callbacks=[es, lr_schedule],
     verbose=0,
 )
@@ -374,54 +363,28 @@ results.append(
 )
 
 # ======================================
-# 9. CNN-LSTM (Improved Architecture)
+# 9. CNN-LSTM (Optimized Architecture)
 # ======================================
 print("\n=== Training CNN-LSTM ===")
 K.clear_session()
 
-# Build improved CNN-LSTM with multi-scale convolutions and attention
+# Simpler CNN-LSTM - sequences now include past radiation values
 inp = layers.Input(shape=(SEQ_LEN, X_train_seq.shape[2]))
 
-# Multi-scale convolution block 1 - capture different temporal patterns
-conv1 = layers.Conv1D(64, 2, padding="same", activation="relu")(inp)
-conv2 = layers.Conv1D(64, 3, padding="same", activation="relu")(inp)
-conv3 = layers.Conv1D(64, 5, padding="same", activation="relu")(inp)
-x = layers.Concatenate()([conv1, conv2, conv3])  # Multi-scale features
-x = layers.BatchNormalization()(x)
+# Conv layers to extract local patterns
+x = layers.Conv1D(64, 3, padding="same", activation="relu")(inp)
+x = layers.Conv1D(64, 3, padding="same", activation="relu")(x)
+x = layers.MaxPool1D(2)(x)
 x = layers.Dropout(0.2)(x)
 
-# Second conv block
-x = layers.Conv1D(128, 3, padding="same", activation="relu")(x)
-x = layers.BatchNormalization()(x)
-x = layers.Conv1D(128, 3, padding="same", activation="relu")(x)
-x = layers.BatchNormalization()(x)
+# LSTM layers for temporal dependencies
+x = layers.Bidirectional(layers.LSTM(64, return_sequences=True))(x)
 x = layers.Dropout(0.2)(x)
-
-# LSTM layers with more capacity
-x = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)
-x = layers.BatchNormalization()(x)
-x = layers.Dropout(0.3)(x)
-
-x = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(x)
-x = layers.BatchNormalization()(x)
-x = layers.Dropout(0.3)(x)
-
-# Self-attention layer
-attention = layers.Dense(1, activation="tanh")(x)
-attention = layers.Flatten()(attention)
-attention = layers.Activation("softmax")(attention)
-attention = layers.RepeatVector(256)(attention)  # 128*2 for bidirectional
-attention = layers.Permute([2, 1])(attention)
-x = layers.Multiply()([x, attention])
-x = layers.Lambda(lambda xin: K.sum(xin, axis=1))(x)
+x = layers.Bidirectional(layers.LSTM(32))(x)
+x = layers.Dropout(0.2)(x)
 
 # Dense output layers
-x = layers.Dense(128, activation="relu")(x)
-x = layers.BatchNormalization()(x)
-x = layers.Dropout(0.3)(x)
 x = layers.Dense(64, activation="relu")(x)
-x = layers.BatchNormalization()(x)
-x = layers.Dropout(0.2)(x)
 x = layers.Dense(32, activation="relu")(x)
 out = layers.Dense(1)(x)
 
@@ -429,14 +392,14 @@ cnn_lstm_model = models.Model(inp, out)
 
 # Learning rate scheduler
 lr_schedule_cnn = callbacks.ReduceLROnPlateau(
-    monitor="val_loss", factor=0.5, patience=5, min_lr=1e-7, verbose=0
+    monitor="val_loss", factor=0.5, patience=5, min_lr=1e-6, verbose=0
 )
 es_cnn = callbacks.EarlyStopping(
     patience=15, restore_best_weights=True, monitor="val_loss"
 )
 
 cnn_lstm_model.compile(
-    optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),
+    optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
     loss="mse",
     metrics=["mae"],
 )
@@ -445,8 +408,8 @@ cnn_lstm_model.fit(
     X_train_seq,
     y_train_seq,
     validation_split=0.1,
-    epochs=100,
-    batch_size=64,
+    epochs=150,
+    batch_size=32,
     callbacks=[es_cnn, lr_schedule_cnn],
     verbose=0,
 )
