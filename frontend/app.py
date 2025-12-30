@@ -57,13 +57,13 @@ selected_date = st.sidebar.date_input(
 
 # Model folder paths
 traditional_folder = os.path.join(BASE_DIR, "saved_models")
-lstm_folder = os.path.join(BASE_DIR, "saved_models_lstm")
+lstm_folder = os.path.join(BASE_DIR, "saved_models")  # LSTM models are in saved_models
 tft_folder = os.path.join(BASE_DIR, "saved_models_tft")
 
 # Model selection with availability indicators
 st.sidebar.markdown("### 🤖 Model Selection")
 
-# Check model availability
+# Check model availability - check both saved_models and saved_models_lstm
 available_model_status = {
     "XGBoost": XGBOOST_AVAILABLE
     and os.path.exists(os.path.join(traditional_folder, "xgboost_model.pkl")),
@@ -71,9 +71,17 @@ available_model_status = {
         os.path.join(traditional_folder, "random_forest_model.pkl")
     ),
     "LSTM": TENSORFLOW_AVAILABLE
-    and os.path.exists(os.path.join(lstm_folder, "lstm_model.h5")),
+    and (
+        os.path.exists(os.path.join(traditional_folder, "lstm_model.h5"))
+        or os.path.exists(os.path.join(BASE_DIR, "saved_models_lstm", "lstm_model.h5"))
+    ),
     "CNN-LSTM": TENSORFLOW_AVAILABLE
-    and os.path.exists(os.path.join(lstm_folder, "cnn_lstm_model.h5")),
+    and (
+        os.path.exists(os.path.join(traditional_folder, "cnn_lstm_model.h5"))
+        or os.path.exists(
+            os.path.join(BASE_DIR, "saved_models_lstm", "cnn_lstm_model.h5")
+        )
+    ),
     "TFT": PYTORCH_AVAILABLE
     and (
         os.path.exists(os.path.join(tft_folder, "tft_model.pt"))

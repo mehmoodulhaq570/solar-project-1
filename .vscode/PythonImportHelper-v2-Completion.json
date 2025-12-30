@@ -859,7 +859,7 @@
         "kind": 5,
         "importPath": "frontend.app",
         "description": "frontend.app",
-        "peekOfCode": "selected_date = st.sidebar.date_input(\n    \"📅 Forecast Date\",\n    datetime.today(),\n    help=\"Select the date for solar radiation forecast\",\n)\n# Model folder paths\ntraditional_folder = os.path.join(BASE_DIR, \"saved_models\")\nlstm_folder = os.path.join(BASE_DIR, \"saved_models_lstm\")\ntft_folder = os.path.join(BASE_DIR, \"saved_models_tft\")\n# Model selection with availability indicators",
+        "peekOfCode": "selected_date = st.sidebar.date_input(\n    \"📅 Forecast Date\",\n    datetime.today(),\n    help=\"Select the date for solar radiation forecast\",\n)\n# Model folder paths\ntraditional_folder = os.path.join(BASE_DIR, \"saved_models\")\nlstm_folder = os.path.join(BASE_DIR, \"saved_models\")  # LSTM models are in saved_models\ntft_folder = os.path.join(BASE_DIR, \"saved_models_tft\")\n# Model selection with availability indicators",
         "detail": "frontend.app",
         "documentation": {}
     },
@@ -868,7 +868,7 @@
         "kind": 5,
         "importPath": "frontend.app",
         "description": "frontend.app",
-        "peekOfCode": "traditional_folder = os.path.join(BASE_DIR, \"saved_models\")\nlstm_folder = os.path.join(BASE_DIR, \"saved_models_lstm\")\ntft_folder = os.path.join(BASE_DIR, \"saved_models_tft\")\n# Model selection with availability indicators\nst.sidebar.markdown(\"### 🤖 Model Selection\")\n# Check model availability\navailable_model_status = {\n    \"XGBoost\": XGBOOST_AVAILABLE\n    and os.path.exists(os.path.join(traditional_folder, \"xgboost_model.pkl\")),\n    \"Random Forest\": os.path.exists(",
+        "peekOfCode": "traditional_folder = os.path.join(BASE_DIR, \"saved_models\")\nlstm_folder = os.path.join(BASE_DIR, \"saved_models\")  # LSTM models are in saved_models\ntft_folder = os.path.join(BASE_DIR, \"saved_models_tft\")\n# Model selection with availability indicators\nst.sidebar.markdown(\"### 🤖 Model Selection\")\n# Check model availability - check both saved_models and saved_models_lstm\navailable_model_status = {\n    \"XGBoost\": XGBOOST_AVAILABLE\n    and os.path.exists(os.path.join(traditional_folder, \"xgboost_model.pkl\")),\n    \"Random Forest\": os.path.exists(",
         "detail": "frontend.app",
         "documentation": {}
     },
@@ -877,7 +877,7 @@
         "kind": 5,
         "importPath": "frontend.app",
         "description": "frontend.app",
-        "peekOfCode": "lstm_folder = os.path.join(BASE_DIR, \"saved_models_lstm\")\ntft_folder = os.path.join(BASE_DIR, \"saved_models_tft\")\n# Model selection with availability indicators\nst.sidebar.markdown(\"### 🤖 Model Selection\")\n# Check model availability\navailable_model_status = {\n    \"XGBoost\": XGBOOST_AVAILABLE\n    and os.path.exists(os.path.join(traditional_folder, \"xgboost_model.pkl\")),\n    \"Random Forest\": os.path.exists(\n        os.path.join(traditional_folder, \"random_forest_model.pkl\")",
+        "peekOfCode": "lstm_folder = os.path.join(BASE_DIR, \"saved_models\")  # LSTM models are in saved_models\ntft_folder = os.path.join(BASE_DIR, \"saved_models_tft\")\n# Model selection with availability indicators\nst.sidebar.markdown(\"### 🤖 Model Selection\")\n# Check model availability - check both saved_models and saved_models_lstm\navailable_model_status = {\n    \"XGBoost\": XGBOOST_AVAILABLE\n    and os.path.exists(os.path.join(traditional_folder, \"xgboost_model.pkl\")),\n    \"Random Forest\": os.path.exists(\n        os.path.join(traditional_folder, \"random_forest_model.pkl\")",
         "detail": "frontend.app",
         "documentation": {}
     },
@@ -886,7 +886,7 @@
         "kind": 5,
         "importPath": "frontend.app",
         "description": "frontend.app",
-        "peekOfCode": "tft_folder = os.path.join(BASE_DIR, \"saved_models_tft\")\n# Model selection with availability indicators\nst.sidebar.markdown(\"### 🤖 Model Selection\")\n# Check model availability\navailable_model_status = {\n    \"XGBoost\": XGBOOST_AVAILABLE\n    and os.path.exists(os.path.join(traditional_folder, \"xgboost_model.pkl\")),\n    \"Random Forest\": os.path.exists(\n        os.path.join(traditional_folder, \"random_forest_model.pkl\")\n    ),",
+        "peekOfCode": "tft_folder = os.path.join(BASE_DIR, \"saved_models_tft\")\n# Model selection with availability indicators\nst.sidebar.markdown(\"### 🤖 Model Selection\")\n# Check model availability - check both saved_models and saved_models_lstm\navailable_model_status = {\n    \"XGBoost\": XGBOOST_AVAILABLE\n    and os.path.exists(os.path.join(traditional_folder, \"xgboost_model.pkl\")),\n    \"Random Forest\": os.path.exists(\n        os.path.join(traditional_folder, \"random_forest_model.pkl\")\n    ),",
         "detail": "frontend.app",
         "documentation": {}
     },
@@ -895,7 +895,7 @@
         "kind": 5,
         "importPath": "frontend.app",
         "description": "frontend.app",
-        "peekOfCode": "available_model_status = {\n    \"XGBoost\": XGBOOST_AVAILABLE\n    and os.path.exists(os.path.join(traditional_folder, \"xgboost_model.pkl\")),\n    \"Random Forest\": os.path.exists(\n        os.path.join(traditional_folder, \"random_forest_model.pkl\")\n    ),\n    \"LSTM\": TENSORFLOW_AVAILABLE\n    and os.path.exists(os.path.join(lstm_folder, \"lstm_model.h5\")),\n    \"CNN-LSTM\": TENSORFLOW_AVAILABLE\n    and os.path.exists(os.path.join(lstm_folder, \"cnn_lstm_model.h5\")),",
+        "peekOfCode": "available_model_status = {\n    \"XGBoost\": XGBOOST_AVAILABLE\n    and os.path.exists(os.path.join(traditional_folder, \"xgboost_model.pkl\")),\n    \"Random Forest\": os.path.exists(\n        os.path.join(traditional_folder, \"random_forest_model.pkl\")\n    ),\n    \"LSTM\": TENSORFLOW_AVAILABLE\n    and (\n        os.path.exists(os.path.join(traditional_folder, \"lstm_model.h5\"))\n        or os.path.exists(os.path.join(BASE_DIR, \"saved_models_lstm\", \"lstm_model.h5\"))",
         "detail": "frontend.app",
         "documentation": {}
     },
