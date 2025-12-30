@@ -753,6 +753,15 @@
         "documentation": {}
     },
     {
+        "label": "seaborn",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "seaborn",
+        "description": "seaborn",
+        "detail": "seaborn",
+        "documentation": {}
+    },
+    {
         "label": "subprocess",
         "kind": 6,
         "isExtraImport": true,
@@ -1815,6 +1824,42 @@
         "description": "frontend",
         "peekOfCode": "selected_api = st.sidebar.selectbox(\n    \"📡 Select API\",\n    [\"NASA POWER\", \"Open-Meteo\"],\n    index=0,\n    help=\"NASA POWER: Historical data (same source as training, ~1 week delay)\\nOpen-Meteo: Real-time forecast (today + 16 days)\",\n    disabled=not enable_api,\n)\n# Show API info\nif enable_api:\n    if selected_api == \"NASA POWER\":",
         "detail": "frontend",
+        "documentation": {}
+    },
+    {
+        "label": "combined_df",
+        "kind": 5,
+        "importPath": "graphs",
+        "description": "graphs",
+        "peekOfCode": "combined_df = pd.DataFrame(\n    [\n        [\"XGBoost\", 0.9981, 0.9933, 22.6207, 22.6207, 9.6930, 9.6930],\n        [\"RF\", 0.9963, 0.9933, 22.7748, 22.7748, 9.8764, 9.8764],\n        [\"LSTM\", 0.9876, 0.9873, 31.2977, 31.2977, 20.1867, 20.1867],\n        [\"CNN-LSTM\", 0.9891, 0.9896, 28.2191, 28.2191, 17.0076, 17.0076],\n        [\"TFT\", 0.9959, 0.9472, 63.6943, 63.6943, 28.5793, 28.5793],\n        [\"TCN\", 0.9936, 0.9461, 64.3800, 64.3800, 28.8272, 28.8272],\n    ],\n    columns=[",
+        "detail": "graphs",
+        "documentation": {}
+    },
+    {
+        "label": "metrics",
+        "kind": 5,
+        "importPath": "graphs",
+        "description": "graphs",
+        "peekOfCode": "metrics = {\n    \"R²\": [\"Train R²\", \"Test R²\"],\n    \"RMSE\": [\"Train RMSE\", \"Test RMSE\"],\n    \"MAE\": [\"Train MAE\", \"Test MAE\"],\n}\n# ====== Global Plot Settings ======\nplt.rcParams.update({\"font.family\": \"serif\", \"font.size\": 12})\npalette = {\"Train\": \"#FF6347\", \"Test\": \"#32CD32\"}  # Red & Green\n# ====== Plotting ======\nfig, axes = plt.subplots(1, 3, figsize=(20, 6))",
+        "detail": "graphs",
+        "documentation": {}
+    },
+    {
+        "label": "palette",
+        "kind": 5,
+        "importPath": "graphs",
+        "description": "graphs",
+        "peekOfCode": "palette = {\"Train\": \"#FF6347\", \"Test\": \"#32CD32\"}  # Red & Green\n# ====== Plotting ======\nfig, axes = plt.subplots(1, 3, figsize=(20, 6))\naxes = axes.flatten()\nfor ax, (metric_name, cols) in zip(axes, metrics.items()):\n    df_melted = combined_df.melt(\n        id_vars=[\"Model\"], value_vars=cols, var_name=\"DataType\", value_name=metric_name\n    )\n    df_melted[\"Type\"] = df_melted[\"DataType\"].str.split(\" \").str[0]  # Train/Test\n    sns.barplot(",
+        "detail": "graphs",
+        "documentation": {}
+    },
+    {
+        "label": "axes",
+        "kind": 5,
+        "importPath": "graphs",
+        "description": "graphs",
+        "peekOfCode": "axes = axes.flatten()\nfor ax, (metric_name, cols) in zip(axes, metrics.items()):\n    df_melted = combined_df.melt(\n        id_vars=[\"Model\"], value_vars=cols, var_name=\"DataType\", value_name=metric_name\n    )\n    df_melted[\"Type\"] = df_melted[\"DataType\"].str.split(\" \").str[0]  # Train/Test\n    sns.barplot(\n        data=df_melted, x=\"Model\", y=metric_name, hue=\"Type\", palette=palette, ax=ax\n    )\n    ax.set_title(",
+        "detail": "graphs",
         "documentation": {}
     },
     {
