@@ -744,56 +744,28 @@
         "documentation": {}
     },
     {
-        "label": "os,",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "os.",
-        "description": "os.",
-        "detail": "os.",
-        "documentation": {}
-    },
-    {
-        "label": "seaborn",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "seaborn",
-        "description": "seaborn",
-        "detail": "seaborn",
-        "documentation": {}
-    },
-    {
-        "label": "subprocess",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "subprocess",
-        "description": "subprocess",
-        "detail": "subprocess",
-        "documentation": {}
-    },
-    {
-        "label": "RandomForestRegressor",
-        "importPath": "sklearn.ensemble",
-        "description": "sklearn.ensemble",
-        "isExtraImport": true,
-        "detail": "sklearn.ensemble",
-        "documentation": {}
-    },
-    {
-        "label": "xgboost",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "xgboost",
-        "description": "xgboost",
-        "detail": "xgboost",
-        "documentation": {}
-    },
-    {
         "label": "tensorflow",
         "kind": 6,
         "isExtraImport": true,
         "importPath": "tensorflow",
         "description": "tensorflow",
         "detail": "tensorflow",
+        "documentation": {}
+    },
+    {
+        "label": "layers",
+        "importPath": "tensorflow.keras",
+        "description": "tensorflow.keras",
+        "isExtraImport": true,
+        "detail": "tensorflow.keras",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "tensorflow.keras",
+        "description": "tensorflow.keras",
+        "isExtraImport": true,
+        "detail": "tensorflow.keras",
         "documentation": {}
     },
     {
@@ -826,6 +798,50 @@
         "description": "tensorflow.keras",
         "isExtraImport": true,
         "detail": "tensorflow.keras",
+        "documentation": {}
+    },
+    {
+        "label": "os,",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os.",
+        "description": "os.",
+        "detail": "os.",
+        "documentation": {}
+    },
+    {
+        "label": "subprocess",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "subprocess",
+        "description": "subprocess",
+        "detail": "subprocess",
+        "documentation": {}
+    },
+    {
+        "label": "seaborn",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "seaborn",
+        "description": "seaborn",
+        "detail": "seaborn",
+        "documentation": {}
+    },
+    {
+        "label": "RandomForestRegressor",
+        "importPath": "sklearn.ensemble",
+        "description": "sklearn.ensemble",
+        "isExtraImport": true,
+        "detail": "sklearn.ensemble",
+        "documentation": {}
+    },
+    {
+        "label": "xgboost",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "xgboost",
+        "description": "xgboost",
+        "detail": "xgboost",
         "documentation": {}
     },
     {
@@ -1264,7 +1280,7 @@
         "kind": 5,
         "importPath": "frontend.models",
         "description": "frontend.models",
-        "peekOfCode": "os.environ[\"TF_CPP_MIN_LOG_LEVEL\"] = \"2\"\n# ============== Check Available Frameworks ==============\nTENSORFLOW_AVAILABLE = False\nPYTORCH_AVAILABLE = False\nXGBOOST_AVAILABLE = False\ntry:\n    from tensorflow.keras.models import load_model as keras_load_model\n    TENSORFLOW_AVAILABLE = True\nexcept ImportError:\n    pass",
+        "peekOfCode": "os.environ[\"TF_CPP_MIN_LOG_LEVEL\"] = \"2\"\n# ============== Check Available Frameworks ==============\nTENSORFLOW_AVAILABLE = False\nPYTORCH_AVAILABLE = False\nXGBOOST_AVAILABLE = False\ntry:\n    import tensorflow as tf\n    # Use tf.keras for Keras 3.x compatibility with Keras 2.x saved models\n    # This handles the time_major parameter issue\n    keras_load_model = tf.keras.models.load_model",
         "detail": "frontend.models",
         "documentation": {}
     },
@@ -1273,7 +1289,7 @@
         "kind": 5,
         "importPath": "frontend.models",
         "description": "frontend.models",
-        "peekOfCode": "TENSORFLOW_AVAILABLE = False\nPYTORCH_AVAILABLE = False\nXGBOOST_AVAILABLE = False\ntry:\n    from tensorflow.keras.models import load_model as keras_load_model\n    TENSORFLOW_AVAILABLE = True\nexcept ImportError:\n    pass\ntry:\n    import torch",
+        "peekOfCode": "TENSORFLOW_AVAILABLE = False\nPYTORCH_AVAILABLE = False\nXGBOOST_AVAILABLE = False\ntry:\n    import tensorflow as tf\n    # Use tf.keras for Keras 3.x compatibility with Keras 2.x saved models\n    # This handles the time_major parameter issue\n    keras_load_model = tf.keras.models.load_model\n    TENSORFLOW_AVAILABLE = True\nexcept ImportError:",
         "detail": "frontend.models",
         "documentation": {}
     },
@@ -1282,7 +1298,7 @@
         "kind": 5,
         "importPath": "frontend.models",
         "description": "frontend.models",
-        "peekOfCode": "PYTORCH_AVAILABLE = False\nXGBOOST_AVAILABLE = False\ntry:\n    from tensorflow.keras.models import load_model as keras_load_model\n    TENSORFLOW_AVAILABLE = True\nexcept ImportError:\n    pass\ntry:\n    import torch\n    PYTORCH_AVAILABLE = True",
+        "peekOfCode": "PYTORCH_AVAILABLE = False\nXGBOOST_AVAILABLE = False\ntry:\n    import tensorflow as tf\n    # Use tf.keras for Keras 3.x compatibility with Keras 2.x saved models\n    # This handles the time_major parameter issue\n    keras_load_model = tf.keras.models.load_model\n    TENSORFLOW_AVAILABLE = True\nexcept ImportError:\n    pass",
         "detail": "frontend.models",
         "documentation": {}
     },
@@ -1291,7 +1307,7 @@
         "kind": 5,
         "importPath": "frontend.models",
         "description": "frontend.models",
-        "peekOfCode": "XGBOOST_AVAILABLE = False\ntry:\n    from tensorflow.keras.models import load_model as keras_load_model\n    TENSORFLOW_AVAILABLE = True\nexcept ImportError:\n    pass\ntry:\n    import torch\n    PYTORCH_AVAILABLE = True\nexcept ImportError:",
+        "peekOfCode": "XGBOOST_AVAILABLE = False\ntry:\n    import tensorflow as tf\n    # Use tf.keras for Keras 3.x compatibility with Keras 2.x saved models\n    # This handles the time_major parameter issue\n    keras_load_model = tf.keras.models.load_model\n    TENSORFLOW_AVAILABLE = True\nexcept ImportError:\n    pass\ntry:",
         "detail": "frontend.models",
         "documentation": {}
     },
@@ -1683,6 +1699,150 @@
         "documentation": {}
     },
     {
+        "label": "os.environ[\"TF_CPP_MIN_LOG_LEVEL\"]",
+        "kind": 5,
+        "importPath": "convert_models",
+        "description": "convert_models",
+        "peekOfCode": "os.environ[\"TF_CPP_MIN_LOG_LEVEL\"] = \"2\"\nimport tensorflow as tf\nfrom tensorflow.keras import layers, models\nprint(\"Converting LSTM model...\")\n# Recreate LSTM architecture\nlstm_model = models.Sequential(\n    [\n        layers.Input(shape=(24, 17)),\n        layers.Bidirectional(layers.LSTM(64, return_sequences=True)),\n        layers.Dropout(0.2),",
+        "detail": "convert_models",
+        "documentation": {}
+    },
+    {
+        "label": "lstm_model",
+        "kind": 5,
+        "importPath": "convert_models",
+        "description": "convert_models",
+        "peekOfCode": "lstm_model = models.Sequential(\n    [\n        layers.Input(shape=(24, 17)),\n        layers.Bidirectional(layers.LSTM(64, return_sequences=True)),\n        layers.Dropout(0.2),\n        layers.Bidirectional(layers.LSTM(32)),\n        layers.Dropout(0.2),\n        layers.Dense(32, activation=\"relu\"),\n        layers.Dense(16, activation=\"relu\"),\n        layers.Dense(1),",
+        "detail": "convert_models",
+        "documentation": {}
+    },
+    {
+        "label": "inp",
+        "kind": 5,
+        "importPath": "convert_models",
+        "description": "convert_models",
+        "peekOfCode": "inp = layers.Input(shape=(24, 17), name=\"input_1\")\nx = layers.Conv1D(64, 3, padding=\"same\", activation=\"relu\", name=\"conv1d\")(inp)\nx = layers.Conv1D(64, 3, padding=\"same\", activation=\"relu\", name=\"conv1d_1\")(x)\nx = layers.BatchNormalization(name=\"batch_normalization\")(x)\nx = layers.MaxPool1D(2, name=\"max_pooling1d\")(x)\nx = layers.Dropout(0.2, name=\"dropout\")(x)\nx = layers.Bidirectional(layers.LSTM(64, return_sequences=True), name=\"bidirectional\")(\n    x\n)\nx = layers.Dropout(0.2, name=\"dropout_1\")(x)",
+        "detail": "convert_models",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "convert_models",
+        "description": "convert_models",
+        "peekOfCode": "x = layers.Conv1D(64, 3, padding=\"same\", activation=\"relu\", name=\"conv1d\")(inp)\nx = layers.Conv1D(64, 3, padding=\"same\", activation=\"relu\", name=\"conv1d_1\")(x)\nx = layers.BatchNormalization(name=\"batch_normalization\")(x)\nx = layers.MaxPool1D(2, name=\"max_pooling1d\")(x)\nx = layers.Dropout(0.2, name=\"dropout\")(x)\nx = layers.Bidirectional(layers.LSTM(64, return_sequences=True), name=\"bidirectional\")(\n    x\n)\nx = layers.Dropout(0.2, name=\"dropout_1\")(x)\nx = layers.Bidirectional(layers.LSTM(32), name=\"bidirectional_1\")(x)",
+        "detail": "convert_models",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "convert_models",
+        "description": "convert_models",
+        "peekOfCode": "x = layers.Conv1D(64, 3, padding=\"same\", activation=\"relu\", name=\"conv1d_1\")(x)\nx = layers.BatchNormalization(name=\"batch_normalization\")(x)\nx = layers.MaxPool1D(2, name=\"max_pooling1d\")(x)\nx = layers.Dropout(0.2, name=\"dropout\")(x)\nx = layers.Bidirectional(layers.LSTM(64, return_sequences=True), name=\"bidirectional\")(\n    x\n)\nx = layers.Dropout(0.2, name=\"dropout_1\")(x)\nx = layers.Bidirectional(layers.LSTM(32), name=\"bidirectional_1\")(x)\nx = layers.Dropout(0.2, name=\"dropout_2\")(x)",
+        "detail": "convert_models",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "convert_models",
+        "description": "convert_models",
+        "peekOfCode": "x = layers.BatchNormalization(name=\"batch_normalization\")(x)\nx = layers.MaxPool1D(2, name=\"max_pooling1d\")(x)\nx = layers.Dropout(0.2, name=\"dropout\")(x)\nx = layers.Bidirectional(layers.LSTM(64, return_sequences=True), name=\"bidirectional\")(\n    x\n)\nx = layers.Dropout(0.2, name=\"dropout_1\")(x)\nx = layers.Bidirectional(layers.LSTM(32), name=\"bidirectional_1\")(x)\nx = layers.Dropout(0.2, name=\"dropout_2\")(x)\n# Match saved model: dense expects input 64 -> output 32",
+        "detail": "convert_models",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "convert_models",
+        "description": "convert_models",
+        "peekOfCode": "x = layers.MaxPool1D(2, name=\"max_pooling1d\")(x)\nx = layers.Dropout(0.2, name=\"dropout\")(x)\nx = layers.Bidirectional(layers.LSTM(64, return_sequences=True), name=\"bidirectional\")(\n    x\n)\nx = layers.Dropout(0.2, name=\"dropout_1\")(x)\nx = layers.Bidirectional(layers.LSTM(32), name=\"bidirectional_1\")(x)\nx = layers.Dropout(0.2, name=\"dropout_2\")(x)\n# Match saved model: dense expects input 64 -> output 32\nx = layers.Dense(32, activation=\"relu\", name=\"dense\")(x)",
+        "detail": "convert_models",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "convert_models",
+        "description": "convert_models",
+        "peekOfCode": "x = layers.Dropout(0.2, name=\"dropout\")(x)\nx = layers.Bidirectional(layers.LSTM(64, return_sequences=True), name=\"bidirectional\")(\n    x\n)\nx = layers.Dropout(0.2, name=\"dropout_1\")(x)\nx = layers.Bidirectional(layers.LSTM(32), name=\"bidirectional_1\")(x)\nx = layers.Dropout(0.2, name=\"dropout_2\")(x)\n# Match saved model: dense expects input 64 -> output 32\nx = layers.Dense(32, activation=\"relu\", name=\"dense\")(x)\nx = layers.Dense(16, activation=\"relu\", name=\"dense_1\")(x)",
+        "detail": "convert_models",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "convert_models",
+        "description": "convert_models",
+        "peekOfCode": "x = layers.Bidirectional(layers.LSTM(64, return_sequences=True), name=\"bidirectional\")(\n    x\n)\nx = layers.Dropout(0.2, name=\"dropout_1\")(x)\nx = layers.Bidirectional(layers.LSTM(32), name=\"bidirectional_1\")(x)\nx = layers.Dropout(0.2, name=\"dropout_2\")(x)\n# Match saved model: dense expects input 64 -> output 32\nx = layers.Dense(32, activation=\"relu\", name=\"dense\")(x)\nx = layers.Dense(16, activation=\"relu\", name=\"dense_1\")(x)\nout = layers.Dense(1, name=\"dense_2\")(x)",
+        "detail": "convert_models",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "convert_models",
+        "description": "convert_models",
+        "peekOfCode": "x = layers.Dropout(0.2, name=\"dropout_1\")(x)\nx = layers.Bidirectional(layers.LSTM(32), name=\"bidirectional_1\")(x)\nx = layers.Dropout(0.2, name=\"dropout_2\")(x)\n# Match saved model: dense expects input 64 -> output 32\nx = layers.Dense(32, activation=\"relu\", name=\"dense\")(x)\nx = layers.Dense(16, activation=\"relu\", name=\"dense_1\")(x)\nout = layers.Dense(1, name=\"dense_2\")(x)\ncnn_lstm_model = models.Model(inp, out)\n# Load weights by name\ncnn_lstm_model.load_weights(\"saved_models/cnn_lstm_model.h5\", by_name=True)",
+        "detail": "convert_models",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "convert_models",
+        "description": "convert_models",
+        "peekOfCode": "x = layers.Bidirectional(layers.LSTM(32), name=\"bidirectional_1\")(x)\nx = layers.Dropout(0.2, name=\"dropout_2\")(x)\n# Match saved model: dense expects input 64 -> output 32\nx = layers.Dense(32, activation=\"relu\", name=\"dense\")(x)\nx = layers.Dense(16, activation=\"relu\", name=\"dense_1\")(x)\nout = layers.Dense(1, name=\"dense_2\")(x)\ncnn_lstm_model = models.Model(inp, out)\n# Load weights by name\ncnn_lstm_model.load_weights(\"saved_models/cnn_lstm_model.h5\", by_name=True)\ncnn_lstm_model.save(\"saved_models/cnn_lstm_model_v3.keras\")",
+        "detail": "convert_models",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "convert_models",
+        "description": "convert_models",
+        "peekOfCode": "x = layers.Dropout(0.2, name=\"dropout_2\")(x)\n# Match saved model: dense expects input 64 -> output 32\nx = layers.Dense(32, activation=\"relu\", name=\"dense\")(x)\nx = layers.Dense(16, activation=\"relu\", name=\"dense_1\")(x)\nout = layers.Dense(1, name=\"dense_2\")(x)\ncnn_lstm_model = models.Model(inp, out)\n# Load weights by name\ncnn_lstm_model.load_weights(\"saved_models/cnn_lstm_model.h5\", by_name=True)\ncnn_lstm_model.save(\"saved_models/cnn_lstm_model_v3.keras\")\nprint(\"CNN-LSTM model saved as cnn_lstm_model_v3.keras\")",
+        "detail": "convert_models",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "convert_models",
+        "description": "convert_models",
+        "peekOfCode": "x = layers.Dense(32, activation=\"relu\", name=\"dense\")(x)\nx = layers.Dense(16, activation=\"relu\", name=\"dense_1\")(x)\nout = layers.Dense(1, name=\"dense_2\")(x)\ncnn_lstm_model = models.Model(inp, out)\n# Load weights by name\ncnn_lstm_model.load_weights(\"saved_models/cnn_lstm_model.h5\", by_name=True)\ncnn_lstm_model.save(\"saved_models/cnn_lstm_model_v3.keras\")\nprint(\"CNN-LSTM model saved as cnn_lstm_model_v3.keras\")\nprint(\"\\nDone! Models converted to Keras 3.x format.\")",
+        "detail": "convert_models",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "convert_models",
+        "description": "convert_models",
+        "peekOfCode": "x = layers.Dense(16, activation=\"relu\", name=\"dense_1\")(x)\nout = layers.Dense(1, name=\"dense_2\")(x)\ncnn_lstm_model = models.Model(inp, out)\n# Load weights by name\ncnn_lstm_model.load_weights(\"saved_models/cnn_lstm_model.h5\", by_name=True)\ncnn_lstm_model.save(\"saved_models/cnn_lstm_model_v3.keras\")\nprint(\"CNN-LSTM model saved as cnn_lstm_model_v3.keras\")\nprint(\"\\nDone! Models converted to Keras 3.x format.\")",
+        "detail": "convert_models",
+        "documentation": {}
+    },
+    {
+        "label": "out",
+        "kind": 5,
+        "importPath": "convert_models",
+        "description": "convert_models",
+        "peekOfCode": "out = layers.Dense(1, name=\"dense_2\")(x)\ncnn_lstm_model = models.Model(inp, out)\n# Load weights by name\ncnn_lstm_model.load_weights(\"saved_models/cnn_lstm_model.h5\", by_name=True)\ncnn_lstm_model.save(\"saved_models/cnn_lstm_model_v3.keras\")\nprint(\"CNN-LSTM model saved as cnn_lstm_model_v3.keras\")\nprint(\"\\nDone! Models converted to Keras 3.x format.\")",
+        "detail": "convert_models",
+        "documentation": {}
+    },
+    {
+        "label": "cnn_lstm_model",
+        "kind": 5,
+        "importPath": "convert_models",
+        "description": "convert_models",
+        "peekOfCode": "cnn_lstm_model = models.Model(inp, out)\n# Load weights by name\ncnn_lstm_model.load_weights(\"saved_models/cnn_lstm_model.h5\", by_name=True)\ncnn_lstm_model.save(\"saved_models/cnn_lstm_model_v3.keras\")\nprint(\"CNN-LSTM model saved as cnn_lstm_model_v3.keras\")\nprint(\"\\nDone! Models converted to Keras 3.x format.\")",
+        "detail": "convert_models",
+        "documentation": {}
+    },
+    {
         "label": "fetch_openmeteo_solar_forecast",
         "kind": 2,
         "importPath": "frontend",
@@ -1827,48 +1987,48 @@
         "documentation": {}
     },
     {
-        "label": "combined_df",
-        "kind": 5,
-        "importPath": "graphs",
-        "description": "graphs",
-        "peekOfCode": "combined_df = pd.DataFrame(\n    [\n        [\"XGBoost\", 0.9981, 0.9933, 22.6207, 22.6207, 9.6930, 9.6930],\n        [\"RF\", 0.9963, 0.9933, 22.7748, 22.7748, 9.8764, 9.8764],\n        [\"LSTM\", 0.9876, 0.9873, 31.2977, 31.2977, 20.1867, 20.1867],\n        [\"CNN-LSTM\", 0.9891, 0.9896, 28.2191, 28.2191, 17.0076, 17.0076],\n        [\"TFT\", 0.9959, 0.9472, 63.6943, 63.6943, 28.5793, 28.5793],\n        [\"TCN\", 0.9936, 0.9461, 64.3800, 64.3800, 28.8272, 28.8272],\n    ],\n    columns=[",
-        "detail": "graphs",
-        "documentation": {}
-    },
-    {
-        "label": "metrics",
-        "kind": 5,
-        "importPath": "graphs",
-        "description": "graphs",
-        "peekOfCode": "metrics = {\n    \"R²\": [\"Train R²\", \"Test R²\"],\n    \"RMSE\": [\"Train RMSE\", \"Test RMSE\"],\n    \"MAE\": [\"Train MAE\", \"Test MAE\"],\n}\n# ====== Global Plot Settings ======\nplt.rcParams.update({\"font.family\": \"serif\", \"font.size\": 12})\npalette = {\"Train\": \"#FF6347\", \"Test\": \"#32CD32\"}  # Red & Green\n# ====== Plotting ======\nfig, axes = plt.subplots(1, 3, figsize=(20, 6))",
-        "detail": "graphs",
-        "documentation": {}
-    },
-    {
-        "label": "palette",
-        "kind": 5,
-        "importPath": "graphs",
-        "description": "graphs",
-        "peekOfCode": "palette = {\"Train\": \"#FF6347\", \"Test\": \"#32CD32\"}  # Red & Green\n# ====== Plotting ======\nfig, axes = plt.subplots(1, 3, figsize=(20, 6))\naxes = axes.flatten()\nfor ax, (metric_name, cols) in zip(axes, metrics.items()):\n    df_melted = combined_df.melt(\n        id_vars=[\"Model\"], value_vars=cols, var_name=\"DataType\", value_name=metric_name\n    )\n    df_melted[\"Type\"] = df_melted[\"DataType\"].str.split(\" \").str[0]  # Train/Test\n    sns.barplot(",
-        "detail": "graphs",
-        "documentation": {}
-    },
-    {
-        "label": "axes",
-        "kind": 5,
-        "importPath": "graphs",
-        "description": "graphs",
-        "peekOfCode": "axes = axes.flatten()\nfor ax, (metric_name, cols) in zip(axes, metrics.items()):\n    df_melted = combined_df.melt(\n        id_vars=[\"Model\"], value_vars=cols, var_name=\"DataType\", value_name=metric_name\n    )\n    df_melted[\"Type\"] = df_melted[\"DataType\"].str.split(\" \").str[0]  # Train/Test\n    sns.barplot(\n        data=df_melted, x=\"Model\", y=metric_name, hue=\"Type\", palette=palette, ax=ax\n    )\n    ax.set_title(",
-        "detail": "graphs",
-        "documentation": {}
-    },
-    {
         "label": "main",
         "kind": 2,
         "importPath": "run_frontend",
         "description": "run_frontend",
         "peekOfCode": "def main():\n    \"\"\"Launch the Streamlit dashboard.\"\"\"\n    # Get the directory of this script\n    script_dir = os.path.dirname(os.path.abspath(__file__))\n    # Path to the frontend app\n    app_path = os.path.join(script_dir, \"frontend\", \"app.py\")\n    if not os.path.exists(app_path):\n        print(f\"Error: Frontend app not found at {app_path}\")\n        sys.exit(1)\n    print(\"🌤 Starting Solar Radiation Prediction Dashboard...\")",
         "detail": "run_frontend",
+        "documentation": {}
+    },
+    {
+        "label": "combined_df",
+        "kind": 5,
+        "importPath": "scores_graphs",
+        "description": "scores_graphs",
+        "peekOfCode": "combined_df = pd.DataFrame(\n    [\n        [\"XGBoost\", 0.9981, 0.9933, 22.6207, 22.6207, 9.6930, 9.6930],\n        [\"RF\", 0.9963, 0.9933, 22.7748, 22.7748, 9.8764, 9.8764],\n        [\"LSTM\", 0.9876, 0.9873, 31.2977, 31.2977, 20.1867, 20.1867],\n        [\"CNN-LSTM\", 0.9891, 0.9896, 28.2191, 28.2191, 17.0076, 17.0076],\n        [\"TFT\", 0.9959, 0.9472, 63.6943, 63.6943, 28.5793, 28.5793],\n        [\"TCN\", 0.9936, 0.9461, 64.3800, 64.3800, 28.8272, 28.8272],\n    ],\n    columns=[",
+        "detail": "scores_graphs",
+        "documentation": {}
+    },
+    {
+        "label": "metrics",
+        "kind": 5,
+        "importPath": "scores_graphs",
+        "description": "scores_graphs",
+        "peekOfCode": "metrics = {\n    \"R²\": [\"Train R²\", \"Test R²\"],\n    \"RMSE\": [\"Train RMSE\", \"Test RMSE\"],\n    \"MAE\": [\"Train MAE\", \"Test MAE\"],\n}\n# ====== Global Plot Settings ======\nplt.rcParams.update({\"font.family\": \"serif\", \"font.size\": 12})\npalette = {\"Train\": \"#FF6347\", \"Test\": \"#32CD32\"}  # Red & Green\n# ====== Plotting ======\nfig, axes = plt.subplots(1, 3, figsize=(20, 6))",
+        "detail": "scores_graphs",
+        "documentation": {}
+    },
+    {
+        "label": "palette",
+        "kind": 5,
+        "importPath": "scores_graphs",
+        "description": "scores_graphs",
+        "peekOfCode": "palette = {\"Train\": \"#FF6347\", \"Test\": \"#32CD32\"}  # Red & Green\n# ====== Plotting ======\nfig, axes = plt.subplots(1, 3, figsize=(20, 6))\naxes = axes.flatten()\nfor ax, (metric_name, cols) in zip(axes, metrics.items()):\n    df_melted = combined_df.melt(\n        id_vars=[\"Model\"], value_vars=cols, var_name=\"DataType\", value_name=metric_name\n    )\n    df_melted[\"Type\"] = df_melted[\"DataType\"].str.split(\" \").str[0]  # Train/Test\n    sns.barplot(",
+        "detail": "scores_graphs",
+        "documentation": {}
+    },
+    {
+        "label": "axes",
+        "kind": 5,
+        "importPath": "scores_graphs",
+        "description": "scores_graphs",
+        "peekOfCode": "axes = axes.flatten()\nfor ax, (metric_name, cols) in zip(axes, metrics.items()):\n    df_melted = combined_df.melt(\n        id_vars=[\"Model\"], value_vars=cols, var_name=\"DataType\", value_name=metric_name\n    )\n    df_melted[\"Type\"] = df_melted[\"DataType\"].str.split(\" \").str[0]  # Train/Test\n    sns.barplot(\n        data=df_melted, x=\"Model\", y=metric_name, hue=\"Type\", palette=palette, ax=ax\n    )\n    ax.set_title(",
+        "detail": "scores_graphs",
         "documentation": {}
     },
     {
@@ -2839,7 +2999,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df_day[\"day_of_year\"] = df_day.index.dayofyear\ndf_day[\"hour_sin\"] = np.sin(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"doy_sin\"] = np.sin(2 * np.pi * df_day[\"day_of_year\"] / 365)\ndf_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"saved_models/xgboost_model.pkl\")",
+        "peekOfCode": "df_day[\"day_of_year\"] = df_day.index.dayofyear\ndf_day[\"hour_sin\"] = np.sin(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"doy_sin\"] = np.sin(2 * np.pi * df_day[\"day_of_year\"] / 365)\ndf_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\n# Using saved_models folder (compatible with current Keras version)",
         "detail": "trend",
         "documentation": {}
     },
@@ -2848,7 +3008,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df_day[\"hour_sin\"] = np.sin(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"doy_sin\"] = np.sin(2 * np.pi * df_day[\"day_of_year\"] / 365)\ndf_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"saved_models/xgboost_model.pkl\")\nrf_model = joblib.load(\"saved_models/random_forest_model.pkl\")",
+        "peekOfCode": "df_day[\"hour_sin\"] = np.sin(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"doy_sin\"] = np.sin(2 * np.pi * df_day[\"day_of_year\"] / 365)\ndf_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\n# Using saved_models folder (compatible with current Keras version)\nMODEL_FOLDER = \"saved_models_lstm\"",
         "detail": "trend",
         "documentation": {}
     },
@@ -2857,7 +3017,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"doy_sin\"] = np.sin(2 * np.pi * df_day[\"day_of_year\"] / 365)\ndf_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"saved_models/xgboost_model.pkl\")\nrf_model = joblib.load(\"saved_models/random_forest_model.pkl\")\nlstm_model = load_model(\"saved_models/lstm_model.h5\")",
+        "peekOfCode": "df_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"doy_sin\"] = np.sin(2 * np.pi * df_day[\"day_of_year\"] / 365)\ndf_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\n# Using saved_models folder (compatible with current Keras version)\nMODEL_FOLDER = \"saved_models_lstm\"\nxgb_model = joblib.load(f\"{MODEL_FOLDER}/xgboost_model.pkl\")",
         "detail": "trend",
         "documentation": {}
     },
@@ -2866,7 +3026,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"doy_sin\"] = np.sin(2 * np.pi * df_day[\"day_of_year\"] / 365)\ndf_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"saved_models/xgboost_model.pkl\")\nrf_model = joblib.load(\"saved_models/random_forest_model.pkl\")\nlstm_model = load_model(\"saved_models/lstm_model.h5\")\ncnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")",
+        "peekOfCode": "df_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"doy_sin\"] = np.sin(2 * np.pi * df_day[\"day_of_year\"] / 365)\ndf_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\n# Using saved_models folder (compatible with current Keras version)\nMODEL_FOLDER = \"saved_models_lstm\"\nxgb_model = joblib.load(f\"{MODEL_FOLDER}/xgboost_model.pkl\")\nrf_model = joblib.load(f\"{MODEL_FOLDER}/random_forest_model.pkl\")",
         "detail": "trend",
         "documentation": {}
     },
@@ -2875,7 +3035,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"doy_sin\"] = np.sin(2 * np.pi * df_day[\"day_of_year\"] / 365)\ndf_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"saved_models/xgboost_model.pkl\")\nrf_model = joblib.load(\"saved_models/random_forest_model.pkl\")\nlstm_model = load_model(\"saved_models/lstm_model.h5\")\ncnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")",
+        "peekOfCode": "df_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"doy_sin\"] = np.sin(2 * np.pi * df_day[\"day_of_year\"] / 365)\ndf_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\n# Using saved_models folder (compatible with current Keras version)\nMODEL_FOLDER = \"saved_models_lstm\"\nxgb_model = joblib.load(f\"{MODEL_FOLDER}/xgboost_model.pkl\")\nrf_model = joblib.load(f\"{MODEL_FOLDER}/random_forest_model.pkl\")\nlstm_model = load_model(f\"{MODEL_FOLDER}/lstm_model.h5\")",
         "detail": "trend",
         "documentation": {}
     },
@@ -2884,7 +3044,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df_day[\"doy_sin\"] = np.sin(2 * np.pi * df_day[\"day_of_year\"] / 365)\ndf_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"saved_models/xgboost_model.pkl\")\nrf_model = joblib.load(\"saved_models/random_forest_model.pkl\")\nlstm_model = load_model(\"saved_models/lstm_model.h5\")\ncnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")",
+        "peekOfCode": "df_day[\"doy_sin\"] = np.sin(2 * np.pi * df_day[\"day_of_year\"] / 365)\ndf_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\n# Using saved_models folder (compatible with current Keras version)\nMODEL_FOLDER = \"saved_models_lstm\"\nxgb_model = joblib.load(f\"{MODEL_FOLDER}/xgboost_model.pkl\")\nrf_model = joblib.load(f\"{MODEL_FOLDER}/random_forest_model.pkl\")\nlstm_model = load_model(f\"{MODEL_FOLDER}/lstm_model.h5\")\ncnn_lstm_model = load_model(f\"{MODEL_FOLDER}/cnn_lstm_model.h5\")",
         "detail": "trend",
         "documentation": {}
     },
@@ -2893,7 +3053,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"saved_models/xgboost_model.pkl\")\nrf_model = joblib.load(\"saved_models/random_forest_model.pkl\")\nlstm_model = load_model(\"saved_models/lstm_model.h5\")\ncnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# Load ensemble weights (original from training)",
+        "peekOfCode": "df_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\n# Using saved_models folder (compatible with current Keras version)\nMODEL_FOLDER = \"saved_models_lstm\"\nxgb_model = joblib.load(f\"{MODEL_FOLDER}/xgboost_model.pkl\")\nrf_model = joblib.load(f\"{MODEL_FOLDER}/random_forest_model.pkl\")\nlstm_model = load_model(f\"{MODEL_FOLDER}/lstm_model.h5\")\ncnn_lstm_model = load_model(f\"{MODEL_FOLDER}/cnn_lstm_model.h5\")\nscaler_X = joblib.load(f\"{MODEL_FOLDER}/scaler_X.pkl\")",
         "detail": "trend",
         "documentation": {}
     },
@@ -2902,7 +3062,16 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "target_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\nxgb_model = joblib.load(\"saved_models/xgboost_model.pkl\")\nrf_model = joblib.load(\"saved_models/random_forest_model.pkl\")\nlstm_model = load_model(\"saved_models/lstm_model.h5\")\ncnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# Load ensemble weights (original from training)\ntry:",
+        "peekOfCode": "target_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\n# Using saved_models folder (compatible with current Keras version)\nMODEL_FOLDER = \"saved_models_lstm\"\nxgb_model = joblib.load(f\"{MODEL_FOLDER}/xgboost_model.pkl\")\nrf_model = joblib.load(f\"{MODEL_FOLDER}/random_forest_model.pkl\")\nlstm_model = load_model(f\"{MODEL_FOLDER}/lstm_model.h5\")\ncnn_lstm_model = load_model(f\"{MODEL_FOLDER}/cnn_lstm_model.h5\")\nscaler_X = joblib.load(f\"{MODEL_FOLDER}/scaler_X.pkl\")\nscaler_y = joblib.load(f\"{MODEL_FOLDER}/scaler_y.pkl\")",
+        "detail": "trend",
+        "documentation": {}
+    },
+    {
+        "label": "MODEL_FOLDER",
+        "kind": 5,
+        "importPath": "trend",
+        "description": "trend",
+        "peekOfCode": "MODEL_FOLDER = \"saved_models_lstm\"\nxgb_model = joblib.load(f\"{MODEL_FOLDER}/xgboost_model.pkl\")\nrf_model = joblib.load(f\"{MODEL_FOLDER}/random_forest_model.pkl\")\nlstm_model = load_model(f\"{MODEL_FOLDER}/lstm_model.h5\")\ncnn_lstm_model = load_model(f\"{MODEL_FOLDER}/cnn_lstm_model.h5\")\nscaler_X = joblib.load(f\"{MODEL_FOLDER}/scaler_X.pkl\")\nscaler_y = joblib.load(f\"{MODEL_FOLDER}/scaler_y.pkl\")\n# Load ensemble weights (original from training)\ntry:\n    ensemble_weights = joblib.load(f\"{MODEL_FOLDER}/ensemble_weights.pkl\")",
         "detail": "trend",
         "documentation": {}
     },
@@ -2911,7 +3080,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "xgb_model = joblib.load(\"saved_models/xgboost_model.pkl\")\nrf_model = joblib.load(\"saved_models/random_forest_model.pkl\")\nlstm_model = load_model(\"saved_models/lstm_model.h5\")\ncnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# Load ensemble weights (original from training)\ntry:\n    ensemble_weights = joblib.load(\"saved_models/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")",
+        "peekOfCode": "xgb_model = joblib.load(f\"{MODEL_FOLDER}/xgboost_model.pkl\")\nrf_model = joblib.load(f\"{MODEL_FOLDER}/random_forest_model.pkl\")\nlstm_model = load_model(f\"{MODEL_FOLDER}/lstm_model.h5\")\ncnn_lstm_model = load_model(f\"{MODEL_FOLDER}/cnn_lstm_model.h5\")\nscaler_X = joblib.load(f\"{MODEL_FOLDER}/scaler_X.pkl\")\nscaler_y = joblib.load(f\"{MODEL_FOLDER}/scaler_y.pkl\")\n# Load ensemble weights (original from training)\ntry:\n    ensemble_weights = joblib.load(f\"{MODEL_FOLDER}/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")",
         "detail": "trend",
         "documentation": {}
     },
@@ -2920,7 +3089,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "rf_model = joblib.load(\"saved_models/random_forest_model.pkl\")\nlstm_model = load_model(\"saved_models/lstm_model.h5\")\ncnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# Load ensemble weights (original from training)\ntry:\n    ensemble_weights = joblib.load(\"saved_models/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")\nexcept:",
+        "peekOfCode": "rf_model = joblib.load(f\"{MODEL_FOLDER}/random_forest_model.pkl\")\nlstm_model = load_model(f\"{MODEL_FOLDER}/lstm_model.h5\")\ncnn_lstm_model = load_model(f\"{MODEL_FOLDER}/cnn_lstm_model.h5\")\nscaler_X = joblib.load(f\"{MODEL_FOLDER}/scaler_X.pkl\")\nscaler_y = joblib.load(f\"{MODEL_FOLDER}/scaler_y.pkl\")\n# Load ensemble weights (original from training)\ntry:\n    ensemble_weights = joblib.load(f\"{MODEL_FOLDER}/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")\nexcept:",
         "detail": "trend",
         "documentation": {}
     },
@@ -2929,7 +3098,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "lstm_model = load_model(\"saved_models/lstm_model.h5\")\ncnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# Load ensemble weights (original from training)\ntry:\n    ensemble_weights = joblib.load(\"saved_models/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")\nexcept:\n    ensemble_weights = {",
+        "peekOfCode": "lstm_model = load_model(f\"{MODEL_FOLDER}/lstm_model.h5\")\ncnn_lstm_model = load_model(f\"{MODEL_FOLDER}/cnn_lstm_model.h5\")\nscaler_X = joblib.load(f\"{MODEL_FOLDER}/scaler_X.pkl\")\nscaler_y = joblib.load(f\"{MODEL_FOLDER}/scaler_y.pkl\")\n# Load ensemble weights (original from training)\ntry:\n    ensemble_weights = joblib.load(f\"{MODEL_FOLDER}/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")\nexcept:\n    ensemble_weights = {",
         "detail": "trend",
         "documentation": {}
     },
@@ -2938,7 +3107,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "cnn_lstm_model = load_model(\"saved_models/cnn_lstm_model.h5\")\nscaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# Load ensemble weights (original from training)\ntry:\n    ensemble_weights = joblib.load(\"saved_models/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")\nexcept:\n    ensemble_weights = {\n        \"XGBoost\": 0.25,",
+        "peekOfCode": "cnn_lstm_model = load_model(f\"{MODEL_FOLDER}/cnn_lstm_model.h5\")\nscaler_X = joblib.load(f\"{MODEL_FOLDER}/scaler_X.pkl\")\nscaler_y = joblib.load(f\"{MODEL_FOLDER}/scaler_y.pkl\")\n# Load ensemble weights (original from training)\ntry:\n    ensemble_weights = joblib.load(f\"{MODEL_FOLDER}/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")\nexcept:\n    ensemble_weights = {\n        \"XGBoost\": 0.25,",
         "detail": "trend",
         "documentation": {}
     },
@@ -2947,7 +3116,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "scaler_X = joblib.load(\"saved_models/scaler_X.pkl\")\nscaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# Load ensemble weights (original from training)\ntry:\n    ensemble_weights = joblib.load(\"saved_models/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")\nexcept:\n    ensemble_weights = {\n        \"XGBoost\": 0.25,\n        \"RandomForest\": 0.25,",
+        "peekOfCode": "scaler_X = joblib.load(f\"{MODEL_FOLDER}/scaler_X.pkl\")\nscaler_y = joblib.load(f\"{MODEL_FOLDER}/scaler_y.pkl\")\n# Load ensemble weights (original from training)\ntry:\n    ensemble_weights = joblib.load(f\"{MODEL_FOLDER}/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")\nexcept:\n    ensemble_weights = {\n        \"XGBoost\": 0.25,\n        \"RandomForest\": 0.25,",
         "detail": "trend",
         "documentation": {}
     },
@@ -2956,7 +3125,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "scaler_y = joblib.load(\"saved_models/scaler_y.pkl\")\n# Load ensemble weights (original from training)\ntry:\n    ensemble_weights = joblib.load(\"saved_models/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")\nexcept:\n    ensemble_weights = {\n        \"XGBoost\": 0.25,\n        \"RandomForest\": 0.25,\n        \"LSTM\": 0.25,",
+        "peekOfCode": "scaler_y = joblib.load(f\"{MODEL_FOLDER}/scaler_y.pkl\")\n# Load ensemble weights (original from training)\ntry:\n    ensemble_weights = joblib.load(f\"{MODEL_FOLDER}/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")\nexcept:\n    ensemble_weights = {\n        \"XGBoost\": 0.25,\n        \"RandomForest\": 0.25,\n        \"LSTM\": 0.25,",
         "detail": "trend",
         "documentation": {}
     },

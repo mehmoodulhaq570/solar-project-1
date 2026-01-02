@@ -173,17 +173,20 @@ df_day["doy_cos"] = np.cos(2 * np.pi * df_day["day_of_year"] / 365)
 target_col = "SolarRadiation"
 
 # ---------- 2. Load trained models ----------
-xgb_model = joblib.load("saved_models/xgboost_model.pkl")
-rf_model = joblib.load("saved_models/random_forest_model.pkl")
-lstm_model = load_model("saved_models/lstm_model.h5")
-cnn_lstm_model = load_model("saved_models/cnn_lstm_model.h5")
+# Using saved_models folder (compatible with current Keras version)
+MODEL_FOLDER = "saved_models_lstm"
 
-scaler_X = joblib.load("saved_models/scaler_X.pkl")
-scaler_y = joblib.load("saved_models/scaler_y.pkl")
+xgb_model = joblib.load(f"{MODEL_FOLDER}/xgboost_model.pkl")
+rf_model = joblib.load(f"{MODEL_FOLDER}/random_forest_model.pkl")
+lstm_model = load_model(f"{MODEL_FOLDER}/lstm_model.h5")
+cnn_lstm_model = load_model(f"{MODEL_FOLDER}/cnn_lstm_model.h5")
+
+scaler_X = joblib.load(f"{MODEL_FOLDER}/scaler_X.pkl")
+scaler_y = joblib.load(f"{MODEL_FOLDER}/scaler_y.pkl")
 
 # Load ensemble weights (original from training)
 try:
-    ensemble_weights = joblib.load("saved_models/ensemble_weights.pkl")
+    ensemble_weights = joblib.load(f"{MODEL_FOLDER}/ensemble_weights.pkl")
     print(f"Ensemble weights loaded: {ensemble_weights}")
 except:
     ensemble_weights = {

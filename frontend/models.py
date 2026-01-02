@@ -20,7 +20,11 @@ PYTORCH_AVAILABLE = False
 XGBOOST_AVAILABLE = False
 
 try:
-    from tensorflow.keras.models import load_model as keras_load_model
+    import tensorflow as tf
+
+    # Use tf.keras for Keras 3.x compatibility with Keras 2.x saved models
+    # This handles the time_major parameter issue
+    keras_load_model = tf.keras.models.load_model
 
     TENSORFLOW_AVAILABLE = True
 except ImportError:
@@ -88,19 +92,27 @@ def load_keras_models(model_folder: str) -> Dict[str, Any]:
     if not TENSORFLOW_AVAILABLE:
         return models
 
-    # Load LSTM
+    # Load LSTM - prefer Keras 3.x format (.keras), fallback to .h5
     try:
-        lstm_path = os.path.join(model_folder, "lstm_model.h5")
-        if os.path.exists(lstm_path):
-            models["LSTM"] = keras_load_model(lstm_path)
+        lstm_path_v3 = os.path.join(model_folder, "lstm_model_v3.keras")
+        lstm_path_h5 = os.path.join(model_folder, "lstm_model.h5")
+
+        if os.path.exists(lstm_path_v3):
+            models["LSTM"] = keras_load_model(lstm_path_v3, compile=False)
+        elif os.path.exists(lstm_path_h5):
+            models["LSTM"] = keras_load_model(lstm_path_h5, compile=False)
     except Exception as e:
         print(f"Warning: LSTM not loaded: {e}")
 
-    # Load CNN-LSTM
+    # Load CNN-LSTM - prefer Keras 3.x format (.keras), fallback to .h5
     try:
-        cnn_lstm_path = os.path.join(model_folder, "cnn_lstm_model.h5")
-        if os.path.exists(cnn_lstm_path):
-            models["CNN-LSTM"] = keras_load_model(cnn_lstm_path)
+        cnn_lstm_path_v3 = os.path.join(model_folder, "cnn_lstm_model_v3.keras")
+        cnn_lstm_path_h5 = os.path.join(model_folder, "cnn_lstm_model.h5")
+
+        if os.path.exists(cnn_lstm_path_v3):
+            models["CNN-LSTM"] = keras_load_model(cnn_lstm_path_v3, compile=False)
+        elif os.path.exists(cnn_lstm_path_h5):
+            models["CNN-LSTM"] = keras_load_model(cnn_lstm_path_h5, compile=False)
     except Exception as e:
         print(f"Warning: CNN-LSTM not loaded: {e}")
 
