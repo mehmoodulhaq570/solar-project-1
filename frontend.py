@@ -196,8 +196,8 @@ selected_date = st.sidebar.date_input(
 # Model folder selection
 model_folder = st.sidebar.selectbox(
     "📁 Model Folder",
-    ["saved_models", "save_model", "saved_models_1"],
-    help="Select folder containing trained models",
+    ["saved_models_lstm", "saved_models", "save_model", "saved_models_1"],
+    help="Select folder containing trained models (saved_models_lstm has best LSTM/CNN-LSTM scores)",
 )
 
 # Model selection
@@ -345,7 +345,13 @@ with tab1:
             if (
                 "LSTM" in selected_models or "Ensemble" in selected_models
             ) and TENSORFLOW_AVAILABLE:
-                loaded_models["LSTM"] = load_model(f"{model_folder}/lstm_model.h5")
+                # Try loading Keras 3.x format first, fallback to h5
+                if os.path.exists(f"{model_folder}/lstm_model_v3.keras"):
+                    loaded_models["LSTM"] = load_model(
+                        f"{model_folder}/lstm_model_v3.keras"
+                    )
+                else:
+                    loaded_models["LSTM"] = load_model(f"{model_folder}/lstm_model.h5")
         except Exception as e:
             st.warning(f"⚠️ LSTM not loaded: {e}")
 
@@ -353,9 +359,15 @@ with tab1:
             if (
                 "CNN-LSTM" in selected_models or "Ensemble" in selected_models
             ) and TENSORFLOW_AVAILABLE:
-                loaded_models["CNN-LSTM"] = load_model(
-                    f"{model_folder}/cnn_lstm_model.h5"
-                )
+                # Try loading Keras 3.x format first, fallback to h5
+                if os.path.exists(f"{model_folder}/cnn_lstm_model_v3.keras"):
+                    loaded_models["CNN-LSTM"] = load_model(
+                        f"{model_folder}/cnn_lstm_model_v3.keras"
+                    )
+                else:
+                    loaded_models["CNN-LSTM"] = load_model(
+                        f"{model_folder}/cnn_lstm_model.h5"
+                    )
         except Exception as e:
             st.warning(f"⚠️ CNN-LSTM not loaded: {e}")
 

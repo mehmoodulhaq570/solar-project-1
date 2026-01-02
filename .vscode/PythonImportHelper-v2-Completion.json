@@ -785,6 +785,22 @@
         "documentation": {}
     },
     {
+        "label": "layers",
+        "importPath": "tensorflow.keras",
+        "description": "tensorflow.keras",
+        "isExtraImport": true,
+        "detail": "tensorflow.keras",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "tensorflow.keras",
+        "description": "tensorflow.keras",
+        "isExtraImport": true,
+        "detail": "tensorflow.keras",
+        "documentation": {}
+    },
+    {
         "label": "callbacks",
         "importPath": "tensorflow.keras",
         "description": "tensorflow.keras",
@@ -1843,6 +1859,150 @@
         "documentation": {}
     },
     {
+        "label": "os.environ[\"TF_CPP_MIN_LOG_LEVEL\"]",
+        "kind": 5,
+        "importPath": "convert_models_lstm",
+        "description": "convert_models_lstm",
+        "peekOfCode": "os.environ[\"TF_CPP_MIN_LOG_LEVEL\"] = \"2\"\nimport tensorflow as tf\nfrom tensorflow.keras import layers, models\nMODEL_FOLDER = \"saved_models_lstm\"\nprint(\"Converting LSTM model from saved_models_lstm...\")\n# Recreate LSTM architecture (matches the saved model structure)\nlstm_model = models.Sequential(\n    [\n        layers.Input(shape=(24, 15)),  # 15 features based on saved_models_lstm\n        layers.Bidirectional(layers.LSTM(64, return_sequences=True)),",
+        "detail": "convert_models_lstm",
+        "documentation": {}
+    },
+    {
+        "label": "MODEL_FOLDER",
+        "kind": 5,
+        "importPath": "convert_models_lstm",
+        "description": "convert_models_lstm",
+        "peekOfCode": "MODEL_FOLDER = \"saved_models_lstm\"\nprint(\"Converting LSTM model from saved_models_lstm...\")\n# Recreate LSTM architecture (matches the saved model structure)\nlstm_model = models.Sequential(\n    [\n        layers.Input(shape=(24, 15)),  # 15 features based on saved_models_lstm\n        layers.Bidirectional(layers.LSTM(64, return_sequences=True)),\n        layers.Dropout(0.2),\n        layers.Bidirectional(layers.LSTM(32)),\n        layers.Dropout(0.2),",
+        "detail": "convert_models_lstm",
+        "documentation": {}
+    },
+    {
+        "label": "lstm_model",
+        "kind": 5,
+        "importPath": "convert_models_lstm",
+        "description": "convert_models_lstm",
+        "peekOfCode": "lstm_model = models.Sequential(\n    [\n        layers.Input(shape=(24, 15)),  # 15 features based on saved_models_lstm\n        layers.Bidirectional(layers.LSTM(64, return_sequences=True)),\n        layers.Dropout(0.2),\n        layers.Bidirectional(layers.LSTM(32)),\n        layers.Dropout(0.2),\n        layers.Dense(64, activation=\"relu\"),\n        layers.Dense(32, activation=\"relu\"),\n        layers.Dense(1),",
+        "detail": "convert_models_lstm",
+        "documentation": {}
+    },
+    {
+        "label": "inp",
+        "kind": 5,
+        "importPath": "convert_models_lstm",
+        "description": "convert_models_lstm",
+        "peekOfCode": "inp = layers.Input(shape=(24, 15), name=\"input_layer\")\nx = layers.Conv1D(64, 3, padding=\"same\", activation=\"relu\", name=\"conv1d\")(inp)\nx = layers.Conv1D(64, 3, padding=\"same\", activation=\"relu\", name=\"conv1d_1\")(x)\nx = layers.MaxPool1D(2, name=\"max_pooling1d\")(x)\nx = layers.Dropout(0.2, name=\"dropout\")(x)\nx = layers.Bidirectional(layers.LSTM(64, return_sequences=True), name=\"bidirectional\")(\n    x\n)\nx = layers.Dropout(0.2, name=\"dropout_1\")(x)\nx = layers.Bidirectional(layers.LSTM(32), name=\"bidirectional_1\")(x)",
+        "detail": "convert_models_lstm",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "convert_models_lstm",
+        "description": "convert_models_lstm",
+        "peekOfCode": "x = layers.Conv1D(64, 3, padding=\"same\", activation=\"relu\", name=\"conv1d\")(inp)\nx = layers.Conv1D(64, 3, padding=\"same\", activation=\"relu\", name=\"conv1d_1\")(x)\nx = layers.MaxPool1D(2, name=\"max_pooling1d\")(x)\nx = layers.Dropout(0.2, name=\"dropout\")(x)\nx = layers.Bidirectional(layers.LSTM(64, return_sequences=True), name=\"bidirectional\")(\n    x\n)\nx = layers.Dropout(0.2, name=\"dropout_1\")(x)\nx = layers.Bidirectional(layers.LSTM(32), name=\"bidirectional_1\")(x)\nx = layers.Dropout(0.2, name=\"dropout_2\")(x)",
+        "detail": "convert_models_lstm",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "convert_models_lstm",
+        "description": "convert_models_lstm",
+        "peekOfCode": "x = layers.Conv1D(64, 3, padding=\"same\", activation=\"relu\", name=\"conv1d_1\")(x)\nx = layers.MaxPool1D(2, name=\"max_pooling1d\")(x)\nx = layers.Dropout(0.2, name=\"dropout\")(x)\nx = layers.Bidirectional(layers.LSTM(64, return_sequences=True), name=\"bidirectional\")(\n    x\n)\nx = layers.Dropout(0.2, name=\"dropout_1\")(x)\nx = layers.Bidirectional(layers.LSTM(32), name=\"bidirectional_1\")(x)\nx = layers.Dropout(0.2, name=\"dropout_2\")(x)\nx = layers.Dense(64, activation=\"relu\", name=\"dense\")(x)",
+        "detail": "convert_models_lstm",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "convert_models_lstm",
+        "description": "convert_models_lstm",
+        "peekOfCode": "x = layers.MaxPool1D(2, name=\"max_pooling1d\")(x)\nx = layers.Dropout(0.2, name=\"dropout\")(x)\nx = layers.Bidirectional(layers.LSTM(64, return_sequences=True), name=\"bidirectional\")(\n    x\n)\nx = layers.Dropout(0.2, name=\"dropout_1\")(x)\nx = layers.Bidirectional(layers.LSTM(32), name=\"bidirectional_1\")(x)\nx = layers.Dropout(0.2, name=\"dropout_2\")(x)\nx = layers.Dense(64, activation=\"relu\", name=\"dense\")(x)\nx = layers.Dense(32, activation=\"relu\", name=\"dense_1\")(x)",
+        "detail": "convert_models_lstm",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "convert_models_lstm",
+        "description": "convert_models_lstm",
+        "peekOfCode": "x = layers.Dropout(0.2, name=\"dropout\")(x)\nx = layers.Bidirectional(layers.LSTM(64, return_sequences=True), name=\"bidirectional\")(\n    x\n)\nx = layers.Dropout(0.2, name=\"dropout_1\")(x)\nx = layers.Bidirectional(layers.LSTM(32), name=\"bidirectional_1\")(x)\nx = layers.Dropout(0.2, name=\"dropout_2\")(x)\nx = layers.Dense(64, activation=\"relu\", name=\"dense\")(x)\nx = layers.Dense(32, activation=\"relu\", name=\"dense_1\")(x)\nout = layers.Dense(1, name=\"dense_2\")(x)",
+        "detail": "convert_models_lstm",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "convert_models_lstm",
+        "description": "convert_models_lstm",
+        "peekOfCode": "x = layers.Bidirectional(layers.LSTM(64, return_sequences=True), name=\"bidirectional\")(\n    x\n)\nx = layers.Dropout(0.2, name=\"dropout_1\")(x)\nx = layers.Bidirectional(layers.LSTM(32), name=\"bidirectional_1\")(x)\nx = layers.Dropout(0.2, name=\"dropout_2\")(x)\nx = layers.Dense(64, activation=\"relu\", name=\"dense\")(x)\nx = layers.Dense(32, activation=\"relu\", name=\"dense_1\")(x)\nout = layers.Dense(1, name=\"dense_2\")(x)\ncnn_lstm_model = models.Model(inp, out)",
+        "detail": "convert_models_lstm",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "convert_models_lstm",
+        "description": "convert_models_lstm",
+        "peekOfCode": "x = layers.Dropout(0.2, name=\"dropout_1\")(x)\nx = layers.Bidirectional(layers.LSTM(32), name=\"bidirectional_1\")(x)\nx = layers.Dropout(0.2, name=\"dropout_2\")(x)\nx = layers.Dense(64, activation=\"relu\", name=\"dense\")(x)\nx = layers.Dense(32, activation=\"relu\", name=\"dense_1\")(x)\nout = layers.Dense(1, name=\"dense_2\")(x)\ncnn_lstm_model = models.Model(inp, out)\ntry:\n    cnn_lstm_model.load_weights(f\"{MODEL_FOLDER}/cnn_lstm_model.h5\", by_name=True)\n    cnn_lstm_model.save(f\"{MODEL_FOLDER}/cnn_lstm_model_v3.keras\")",
+        "detail": "convert_models_lstm",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "convert_models_lstm",
+        "description": "convert_models_lstm",
+        "peekOfCode": "x = layers.Bidirectional(layers.LSTM(32), name=\"bidirectional_1\")(x)\nx = layers.Dropout(0.2, name=\"dropout_2\")(x)\nx = layers.Dense(64, activation=\"relu\", name=\"dense\")(x)\nx = layers.Dense(32, activation=\"relu\", name=\"dense_1\")(x)\nout = layers.Dense(1, name=\"dense_2\")(x)\ncnn_lstm_model = models.Model(inp, out)\ntry:\n    cnn_lstm_model.load_weights(f\"{MODEL_FOLDER}/cnn_lstm_model.h5\", by_name=True)\n    cnn_lstm_model.save(f\"{MODEL_FOLDER}/cnn_lstm_model_v3.keras\")\n    print(\"CNN-LSTM model saved as cnn_lstm_model_v3.keras\")",
+        "detail": "convert_models_lstm",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "convert_models_lstm",
+        "description": "convert_models_lstm",
+        "peekOfCode": "x = layers.Dropout(0.2, name=\"dropout_2\")(x)\nx = layers.Dense(64, activation=\"relu\", name=\"dense\")(x)\nx = layers.Dense(32, activation=\"relu\", name=\"dense_1\")(x)\nout = layers.Dense(1, name=\"dense_2\")(x)\ncnn_lstm_model = models.Model(inp, out)\ntry:\n    cnn_lstm_model.load_weights(f\"{MODEL_FOLDER}/cnn_lstm_model.h5\", by_name=True)\n    cnn_lstm_model.save(f\"{MODEL_FOLDER}/cnn_lstm_model_v3.keras\")\n    print(\"CNN-LSTM model saved as cnn_lstm_model_v3.keras\")\nexcept Exception as e:",
+        "detail": "convert_models_lstm",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "convert_models_lstm",
+        "description": "convert_models_lstm",
+        "peekOfCode": "x = layers.Dense(64, activation=\"relu\", name=\"dense\")(x)\nx = layers.Dense(32, activation=\"relu\", name=\"dense_1\")(x)\nout = layers.Dense(1, name=\"dense_2\")(x)\ncnn_lstm_model = models.Model(inp, out)\ntry:\n    cnn_lstm_model.load_weights(f\"{MODEL_FOLDER}/cnn_lstm_model.h5\", by_name=True)\n    cnn_lstm_model.save(f\"{MODEL_FOLDER}/cnn_lstm_model_v3.keras\")\n    print(\"CNN-LSTM model saved as cnn_lstm_model_v3.keras\")\nexcept Exception as e:\n    print(f\"CNN-LSTM load failed with 15 features, trying 17: {e}\")",
+        "detail": "convert_models_lstm",
+        "documentation": {}
+    },
+    {
+        "label": "x",
+        "kind": 5,
+        "importPath": "convert_models_lstm",
+        "description": "convert_models_lstm",
+        "peekOfCode": "x = layers.Dense(32, activation=\"relu\", name=\"dense_1\")(x)\nout = layers.Dense(1, name=\"dense_2\")(x)\ncnn_lstm_model = models.Model(inp, out)\ntry:\n    cnn_lstm_model.load_weights(f\"{MODEL_FOLDER}/cnn_lstm_model.h5\", by_name=True)\n    cnn_lstm_model.save(f\"{MODEL_FOLDER}/cnn_lstm_model_v3.keras\")\n    print(\"CNN-LSTM model saved as cnn_lstm_model_v3.keras\")\nexcept Exception as e:\n    print(f\"CNN-LSTM load failed with 15 features, trying 17: {e}\")\n    # Try with 17 features",
+        "detail": "convert_models_lstm",
+        "documentation": {}
+    },
+    {
+        "label": "out",
+        "kind": 5,
+        "importPath": "convert_models_lstm",
+        "description": "convert_models_lstm",
+        "peekOfCode": "out = layers.Dense(1, name=\"dense_2\")(x)\ncnn_lstm_model = models.Model(inp, out)\ntry:\n    cnn_lstm_model.load_weights(f\"{MODEL_FOLDER}/cnn_lstm_model.h5\", by_name=True)\n    cnn_lstm_model.save(f\"{MODEL_FOLDER}/cnn_lstm_model_v3.keras\")\n    print(\"CNN-LSTM model saved as cnn_lstm_model_v3.keras\")\nexcept Exception as e:\n    print(f\"CNN-LSTM load failed with 15 features, trying 17: {e}\")\n    # Try with 17 features\n    inp = layers.Input(shape=(24, 17), name=\"input_layer\")",
+        "detail": "convert_models_lstm",
+        "documentation": {}
+    },
+    {
+        "label": "cnn_lstm_model",
+        "kind": 5,
+        "importPath": "convert_models_lstm",
+        "description": "convert_models_lstm",
+        "peekOfCode": "cnn_lstm_model = models.Model(inp, out)\ntry:\n    cnn_lstm_model.load_weights(f\"{MODEL_FOLDER}/cnn_lstm_model.h5\", by_name=True)\n    cnn_lstm_model.save(f\"{MODEL_FOLDER}/cnn_lstm_model_v3.keras\")\n    print(\"CNN-LSTM model saved as cnn_lstm_model_v3.keras\")\nexcept Exception as e:\n    print(f\"CNN-LSTM load failed with 15 features, trying 17: {e}\")\n    # Try with 17 features\n    inp = layers.Input(shape=(24, 17), name=\"input_layer\")\n    x = layers.Conv1D(64, 3, padding=\"same\", activation=\"relu\", name=\"conv1d\")(inp)",
+        "detail": "convert_models_lstm",
+        "documentation": {}
+    },
+    {
         "label": "fetch_openmeteo_solar_forecast",
         "kind": 2,
         "importPath": "frontend",
@@ -1937,7 +2097,7 @@
         "kind": 5,
         "importPath": "frontend",
         "description": "frontend",
-        "peekOfCode": "selected_date = st.sidebar.date_input(\n    \"📅 Forecast Date\",\n    datetime.today(),\n    help=\"Select the date for solar radiation forecast\",\n)\n# Model folder selection\nmodel_folder = st.sidebar.selectbox(\n    \"📁 Model Folder\",\n    [\"saved_models\", \"save_model\", \"saved_models_1\"],\n    help=\"Select folder containing trained models\",",
+        "peekOfCode": "selected_date = st.sidebar.date_input(\n    \"📅 Forecast Date\",\n    datetime.today(),\n    help=\"Select the date for solar radiation forecast\",\n)\n# Model folder selection\nmodel_folder = st.sidebar.selectbox(\n    \"📁 Model Folder\",\n    [\"saved_models_lstm\", \"saved_models\", \"save_model\", \"saved_models_1\"],\n    help=\"Select folder containing trained models (saved_models_lstm has best LSTM/CNN-LSTM scores)\",",
         "detail": "frontend",
         "documentation": {}
     },
@@ -1946,7 +2106,7 @@
         "kind": 5,
         "importPath": "frontend",
         "description": "frontend",
-        "peekOfCode": "model_folder = st.sidebar.selectbox(\n    \"📁 Model Folder\",\n    [\"saved_models\", \"save_model\", \"saved_models_1\"],\n    help=\"Select folder containing trained models\",\n)\n# Model selection\navailable_models = [\"XGBoost\", \"Random Forest\", \"LSTM\", \"CNN-LSTM\", \"Ensemble\"]\nselected_models = st.sidebar.multiselect(\n    \"🤖 Select Models\",\n    available_models,",
+        "peekOfCode": "model_folder = st.sidebar.selectbox(\n    \"📁 Model Folder\",\n    [\"saved_models_lstm\", \"saved_models\", \"save_model\", \"saved_models_1\"],\n    help=\"Select folder containing trained models (saved_models_lstm has best LSTM/CNN-LSTM scores)\",\n)\n# Model selection\navailable_models = [\"XGBoost\", \"Random Forest\", \"LSTM\", \"CNN-LSTM\", \"Ensemble\"]\nselected_models = st.sidebar.multiselect(\n    \"🤖 Select Models\",\n    available_models,",
         "detail": "frontend",
         "documentation": {}
     },
@@ -2999,7 +3159,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df_day[\"day_of_year\"] = df_day.index.dayofyear\ndf_day[\"hour_sin\"] = np.sin(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"doy_sin\"] = np.sin(2 * np.pi * df_day[\"day_of_year\"] / 365)\ndf_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\n# Using saved_models folder (compatible with current Keras version)",
+        "peekOfCode": "df_day[\"day_of_year\"] = df_day.index.dayofyear\ndf_day[\"hour_sin\"] = np.sin(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"doy_sin\"] = np.sin(2 * np.pi * df_day[\"day_of_year\"] / 365)\ndf_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\n# Using saved_models_lstm folder (best LSTM/CNN-LSTM scores)",
         "detail": "trend",
         "documentation": {}
     },
@@ -3008,7 +3168,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df_day[\"hour_sin\"] = np.sin(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"doy_sin\"] = np.sin(2 * np.pi * df_day[\"day_of_year\"] / 365)\ndf_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\n# Using saved_models folder (compatible with current Keras version)\nMODEL_FOLDER = \"saved_models_lstm\"",
+        "peekOfCode": "df_day[\"hour_sin\"] = np.sin(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"doy_sin\"] = np.sin(2 * np.pi * df_day[\"day_of_year\"] / 365)\ndf_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\n# Using saved_models_lstm folder (best LSTM/CNN-LSTM scores)\nMODEL_FOLDER = \"saved_models_lstm\"",
         "detail": "trend",
         "documentation": {}
     },
@@ -3017,7 +3177,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"doy_sin\"] = np.sin(2 * np.pi * df_day[\"day_of_year\"] / 365)\ndf_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\n# Using saved_models folder (compatible with current Keras version)\nMODEL_FOLDER = \"saved_models_lstm\"\nxgb_model = joblib.load(f\"{MODEL_FOLDER}/xgboost_model.pkl\")",
+        "peekOfCode": "df_day[\"hour_cos\"] = np.cos(2 * np.pi * df_day[\"hour\"] / 24)\ndf_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"doy_sin\"] = np.sin(2 * np.pi * df_day[\"day_of_year\"] / 365)\ndf_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\n# Using saved_models_lstm folder (best LSTM/CNN-LSTM scores)\nMODEL_FOLDER = \"saved_models_lstm\"\nxgb_model = joblib.load(f\"{MODEL_FOLDER}/xgboost_model.pkl\")",
         "detail": "trend",
         "documentation": {}
     },
@@ -3026,7 +3186,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"doy_sin\"] = np.sin(2 * np.pi * df_day[\"day_of_year\"] / 365)\ndf_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\n# Using saved_models folder (compatible with current Keras version)\nMODEL_FOLDER = \"saved_models_lstm\"\nxgb_model = joblib.load(f\"{MODEL_FOLDER}/xgboost_model.pkl\")\nrf_model = joblib.load(f\"{MODEL_FOLDER}/random_forest_model.pkl\")",
+        "peekOfCode": "df_day[\"month_sin\"] = np.sin(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"doy_sin\"] = np.sin(2 * np.pi * df_day[\"day_of_year\"] / 365)\ndf_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\n# Using saved_models_lstm folder (best LSTM/CNN-LSTM scores)\nMODEL_FOLDER = \"saved_models_lstm\"\nxgb_model = joblib.load(f\"{MODEL_FOLDER}/xgboost_model.pkl\")\nrf_model = joblib.load(f\"{MODEL_FOLDER}/random_forest_model.pkl\")",
         "detail": "trend",
         "documentation": {}
     },
@@ -3035,7 +3195,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"doy_sin\"] = np.sin(2 * np.pi * df_day[\"day_of_year\"] / 365)\ndf_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\n# Using saved_models folder (compatible with current Keras version)\nMODEL_FOLDER = \"saved_models_lstm\"\nxgb_model = joblib.load(f\"{MODEL_FOLDER}/xgboost_model.pkl\")\nrf_model = joblib.load(f\"{MODEL_FOLDER}/random_forest_model.pkl\")\nlstm_model = load_model(f\"{MODEL_FOLDER}/lstm_model.h5\")",
+        "peekOfCode": "df_day[\"month_cos\"] = np.cos(2 * np.pi * df_day[\"month\"] / 12)\ndf_day[\"doy_sin\"] = np.sin(2 * np.pi * df_day[\"day_of_year\"] / 365)\ndf_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\n# Using saved_models_lstm folder (best LSTM/CNN-LSTM scores)\nMODEL_FOLDER = \"saved_models_lstm\"\nxgb_model = joblib.load(f\"{MODEL_FOLDER}/xgboost_model.pkl\")\nrf_model = joblib.load(f\"{MODEL_FOLDER}/random_forest_model.pkl\")\n# Load Keras 3.x format models (converted from h5)",
         "detail": "trend",
         "documentation": {}
     },
@@ -3044,7 +3204,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df_day[\"doy_sin\"] = np.sin(2 * np.pi * df_day[\"day_of_year\"] / 365)\ndf_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\n# Using saved_models folder (compatible with current Keras version)\nMODEL_FOLDER = \"saved_models_lstm\"\nxgb_model = joblib.load(f\"{MODEL_FOLDER}/xgboost_model.pkl\")\nrf_model = joblib.load(f\"{MODEL_FOLDER}/random_forest_model.pkl\")\nlstm_model = load_model(f\"{MODEL_FOLDER}/lstm_model.h5\")\ncnn_lstm_model = load_model(f\"{MODEL_FOLDER}/cnn_lstm_model.h5\")",
+        "peekOfCode": "df_day[\"doy_sin\"] = np.sin(2 * np.pi * df_day[\"day_of_year\"] / 365)\ndf_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\n# Using saved_models_lstm folder (best LSTM/CNN-LSTM scores)\nMODEL_FOLDER = \"saved_models_lstm\"\nxgb_model = joblib.load(f\"{MODEL_FOLDER}/xgboost_model.pkl\")\nrf_model = joblib.load(f\"{MODEL_FOLDER}/random_forest_model.pkl\")\n# Load Keras 3.x format models (converted from h5)\nimport os",
         "detail": "trend",
         "documentation": {}
     },
@@ -3053,7 +3213,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "df_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\n# Using saved_models folder (compatible with current Keras version)\nMODEL_FOLDER = \"saved_models_lstm\"\nxgb_model = joblib.load(f\"{MODEL_FOLDER}/xgboost_model.pkl\")\nrf_model = joblib.load(f\"{MODEL_FOLDER}/random_forest_model.pkl\")\nlstm_model = load_model(f\"{MODEL_FOLDER}/lstm_model.h5\")\ncnn_lstm_model = load_model(f\"{MODEL_FOLDER}/cnn_lstm_model.h5\")\nscaler_X = joblib.load(f\"{MODEL_FOLDER}/scaler_X.pkl\")",
+        "peekOfCode": "df_day[\"doy_cos\"] = np.cos(2 * np.pi * df_day[\"day_of_year\"] / 365)\ntarget_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\n# Using saved_models_lstm folder (best LSTM/CNN-LSTM scores)\nMODEL_FOLDER = \"saved_models_lstm\"\nxgb_model = joblib.load(f\"{MODEL_FOLDER}/xgboost_model.pkl\")\nrf_model = joblib.load(f\"{MODEL_FOLDER}/random_forest_model.pkl\")\n# Load Keras 3.x format models (converted from h5)\nimport os\nif os.path.exists(f\"{MODEL_FOLDER}/lstm_model_v3.keras\"):",
         "detail": "trend",
         "documentation": {}
     },
@@ -3062,7 +3222,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "target_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\n# Using saved_models folder (compatible with current Keras version)\nMODEL_FOLDER = \"saved_models_lstm\"\nxgb_model = joblib.load(f\"{MODEL_FOLDER}/xgboost_model.pkl\")\nrf_model = joblib.load(f\"{MODEL_FOLDER}/random_forest_model.pkl\")\nlstm_model = load_model(f\"{MODEL_FOLDER}/lstm_model.h5\")\ncnn_lstm_model = load_model(f\"{MODEL_FOLDER}/cnn_lstm_model.h5\")\nscaler_X = joblib.load(f\"{MODEL_FOLDER}/scaler_X.pkl\")\nscaler_y = joblib.load(f\"{MODEL_FOLDER}/scaler_y.pkl\")",
+        "peekOfCode": "target_col = \"SolarRadiation\"\n# ---------- 2. Load trained models ----------\n# Using saved_models_lstm folder (best LSTM/CNN-LSTM scores)\nMODEL_FOLDER = \"saved_models_lstm\"\nxgb_model = joblib.load(f\"{MODEL_FOLDER}/xgboost_model.pkl\")\nrf_model = joblib.load(f\"{MODEL_FOLDER}/random_forest_model.pkl\")\n# Load Keras 3.x format models (converted from h5)\nimport os\nif os.path.exists(f\"{MODEL_FOLDER}/lstm_model_v3.keras\"):\n    lstm_model = load_model(f\"{MODEL_FOLDER}/lstm_model_v3.keras\")",
         "detail": "trend",
         "documentation": {}
     },
@@ -3071,7 +3231,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "MODEL_FOLDER = \"saved_models_lstm\"\nxgb_model = joblib.load(f\"{MODEL_FOLDER}/xgboost_model.pkl\")\nrf_model = joblib.load(f\"{MODEL_FOLDER}/random_forest_model.pkl\")\nlstm_model = load_model(f\"{MODEL_FOLDER}/lstm_model.h5\")\ncnn_lstm_model = load_model(f\"{MODEL_FOLDER}/cnn_lstm_model.h5\")\nscaler_X = joblib.load(f\"{MODEL_FOLDER}/scaler_X.pkl\")\nscaler_y = joblib.load(f\"{MODEL_FOLDER}/scaler_y.pkl\")\n# Load ensemble weights (original from training)\ntry:\n    ensemble_weights = joblib.load(f\"{MODEL_FOLDER}/ensemble_weights.pkl\")",
+        "peekOfCode": "MODEL_FOLDER = \"saved_models_lstm\"\nxgb_model = joblib.load(f\"{MODEL_FOLDER}/xgboost_model.pkl\")\nrf_model = joblib.load(f\"{MODEL_FOLDER}/random_forest_model.pkl\")\n# Load Keras 3.x format models (converted from h5)\nimport os\nif os.path.exists(f\"{MODEL_FOLDER}/lstm_model_v3.keras\"):\n    lstm_model = load_model(f\"{MODEL_FOLDER}/lstm_model_v3.keras\")\nelse:\n    lstm_model = load_model(f\"{MODEL_FOLDER}/lstm_model.h5\")\nif os.path.exists(f\"{MODEL_FOLDER}/cnn_lstm_model_v3.keras\"):",
         "detail": "trend",
         "documentation": {}
     },
@@ -3080,7 +3240,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "xgb_model = joblib.load(f\"{MODEL_FOLDER}/xgboost_model.pkl\")\nrf_model = joblib.load(f\"{MODEL_FOLDER}/random_forest_model.pkl\")\nlstm_model = load_model(f\"{MODEL_FOLDER}/lstm_model.h5\")\ncnn_lstm_model = load_model(f\"{MODEL_FOLDER}/cnn_lstm_model.h5\")\nscaler_X = joblib.load(f\"{MODEL_FOLDER}/scaler_X.pkl\")\nscaler_y = joblib.load(f\"{MODEL_FOLDER}/scaler_y.pkl\")\n# Load ensemble weights (original from training)\ntry:\n    ensemble_weights = joblib.load(f\"{MODEL_FOLDER}/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")",
+        "peekOfCode": "xgb_model = joblib.load(f\"{MODEL_FOLDER}/xgboost_model.pkl\")\nrf_model = joblib.load(f\"{MODEL_FOLDER}/random_forest_model.pkl\")\n# Load Keras 3.x format models (converted from h5)\nimport os\nif os.path.exists(f\"{MODEL_FOLDER}/lstm_model_v3.keras\"):\n    lstm_model = load_model(f\"{MODEL_FOLDER}/lstm_model_v3.keras\")\nelse:\n    lstm_model = load_model(f\"{MODEL_FOLDER}/lstm_model.h5\")\nif os.path.exists(f\"{MODEL_FOLDER}/cnn_lstm_model_v3.keras\"):\n    cnn_lstm_model = load_model(f\"{MODEL_FOLDER}/cnn_lstm_model_v3.keras\")",
         "detail": "trend",
         "documentation": {}
     },
@@ -3089,25 +3249,7 @@
         "kind": 5,
         "importPath": "trend",
         "description": "trend",
-        "peekOfCode": "rf_model = joblib.load(f\"{MODEL_FOLDER}/random_forest_model.pkl\")\nlstm_model = load_model(f\"{MODEL_FOLDER}/lstm_model.h5\")\ncnn_lstm_model = load_model(f\"{MODEL_FOLDER}/cnn_lstm_model.h5\")\nscaler_X = joblib.load(f\"{MODEL_FOLDER}/scaler_X.pkl\")\nscaler_y = joblib.load(f\"{MODEL_FOLDER}/scaler_y.pkl\")\n# Load ensemble weights (original from training)\ntry:\n    ensemble_weights = joblib.load(f\"{MODEL_FOLDER}/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")\nexcept:",
-        "detail": "trend",
-        "documentation": {}
-    },
-    {
-        "label": "lstm_model",
-        "kind": 5,
-        "importPath": "trend",
-        "description": "trend",
-        "peekOfCode": "lstm_model = load_model(f\"{MODEL_FOLDER}/lstm_model.h5\")\ncnn_lstm_model = load_model(f\"{MODEL_FOLDER}/cnn_lstm_model.h5\")\nscaler_X = joblib.load(f\"{MODEL_FOLDER}/scaler_X.pkl\")\nscaler_y = joblib.load(f\"{MODEL_FOLDER}/scaler_y.pkl\")\n# Load ensemble weights (original from training)\ntry:\n    ensemble_weights = joblib.load(f\"{MODEL_FOLDER}/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")\nexcept:\n    ensemble_weights = {",
-        "detail": "trend",
-        "documentation": {}
-    },
-    {
-        "label": "cnn_lstm_model",
-        "kind": 5,
-        "importPath": "trend",
-        "description": "trend",
-        "peekOfCode": "cnn_lstm_model = load_model(f\"{MODEL_FOLDER}/cnn_lstm_model.h5\")\nscaler_X = joblib.load(f\"{MODEL_FOLDER}/scaler_X.pkl\")\nscaler_y = joblib.load(f\"{MODEL_FOLDER}/scaler_y.pkl\")\n# Load ensemble weights (original from training)\ntry:\n    ensemble_weights = joblib.load(f\"{MODEL_FOLDER}/ensemble_weights.pkl\")\n    print(f\"Ensemble weights loaded: {ensemble_weights}\")\nexcept:\n    ensemble_weights = {\n        \"XGBoost\": 0.25,",
+        "peekOfCode": "rf_model = joblib.load(f\"{MODEL_FOLDER}/random_forest_model.pkl\")\n# Load Keras 3.x format models (converted from h5)\nimport os\nif os.path.exists(f\"{MODEL_FOLDER}/lstm_model_v3.keras\"):\n    lstm_model = load_model(f\"{MODEL_FOLDER}/lstm_model_v3.keras\")\nelse:\n    lstm_model = load_model(f\"{MODEL_FOLDER}/lstm_model.h5\")\nif os.path.exists(f\"{MODEL_FOLDER}/cnn_lstm_model_v3.keras\"):\n    cnn_lstm_model = load_model(f\"{MODEL_FOLDER}/cnn_lstm_model_v3.keras\")\nelse:",
         "detail": "trend",
         "documentation": {}
     },

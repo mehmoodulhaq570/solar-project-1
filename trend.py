@@ -173,13 +173,24 @@ df_day["doy_cos"] = np.cos(2 * np.pi * df_day["day_of_year"] / 365)
 target_col = "SolarRadiation"
 
 # ---------- 2. Load trained models ----------
-# Using saved_models folder (compatible with current Keras version)
+# Using saved_models_lstm folder (best LSTM/CNN-LSTM scores)
 MODEL_FOLDER = "saved_models_lstm"
 
 xgb_model = joblib.load(f"{MODEL_FOLDER}/xgboost_model.pkl")
 rf_model = joblib.load(f"{MODEL_FOLDER}/random_forest_model.pkl")
-lstm_model = load_model(f"{MODEL_FOLDER}/lstm_model.h5")
-cnn_lstm_model = load_model(f"{MODEL_FOLDER}/cnn_lstm_model.h5")
+
+# Load Keras 3.x format models (converted from h5)
+import os
+
+if os.path.exists(f"{MODEL_FOLDER}/lstm_model_v3.keras"):
+    lstm_model = load_model(f"{MODEL_FOLDER}/lstm_model_v3.keras")
+else:
+    lstm_model = load_model(f"{MODEL_FOLDER}/lstm_model.h5")
+
+if os.path.exists(f"{MODEL_FOLDER}/cnn_lstm_model_v3.keras"):
+    cnn_lstm_model = load_model(f"{MODEL_FOLDER}/cnn_lstm_model_v3.keras")
+else:
+    cnn_lstm_model = load_model(f"{MODEL_FOLDER}/cnn_lstm_model.h5")
 
 scaler_X = joblib.load(f"{MODEL_FOLDER}/scaler_X.pkl")
 scaler_y = joblib.load(f"{MODEL_FOLDER}/scaler_y.pkl")
